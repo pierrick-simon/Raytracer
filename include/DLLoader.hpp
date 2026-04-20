@@ -1,0 +1,168 @@
+/*
+** EPITECH PROJECT, 2026
+** RayTracer
+** File description:
+** DESCRIPTION
+*/
+
+#ifndef DLLOADER_HPP
+    #define DLLOADER_HPP
+    #include <dlfcn.h>
+    #include <memory>
+    #include <stdexcept>
+    #include <string>
+
+namespace RayTracer {
+    template<typename T>
+    class DLLoader {
+    public:
+        explicit DLLoader(const std::string &libFile) : _handle(nullptr)
+        {
+            this->loadFile(libFile);
+        }
+
+        explicit DLLoader() : _handle(nullptr)
+        {
+        }
+
+        DLLoader(const DLLoader &) = delete;
+
+        ~DLLoader()
+        {
+            this->close();
+        }
+
+        DLLoader &operator=(const DLLoader &) = delete;
+
+        DLLoader(DLLoader &&other) noexcept : _handle(other._handle)
+        {
+            other._handle = nullptr;
+        }
+
+        DLLoader &operator=(DLLoader &&other) noexcept
+        {
+            if (this != &other) {
+                close();
+                this->_handle = other._handle;
+                other._handle = nullptr;
+            }
+            return *this;
+        }
+
+        std::unique_ptr<T> getInstance()
+        {
+            void *entryPoint = dlsym(this->_handle, ENTRY_POINT_SYMBOL.data());
+            if (!entryPoint)
+                throw std::runtime_error(
+                    std::string("Failed to open ") + ENTRY_POINT_SYMBOL.data() +
+                    ": " + dlerror());
+
+            using EntryPointFn = T*(*)();
+            T *instance = reinterpret_cast<EntryPointFn>(entryPoint)();
+            if (!instance)
+                throw std::runtime_error(
+                    std::string("Failed to create a new instance using ") +
+                    ENTRY_POINT_SYMBOL.data());
+            std::unique_ptr<T> ptr(instance);
+            return std::move(ptr);
+        }
+
+        std::unique_ptr<T> getType()
+        {
+            void *entryPoint = dlsym(this->_handle, TYPE_ENTRY_POINT_SYMBOL.data());
+            if (!entryPoint)
+                throw std::runtime_error(
+                    std::string("Failed to open ") + TYPE_ENTRY_POINT_SYMBOL.data() +
+                    ": " + dlerror());
+
+            using EntryPointFn = T*(*)();
+            T *instance = reinterpret_cast<EntryPointFn>(entryPoint)();
+            if (!instance)
+                throw std::runtime_error(
+                    std::string("Failed to create a new instance using ") +
+                    ENTRY_POINT_SYMBOL.data());
+            std::unique_ptr<T> ptr(instance);
+            return std::move(ptr);
+        }
+
+        void close() noexcept
+        {
+            if (this->_handle) {
+                dlclose(this->_handle);
+                this->_handle = nullptr;
+            }
+        }
+
+        void loadFile(const std::string &libFile)
+        {
+            this->close();
+            this->_handle = dlopen(libFile.c_str(), RTLD_NOW);
+            if (!this->_handle)
+                throw LibraryLoadException(dlerror());
+        }
+
+        class DLLoaderException : public std::exception {
+        public:
+            [[nodiscard]] const char *what() const noexcept override
+            {
+                return "DLLoader exception";
+            }
+        };
+
+        class LibraryLoadException : public DLLoaderException {
+        public:
+            explicit LibraryLoadException(const std::string &msg) : _libFile(
+                msg)
+            {
+            }
+
+            [[nodiscard]] const char *what() const noexcept override
+            {
+                return this->_libFile.data();
+            }
+
+        private:
+            std::string _libFile;
+        };
+
+        class NoEntrypointException : public DLLoaderException {
+        public:
+            explicit NoEntrypointException(const std::string &msg) : _msg(msg)
+            {
+            }
+
+            [[nodiscard]] const char *what() const noexcept override
+            {
+                return this->_msg.data();
+            }
+
+        private:
+            std::string _msg;
+        };
+
+        class InstanceCreationException : public DLLoaderException {
+        public:
+            explicit InstanceCreationException(const std::string &msg) : _msg(
+                msg)
+            {
+            }
+
+            [[nodiscard]] const char *what() const noexcept override
+            {
+                return this->_msg.data();
+            }
+
+        private:
+            std::string _msg;
+        };
+
+    private:
+        static constexpr std::string_view ENTRY_POINT_SYMBOL =
+            "rayTracerLibEntryPoint";
+        static constexpr std::string_view TYPE_ENTRY_POINT_SYMBOL =
+            "rayTracerTypeEntryPoint";
+        void *_handle;
+    };
+}
+
+#endif
