@@ -9,8 +9,13 @@
 
 RayTracer::DisplaySFML::DisplaySFML()
     : _window(sf::RenderWindow(sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, WINDOW_BITS),
-    "RayTracer", sf::Style::Close | sf::Style::Resize))
+    "RayTracer", sf::Style::Close | sf::Style::Resize)),
+    _view(sf::FloatRect(0.0, 0.0, WINDOW_SIZE_X, WINDOW_SIZE_Y))
 {
+    _window.setView(_view);
+    _background.setSize({WINDOW_SIZE_X, WINDOW_SIZE_Y});
+    _pix.setSize({1, 1});
+    _background.setFillColor(sf::Color::Black);
     _window.setFramerateLimit(FPS);
 }
 
@@ -29,10 +34,12 @@ RayTracer::Event RayTracer::DisplaySFML::getEvent()
             value = {Action::Close, pos};
         action = keyPressed(event);
         if (action != Action::None)
-            Event value = {action, pos};
+            value = {action, pos};
         action = mousseButton(event);
         if (action != Action::None)
-            Event value = {action, pos};
+            value = {action, pos};
+        if (event.type == sf::Event::Resized)
+            resized();
     }
     return value;
 }
@@ -63,8 +70,42 @@ RayTracer::Action RayTracer::DisplaySFML::mousseButton(sf::Event event)
 
 void RayTracer::DisplaySFML::draw(PortablePixMap ppm)
 {
-    _window.clear(sf::Color::Black);
+    _size = {static_cast<float>(ppm.getWidth()),
+        static_cast<float>(ppm.getHeight())};
+     _window.clear(DARKBLUE);
+    resized();
+    _background.setSize(_size);
+    _window.draw(_background);
+    for (size_t i = 0; i < ppm.getHeight(); i++) {
+        for (size_t j = 0; j < ppm.getWidth(); j++) {
+            auto color = ppm.getPix(j, i);
+            _pix.setFillColor({color.x, color.y, color.z});
+            _pix.setPosition({static_cast<float>(j), static_cast<float>(i)});
+            _window.draw(_pix);
+        }
+    }
     _window.display();
+}
+
+void RayTracer::DisplaySFML::resized()
+{
+    _view.reset(sf::FloatRect(0, 0, _size.x, _size.y));
+    float windowRatio = static_cast<float>(_window.getSize().x) /
+                        static_cast<float>(_window.getSize().y);
+    float viewRatio   = _size.x / _size.y;
+    sf::Vector2f size = {1, 1};
+    sf::Vector2f pos  = {0, 0};
+
+    if (windowRatio >= viewRatio) {
+        size.x = viewRatio / windowRatio;
+        pos.x  = (1.0f - size.x) / 2.0f;
+    } else {
+        size.y = windowRatio / viewRatio;
+        pos.y  = (1.0f - size.y) / 2.0f;
+    }
+
+    _view.setViewport(sf::FloatRect(pos.x, pos.y, size.x, size.y));
+    _window.setView(_view);
 }
 
 const std::unordered_map<sf::Keyboard::Key, RayTracer::Action>
