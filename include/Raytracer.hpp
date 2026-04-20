@@ -8,7 +8,7 @@
 #ifndef RAYTRACER_HPP
     #define RAYTRACER_HPP
 
-namespace rtr {
+namespace RayTracer {
 
     constexpr int EPISUCCESS = 0;
     constexpr int EPIERROR = 84;

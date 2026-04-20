@@ -9,5 +9,5 @@
 
 int main()
 {
-    return rtr::EPISUCCESS;
+    return RayTracer::EPISUCCESS;
 }

@@ -234,6 +234,7 @@ namespace Maths {
     }
 
     using Vector3D = Vector3<double>;
+    using RGB = Vector3<unsigned char>;
 } // bs
 
 #endif

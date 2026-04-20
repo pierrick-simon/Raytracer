@@ -17,5 +17,5 @@ static void redirect_all_std()
 
 Test(Example, example_test)
 {
-    cr_assert_eq(true, true);
+    cr_assert(true);
 }

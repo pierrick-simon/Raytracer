@@ -11,6 +11,7 @@ set(MAIN
 )
 
 set(SRCS
+    src/PortablePixMap.cpp
 )
 
 set(HEADERS
@@ -26,6 +27,7 @@ find_library(CRITERION criterion REQUIRED)
 
 set(SRCS_TESTS
     tests/tests_init.cpp
+    tests/tests_PPM.cpp
 )
 
 add_executable(tests_run_bin EXCLUDE_FROM_ALL ${SRCS_TESTS} ${SRCS})
