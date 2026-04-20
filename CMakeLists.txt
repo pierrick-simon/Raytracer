@@ -17,6 +17,7 @@ set(SRCS
 set(HEADERS
     include/
     include/maths
+    include/display
 )
 
 add_executable(raytracer ${MAIN} ${SRCS})
