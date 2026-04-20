@@ -18,6 +18,8 @@ namespace Maths {
 
         explicit Point3(Type x, Type y, Type z);
 
+        explicit Point3(const Vector3<Type> &vec);
+
         Point3 operator+(const Vector3<Type> &other) const;
 
         Point3 operator-(const Vector3<Type> &other) const;
@@ -42,8 +44,6 @@ namespace Maths {
 
         [[nodiscard]] double length() const;
 
-        [[nodiscard]] double norm() const = length;
-
         [[nodiscard]] double distance(const Point3 &rhs) const;
 
         static double distance(const Point3 &lhs, const Point3 &rhs);
@@ -58,6 +58,14 @@ namespace Maths {
         x(x),
         y(y),
         z(z)
+    {
+    }
+
+    template<typename Type>
+    Point3<Type>::Point3(const Vector3<Type> &vec) :
+        x(vec.x),
+        y(vec.y),
+        z(vec.z)
     {
     }
 
