@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(Raytracer)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-find_package(SFML 2 COMPONENTS graphics window system REQUIRED)
 
 set(MAIN
     src/Main.cpp
@@ -14,19 +13,20 @@ set(SRCS
     src/PortablePixMap.cpp
 )
 
-set(DISPLAY_SRCS
-    src/display/DisplaySFML.cpp
-)
-
 set(HEADERS
     include/
     include/maths
     include/display
 )
 
-add_executable(raytracer ${MAIN} ${SRCS} ${DISPLAY_SRCS})
+add_executable(raytracer ${MAIN} ${SRCS})
 target_include_directories(raytracer PRIVATE ${HEADERS})
-target_link_libraries(raytracer sfml-graphics sfml-window sfml-system)
+
+target_compile_options(raytracer PRIVATE -g)
+
+add_custom_target(main
+    DEPENDS raytracer
+)
 
 find_library(CRITERION criterion REQUIRED)
 
@@ -45,4 +45,17 @@ add_custom_target(tests_run
     COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/*.gcda
     COMMAND ./tests_run_bin
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+add_custom_target(display ALL
+    COMMAND ${CMAKE_COMMAND} -B../plugins/display -S../plugins/display
+    COMMAND make -C ../plugins/display
+)
+
+file(GLOB_RECURSE LIBS
+    "${CMAKE_SOURCE_DIR}/plugins/raytracer_*.so"
+)
+
+add_custom_target(clean_libs
+    COMMAND rm -f ${LIBS}
 )

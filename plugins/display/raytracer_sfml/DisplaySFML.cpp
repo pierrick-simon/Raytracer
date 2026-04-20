@@ -8,7 +8,8 @@
 #include "DisplaySFML.hpp"
 
 RayTracer::DisplaySFML::DisplaySFML()
-    : _window(sf::RenderWindow(sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, WINDOW_BITS),
+    : _window(sf::RenderWindow(
+        sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, WINDOW_BITS),
     "RayTracer", sf::Style::Close | sf::Style::Resize)),
     _view(sf::FloatRect(0.0, 0.0, WINDOW_SIZE_X, WINDOW_SIZE_Y))
 {
