@@ -14,13 +14,17 @@ set(SRCS
     src/PortablePixMap.cpp
 )
 
+set(DISPLAY_SRCS
+    src/display/DisplaySFML.cpp
+)
+
 set(HEADERS
     include/
     include/maths
     include/display
 )
 
-add_executable(raytracer ${MAIN} ${SRCS})
+add_executable(raytracer ${MAIN} ${SRCS} ${DISPLAY_SRCS})
 target_include_directories(raytracer PRIVATE ${HEADERS})
 target_link_libraries(raytracer sfml-graphics sfml-window sfml-system)
 

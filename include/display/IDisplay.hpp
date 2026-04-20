@@ -17,7 +17,7 @@ namespace RayTracer {
         public:
             virtual ~IDisplay() = default;
 
-            virtual Event event() = 0;
+            virtual Event getEvent() = 0;
             virtual void draw(PortablePixMap) = 0;
     };
 };
