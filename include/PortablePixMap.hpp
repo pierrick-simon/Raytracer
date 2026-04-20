@@ -26,6 +26,7 @@ namespace RayTracer {
         public:
             PortablePixMap(std::size_t width, std::size_t height)
                 : _width(width), _height(height), _map(width * height) {};
+            PortablePixMap(std::string filepath);
 
             void setPix(std::size_t width, std::size_t height, Maths::RGB pix);
             Maths::RGB getPix(std::size_t width, std::size_t height);
@@ -35,13 +36,38 @@ namespace RayTracer {
             class OutOfRangeException : public std::exception {
                 public:
                     const char *what() const noexcept override
-                        { return "Portable PixMap out of range."; };
+                        { return "Portable PixMap out of range."; }
+            };
+
+            class WrongExtensionException : public std::exception {
+                public:
+                    const char *what() const noexcept override
+                        { return "Wrong File Extension."; }
+            };
+
+            class NoSuchFileException : public std::exception {
+                public:
+                    const char *what() const noexcept override
+                        { return "No Such File."; }
+            };
+
+            class FileException : public std::exception {
+                public:
+                    const char *what() const noexcept override
+                        { return "File Error."; }
             };
 
         private:
-        std::size_t _width;
-        std::size_t _height;
-        std::vector<Maths::RGB> _map = {};
+            bool customGetline(std::reference_wrapper<std::string> str,
+                std::reference_wrapper<std::ifstream> file);
+            bool readType(std::reference_wrapper<std::ifstream> file);
+            bool readSize(std::reference_wrapper<std::ifstream> file);
+            bool readMaxSize(std::reference_wrapper<std::ifstream> file);
+            bool readBody(std::string line);
+
+            std::size_t _width;
+            std::size_t _height;
+            std::vector<Maths::RGB> _map = {};
     };
 };
 
