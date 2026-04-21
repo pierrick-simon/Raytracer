@@ -43,11 +43,11 @@ target_compile_options(tests_run_bin PRIVATE --coverage)
 target_link_libraries(tests_run_bin criterion --coverage)
 
 add_custom_target(tests_run
-    DEPENDS tests_run_bin
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_BINARY_DIR}/*.gcda
-    COMMAND ${CMAKE_COMMAND} -E rm -f screenshots/test.ppm
+    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_SOURCE_DIR}/*.gcda
+    COMMAND ${CMAKE_COMMAND} -E rm -f screenshots/test_save.ppm screenshots/test.ppm
     COMMAND ./tests_run_bin
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    DEPENDS tests_run_bin
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 
 add_custom_target(display ALL

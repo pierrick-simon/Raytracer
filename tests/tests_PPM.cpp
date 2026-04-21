@@ -77,7 +77,7 @@ static std::string readFile(std::string path, bool test)
 
 Test(PPM, save)
 {
-    std::string filename = "test";
+    std::string filename = "test_save";
     std::size_t w = 3;
     std::size_t h = 3;
     RayTracer::PortablePixMap tmp(w, h);
