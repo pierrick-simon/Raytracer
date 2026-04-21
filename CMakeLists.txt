@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(MAIN
     src/Main.cpp
+        include/LibType.hpp
 )
 
 set(SRCS

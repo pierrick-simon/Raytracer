@@ -9,47 +9,56 @@
 #include <filesystem>
 #include "RayTracer.hpp"
 
-RayTracer::RayTracer::RayTracer(std::queue<std::string> args)
-{
-    if (args.empty() || args.front() == HELP_FLAG) {
-        showHelp();
-        throw HelpException();
-    }
-    _ppm = PortablePixMap(args.front());
-    std::filesystem::path path(args.front());
-    _name = path.filename();
-    size_t pos = _name.find(ARG_EXT);
-    if (pos != std::string::npos)
-        _name.replace(pos, _name.length() - pos, "\0");
-    args.pop();
-    if (!args.empty() && args.front() == DISPLAY_FLAG && args.size() == 2) {
+namespace RayTracer {
+    RayTracer::RayTracer::RayTracer(std::queue<std::string> args)
+    {
+        if (args.empty() || args.front() == HELP_FLAG) {
+            showHelp();
+            throw HelpException();
+        }
+        _ppm = PortablePixMap(args.front());
+        std::filesystem::path path(args.front());
+        _name = path.filename();
+        size_t pos = _name.find(ARG_EXT);
+        if (pos != std::string::npos)
+            _name.replace(pos, _name.length() - pos, "\0");
         args.pop();
-        _display.emplace(args.front());
-    } else {
-        showHelp();
-        throw HelpException();
+        if (!args.empty() && args.front() == DISPLAY_FLAG && args.size() == 2) {
+            args.pop();
+            _display.emplace(args.front());
+            if (_display->getType() != LibType::GRAPHICS)
+                throw IncorrectLibTypeException();
+        } else {
+            showHelp();
+            throw HelpException();
+        }
     }
-}
 
-void RayTracer::RayTracer::showHelp()
-{
-    std::ifstream file({std::string(HELP)});
+    void RayTracer::run()
+    {
+        if (_display.has_value())
+            runDisplay();
+        _ppm.save(_name);
+    }
 
-    if (file.is_open())
-        std::cout << file.rdbuf();
-}
+    void RayTracer::showHelp()
+    {
+        std::ifstream file({std::string(HELP)});
 
-void RayTracer::RayTracer::run()
-{
-    if (_display.has_value())
-        runDisplay();
-    _ppm.save(_name);
-}
+        if (file.is_open())
+            std::cout << file.rdbuf();
+    }
 
-void RayTracer::RayTracer::runDisplay()
-{
-    auto display = _display.value().getInstance();
+    const char *RayTracer::IncorrectLibTypeException::what() const noexcept
+    {
+        return "Tried to load an incorrect lib type.";
+    }
 
-    while (display->getEvent().first != Action::Close)
-        display->draw(_ppm);
+    void RayTracer::runDisplay()
+    {
+        auto display = _display.value().getInstance();
+
+        while (display->getEvent().first != Action::Close)
+            display->draw(_ppm);
+    }
 }

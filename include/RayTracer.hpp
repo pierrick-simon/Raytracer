@@ -30,12 +30,18 @@ namespace RayTracer {
             RayTracer(std::queue<std::string> args);
 
             void run();
-            void showHelp();
+
+            static void showHelp();
 
             class HelpException : public std::exception {
                 public:
                     const char *what() const noexcept override
                         { return "Show Help."; }
+            };
+
+            class IncorrectLibTypeException : public std::exception {
+                public:
+                    const char *what() const noexcept override;
             };
 
         private:

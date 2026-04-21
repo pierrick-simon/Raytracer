@@ -7,6 +7,8 @@
 
 #include "DisplaySFML.hpp"
 
+#include "LibType.hpp"
+
 RayTracer::DisplaySFML::DisplaySFML()
     : _window(sf::RenderWindow(
         sf::VideoMode(WINDOW_SIZE_X, WINDOW_SIZE_Y, WINDOW_BITS),
@@ -219,4 +221,9 @@ const std::unordered_map<int, RayTracer::Action>
 extern "C" RayTracer::IDisplay *rayTracerLibEntryPoint()
 {
     return new RayTracer::DisplaySFML();
+}
+
+extern "C" RayTracer::LibType rayTracerType()
+{
+    return RayTracer::LibType::GRAPHICS;
 }
