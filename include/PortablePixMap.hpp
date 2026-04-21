@@ -24,6 +24,7 @@ namespace RayTracer {
 
     class PortablePixMap {
         public:
+            PortablePixMap() {};
             PortablePixMap(std::size_t width, std::size_t height)
                 : _width(width), _height(height), _map(width * height) {};
             PortablePixMap(std::string filepath);

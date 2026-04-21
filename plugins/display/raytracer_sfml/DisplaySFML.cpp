@@ -215,3 +215,8 @@ const std::unordered_map<int, RayTracer::Action>
     {sf::Mouse::Middle, Action::MiddleMouse},
     {sf::Mouse::Right, Action::RightMouse},
 };
+
+extern "C" RayTracer::IDisplay *rayTracerLibEntryPoint()
+{
+    return new RayTracer::DisplaySFML();
+}
