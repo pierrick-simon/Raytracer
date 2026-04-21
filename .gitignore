@@ -7,3 +7,5 @@ raytracer
 tests_run_bin
 Testing
 screenshots
+.vscode
+plugins/raytracer_*.so

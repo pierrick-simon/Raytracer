@@ -1,0 +1,9 @@
+USAGE:
+    ./raytracer <SCENE_FILE> [OPTION]
+
+DESCRIPTION
+    SCENE_FILE
+        scene configuration
+    
+    OPTION (Mandatory arguments)
+        --display <PATH>

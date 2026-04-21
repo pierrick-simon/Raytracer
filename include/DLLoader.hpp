@@ -12,6 +12,8 @@
     #include <stdexcept>
     #include <string>
 
+#include "LibType.hpp"
+
 namespace RayTracer {
     template<typename T>
     class DLLoader {
@@ -67,7 +69,7 @@ namespace RayTracer {
             return std::move(ptr);
         }
 
-        std::unique_ptr<T> getType()
+        [[nodiscard]] LibType getType() const
         {
             void *entryPoint = dlsym(this->_handle, TYPE_ENTRY_POINT_SYMBOL.data());
             if (!entryPoint)
@@ -75,14 +77,9 @@ namespace RayTracer {
                     std::string("Failed to open ") + TYPE_ENTRY_POINT_SYMBOL.data() +
                     ": " + dlerror());
 
-            using EntryPointFn = T*(*)();
-            T *instance = reinterpret_cast<EntryPointFn>(entryPoint)();
-            if (!instance)
-                throw std::runtime_error(
-                    std::string("Failed to create a new instance using ") +
-                    ENTRY_POINT_SYMBOL.data());
-            std::unique_ptr<T> ptr(instance);
-            return std::move(ptr);
+            using EntryPointFn = LibType(*)();
+            LibType type = reinterpret_cast<EntryPointFn>(entryPoint)();
+            return type;
         }
 
         void close() noexcept
@@ -160,7 +157,7 @@ namespace RayTracer {
         static constexpr std::string_view ENTRY_POINT_SYMBOL =
             "rayTracerLibEntryPoint";
         static constexpr std::string_view TYPE_ENTRY_POINT_SYMBOL =
-            "rayTracerTypeEntryPoint";
+            "rayTracerType";
         void *_handle;
     };
 }

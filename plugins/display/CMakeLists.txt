@@ -1,0 +1,35 @@
+cmake_minimum_required(VERSION 3.5)
+project(arcade)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(SHARED_HEADERS
+    ../../include/
+    ../../include/display
+    ../../include/maths
+)
+
+set(SHARED_SRCS
+    ../../src/PortablePixMap.cpp
+)
+
+set(SFML
+    raytracer_sfml
+)
+
+set(SRCS_SFML
+    ${SFML}/DisplaySFML.cpp
+)
+
+add_library(${SFML} SHARED ${SRCS_SFML} ${SHARED_SRCS})
+target_include_directories(${SFML} PRIVATE ${SFML} ${SHARED_HEADERS})
+target_link_libraries(${SFML} sfml-graphics sfml-window sfml-system sfml-audio)
+set_target_properties(${SFML} PROPERTIES PREFIX "")
+
+target_compile_options(${SFML} PRIVATE -g)
+
+add_custom_target(move ALL
+    DEPENDS ${SFML}
+    COMMAND mv *.so ../
+)

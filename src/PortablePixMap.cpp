@@ -10,8 +10,6 @@
 #include <iomanip>
 #include "PortablePixMap.hpp"
 
-#include <iostream>
-#define DEBUG(value) std::cout << "\e[0;35m" << "DEBUG: " <<  "\e[0;37m" << "\t" << value << std::endl;
 RayTracer::PortablePixMap::PortablePixMap(std::string filepath)
 {
     std::ifstream file(filepath);
@@ -24,14 +22,9 @@ RayTracer::PortablePixMap::PortablePixMap(std::string filepath)
     if (!readType(file) || !readSize(file) || !readMaxSize(file))
         throw FileException();
     while (customGetline(line, file))
-        if (!readBody(line)) {
+        if (!readBody(line))
             throw FileException();
-            DEBUG(line);
-        }
     if (_map.size() != _height * _width) {
-        DEBUG(_map.size());
-        DEBUG(_height);
-        DEBUG(_width);
         throw FileException();
     }
 }
@@ -41,7 +34,7 @@ void RayTracer::PortablePixMap::setPix(
 {
     if (_height <= height || _width <= width)
         throw  OutOfRangeException();
-    size_t idx = height * width;
+    size_t idx = height * _width + width;
     _map[idx] = pix;
 }
 
@@ -50,7 +43,7 @@ Maths::RGB RayTracer::PortablePixMap::getPix(
 {
     if (_height <= height || _width <= width)
         throw  OutOfRangeException();
-    size_t idx = height * width;
+    size_t idx = height * _width + width;
     return _map[idx];
 }
 
