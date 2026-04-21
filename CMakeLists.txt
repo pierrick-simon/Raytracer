@@ -12,16 +12,21 @@ set(MAIN
 
 set(SRCS
     src/PortablePixMap.cpp
+    src/PortablePixMap.cpp
+    src/Parser/ConfigFileParser.cpp
+    src/Objects/Camera.cpp
 )
 
 set(HEADERS
     include/
     include/maths
+    include/Objects
+    include/Parser
 )
 
 add_executable(raytracer ${MAIN} ${SRCS})
 target_include_directories(raytracer PRIVATE ${HEADERS})
-target_link_libraries(raytracer sfml-graphics sfml-window sfml-system)
+target_link_libraries(raytracer sfml-graphics sfml-window sfml-system config++)
 
 find_library(CRITERION criterion REQUIRED)
 
