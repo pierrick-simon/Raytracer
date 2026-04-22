@@ -13,21 +13,26 @@
 namespace RayTracer {
     class Sphere : public IObject {
     public:
-        Sphere(int, int, int, Maths::RGB);
+        Sphere(int, int, int, std::size_t, Maths::RGB);
 
         void setX(int);
         void setY(int);
         void setZ(int);
+        void setRadius(std::size_t);
         void setColor(Maths::RGB);
 
         [[nodiscard]] int getX() const;
         [[nodiscard]] int getY() const;
         [[nodiscard]] int getZ() const;
+        [[nodiscard]] std::size_t getRadius() const;
         [[nodiscard]] Maths::RGB getColor() const;
+
+        std::optional<HitInfo> hits(Ray &) override;
     private:
         int _x = 0;
         int _y = 0;
         int _z = 0;
+        std::size_t _r = 0;
         Maths::RGB _color;
     };
 }
