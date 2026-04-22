@@ -1,4 +1,3 @@
-
 ```plantuml
 @startuml
 
@@ -31,7 +30,7 @@ interface IObject {
 interface ILightSource {
     + Vector3D getPosition() const
     + RGB getColor() const
-    + float getLightAmount(const Ray &) const
+    + double getLightAmount(const Ray &) const
 }
 
 interface IMaterial {

@@ -16,7 +16,10 @@ set(SRCS
     src/Parser/ConfigFileParser.cpp
     src/Objects/Camera.cpp
     src/Objects/Sphere.cpp
-    src/Objects/Lights.cpp
+    src/Objects/Lights/Lights.cpp
+    src/Objects/Lights/LightConfig.cpp
+    src/Objects/Lights/LightDirectional.cpp
+    src/Objects/Lights/PointLight.cpp
 )
 
 set(HEADERS
@@ -24,6 +27,7 @@ set(HEADERS
     include/maths
     include/Objects
     include/Parser
+    include/Objects/Lights
 )
 
 add_executable(raytracer ${MAIN} ${SRCS})

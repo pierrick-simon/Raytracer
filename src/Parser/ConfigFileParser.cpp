@@ -11,9 +11,12 @@
 #include "ConfigFileParser.hpp"
 
 #include <iostream>
+#include <memory>
 
 #include "Camera.hpp"
-#include "Lights.hpp"
+#include "../../include/Objects/Lights/DirectionalLight.hpp"
+#include "../../include/Objects/Lights/Lights.hpp"
+#include "PointLight.hpp"
 #include "Shpere.hpp"
 
 namespace RayTracer {
@@ -67,7 +70,37 @@ namespace RayTracer {
         return Camera{resolution, position, rotation, fov};
     }
 
-    Lights ConfigFileParser::parseLights() const
+    std::unique_ptr<ILightSource> ConfigFileParser::parseDirectionalLight(
+    libconfig::Setting const &element)
+    {
+        int x = 0;
+        int y = 0;
+        int z = 0;
+
+        for (int i = 0; i < element.getLength(); ++i) {
+            element[i].lookupValue("x", x);
+            element[i].lookupValue("y", y);
+            element[i].lookupValue("z", z);
+        }
+        return std::make_unique<DirectionalLight>(x, y, z);
+    }
+
+    std::unique_ptr<ILightSource> ConfigFileParser::parsePointLight(
+    libconfig::Setting const &element)
+    {
+        int x = 0;
+        int y = 0;
+        int z = 0;
+
+        for (int i = 0; i < element.getLength(); ++i) {
+            element[i].lookupValue("x", x);
+            element[i].lookupValue("y", y);
+            element[i].lookupValue("z", z);
+        }
+        return std::make_unique<PointLight>(x, y, z);
+    }
+
+    LightConfig ConfigFileParser::parseLights() const
     {
         libconfig::Config cfg;
 
@@ -76,15 +109,12 @@ namespace RayTracer {
 
         double ambient = 0.0;
         double diffuse = 0.0;
-        std::vector<Maths::Vector3<int>> point;
-        std::vector<Maths::Vector3<int>> directional;
+        std::vector<std::unique_ptr<ILightSource>> lights;
         root.lookupValue("ambient", ambient);
         root.lookupValue("diffuse", diffuse);
-        for (int i = 0; i < root["point"].getLength(); ++i)
-            point.push_back(parseVector3I(root["point"][i]));
-        for (int i = 0; i < root["directional"].getLength(); ++i)
-            directional.push_back(parseVector3I(root["directional"][i]));
-        return Lights{ambient, diffuse, point, directional};
+        lights.push_back(parsePointLight(root["point"]));
+        lights.push_back(parseDirectionalLight(root["directional"]));
+        return LightConfig{ambient, diffuse, std::move(lights)};
     }
 
     Maths::RGB ConfigFileParser::parseColor(libconfig::Setting const &element)
@@ -103,7 +133,8 @@ namespace RayTracer {
             static_cast<unsigned char>(b)};
     }
 
-    Sphere ConfigFileParser::parseSphere(libconfig::Setting const &element)
+    std::unique_ptr<IObject> ConfigFileParser::parseSphere(
+        libconfig::Setting const &element)
     {
         int x = 0;
         int y = 0;
@@ -116,14 +147,14 @@ namespace RayTracer {
         element.lookupValue("z", z);
         element.lookupValue("r", r);
         color = parseColor(element["color"]);
-        return Sphere{x, y, z, r,color};
+        return std::make_unique<Sphere>(Sphere{x, y, z, r,color});
     }
 
-    std::vector<Sphere> ConfigFileParser::parseSpheres(
+    std::vector<std::unique_ptr<IObject>> ConfigFileParser::parseSpheres(
         libconfig::Setting const &element)
     {
         int count = element.getLength();
-        std::vector<Sphere> spheres;
+        std::vector<std::unique_ptr<IObject>> spheres;
 
         for (int i = 0; i < count; ++i) {
             const libconfig::Setting &sphere = element[i];
@@ -132,15 +163,14 @@ namespace RayTracer {
         return spheres;
     }
 
-    std::vector<IObject> ConfigFileParser::parsePrimitives() const
+    std::vector<std::unique_ptr<IObject>> ConfigFileParser::parsePrimitives() const
     {
-        std::vector<IObject> objects;
         libconfig::Config cfg;
 
         cfg.readFile(_filepath.c_str());
 
         const libconfig::Setting &root = cfg.getRoot()["primitives"];
-        auto spheres = parseSpheres(root["spheres"]);
+        auto objects = parseSpheres(root["spheres"]);
         return objects;
     }
 }
