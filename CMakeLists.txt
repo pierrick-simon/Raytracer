@@ -15,6 +15,7 @@ set(SRCS
     src/PortablePixMap.cpp
     src/Parser/ConfigFileParser.cpp
     src/Objects/Camera.cpp
+    src/Objects/Sphere.cpp
 )
 
 set(HEADERS
