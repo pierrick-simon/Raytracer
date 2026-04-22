@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include "Camera.hpp"
+#include "Lights.hpp"
 #include "Shpere.hpp"
 
 namespace RayTracer {
@@ -64,6 +65,26 @@ namespace RayTracer {
         const Maths::Vector3<int> rotation = parseVector3I(rot);
 
         return Camera{resolution, position, rotation, fov};
+    }
+
+    Lights ConfigFileParser::parseLights() const
+    {
+        libconfig::Config cfg;
+
+        cfg.readFile(_filepath.c_str());
+        const libconfig::Setting &root = cfg.getRoot()["lights"];
+
+        double ambient = 0.0;
+        double diffuse = 0.0;
+        std::vector<Maths::Vector3<int>> point;
+        std::vector<Maths::Vector3<int>> directional;
+        root.lookupValue("ambient", ambient);
+        root.lookupValue("diffuse", diffuse);
+        for (int i = 0; i < root["point"].getLength(); ++i)
+            point.push_back(parseVector3I(root["point"][i]));
+        for (int i = 0; i < root["directional"].getLength(); ++i)
+            directional.push_back(parseVector3I(root["directional"][i]));
+        return Lights{ambient, diffuse, point, directional};
     }
 
     Maths::RGB ConfigFileParser::parseColor(libconfig::Setting const &element)
@@ -118,10 +139,8 @@ namespace RayTracer {
 
         cfg.readFile(_filepath.c_str());
 
-        const libconfig::Setting &root = cfg.getRoot();
-        const libconfig::Setting &primitives = root["primitives"];
-        auto spheres = parseSpheres(primitives["spheres"]);
-
+        const libconfig::Setting &root = cfg.getRoot()["primitives"];
+        auto spheres = parseSpheres(root["spheres"]);
         return objects;
     }
 }

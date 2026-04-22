@@ -16,6 +16,7 @@ set(SRCS
     src/Parser/ConfigFileParser.cpp
     src/Objects/Camera.cpp
     src/Objects/Sphere.cpp
+    src/Objects/Lights.cpp
 )
 
 set(HEADERS

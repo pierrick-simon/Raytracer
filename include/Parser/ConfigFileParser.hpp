@@ -12,6 +12,7 @@
 #include <vector>
 
     #include "Camera.hpp"
+#include "Lights.hpp"
 #include "Shpere.hpp"
 
 namespace RayTracer {
@@ -28,6 +29,7 @@ namespace RayTracer {
         };
 
         [[nodiscard]] Camera parseCamera() const;
+        [[nodiscard]] Lights parseLights() const;
         [[nodiscard]] std::vector<IObject> parsePrimitives() const;
     private:
         static Maths::Vector3<int> parseVector3I(libconfig::Setting const &element);

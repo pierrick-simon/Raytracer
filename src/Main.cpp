@@ -8,13 +8,15 @@
 #include <iostream>
 
 #include "ConfigFileParser.hpp"
+#include "Lights.hpp"
 #include "Raytracer.hpp"
 
 int main()
 {
     try {
         RayTracer::ConfigFileParser p("test2.cfg");
-        auto cam = p.parsePrimitives();
+        RayTracer::Lights cam = p.parseLights();
+        std::cout << cam.getAmbient() << std::endl;
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;
     }
