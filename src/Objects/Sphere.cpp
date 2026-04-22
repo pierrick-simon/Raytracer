@@ -8,7 +8,7 @@
 #include "Shpere.hpp"
 
 namespace RayTracer {
-    Sphere::Sphere(int x, int y, int z, Maths::Vector3<int> color) :
+    Sphere::Sphere(int x, int y, int z, Maths::RGB color) :
     _x(x), _y(y), _z(z), _color(color) {}
 
     void Sphere::setX(int x)
@@ -26,7 +26,7 @@ namespace RayTracer {
         _z = z;
     }
 
-    void Sphere::setColor(Maths::Vector3<int> const color)
+    void Sphere::setColor(Maths::RGB const color)
     {
         _color = color;
     }
@@ -46,7 +46,7 @@ namespace RayTracer {
         return _z;
     }
 
-    Maths::Vector3<int> Sphere::getColor() const
+    Maths::RGB Sphere::getColor() const
     {
         return _color;
     }
