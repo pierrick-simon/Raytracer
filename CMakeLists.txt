@@ -7,22 +7,34 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(MAIN
     src/Main.cpp
-        include/LibType.hpp
+    include/LibType.hpp
 )
 
 set(SRCS
     src/PortablePixMap.cpp
     src/RayTracer.cpp
+    src/PortablePixMap.cpp
+    src/Parser/ConfigFileParser.cpp
+    src/Objects/Camera.cpp
+    src/Objects/Sphere.cpp
+    src/Objects/Lights/Lights.cpp
+    src/Objects/Lights/LightConfig.cpp
+    src/Objects/Lights/LightDirectional.cpp
+    src/Objects/Lights/PointLight.cpp
 )
 
 set(HEADERS
     include/
     include/maths
     include/display
+    include/Objects
+    include/Parser
+    include/Objects/Lights
 )
 
 add_executable(raytracer ${MAIN} ${SRCS})
 target_include_directories(raytracer PRIVATE ${HEADERS})
+target_link_libraries(raytracer sfml-graphics sfml-window sfml-system config++)
 
 target_compile_options(raytracer PRIVATE -g)
 
