@@ -12,9 +12,10 @@
 
 namespace RayTracer {
     class Ray {
-        Maths::Point3D _origin;
-        Maths::Vector3D _direction;
-        Maths::RGB _color;
+        public:
+            Maths::Point3D origin;
+            Maths::Vector3D direction;
+            Maths::RGB color;
     };
 }
 

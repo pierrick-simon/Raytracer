@@ -11,6 +11,10 @@
     #include <cmath>
 
 namespace Maths {
+
+    template<typename Type>
+    class Point3;
+
     template<typename Type>
     class Vector3 {
     public:
@@ -20,6 +24,21 @@ namespace Maths {
             x(x),
             y(y),
             z(z)
+        {
+        }
+
+        constexpr explicit Vector3(const Point3<Type> &p):
+            x(p.x),
+            y(p.y),
+            z(p.z)
+        {
+        }
+
+        constexpr explicit Vector3(const Point3<Type> &p1,
+            const Point3<Type> &p2):
+            x(p2.x - p1.x),
+            y(p2.y - p1.x),
+            z(p2.z - p1.x)
         {
         }
 
