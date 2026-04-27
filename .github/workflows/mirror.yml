@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: '0'
       - name: Dependecies
-        run: sudo apt-get install libconfig++-dev && sudo apt install lib-criterion-dev
+        run: sudo apt-get install libconfig++-dev && sudo apt install libcriterion-dev
       - name: CMake
         timeout-minutes: 2
         run: mkdir -p ./build/ ; cd ./build/ ; cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ; cd ..
@@ -58,7 +58,7 @@ jobs:
         with:
           fetch-depth: '0'
       - name: Dependecies
-        run: sudo apt-get install libconfig++-dev && sudo apt install lib-criterion-dev
+        run: sudo apt-get install libconfig++-dev && sudo apt install libcriterion-dev
       - name: CMake
         timeout-minutes: 2
         run: mkdir -p ./build/ ; cd ./build/ ; cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ; cd ..
