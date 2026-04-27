@@ -52,7 +52,7 @@ set(SRCS_TESTS
 add_executable(tests_run_bin EXCLUDE_FROM_ALL ${SRCS_TESTS} ${SRCS})
 target_include_directories(tests_run_bin PRIVATE ${HEADERS})
 target_compile_options(tests_run_bin PRIVATE --coverage)
-target_link_libraries(tests_run_bin criterion --coverage)
+target_link_libraries(tests_run_bin criterion --coverage sfml-graphics sfml-window sfml-system config++)
 
 add_custom_target(tests_run
     COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_SOURCE_DIR}/*.gcda
