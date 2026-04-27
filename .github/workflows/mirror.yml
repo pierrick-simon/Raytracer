@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: '0'
       - name: Dependecies
-        run: sudo apt-get install libconfig++-dev && sudo apt install libcriterion-dev libsfml-graphics libsfml-window libsfml-system
+        run: sudo apt-get install libconfig++-dev && sudo apt install libcriterion-dev libsfml-graphics2.6 libsfml-window2.6 libsfml-system2.6 libsfml-dev
       - name: CMake
         timeout-minutes: 2
         run: mkdir -p ./build/ ; cd ./build/ ; cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ; cd ..
@@ -58,7 +58,7 @@ jobs:
         with:
           fetch-depth: '0'
       - name: Dependecies
-        run: sudo apt-get install libconfig++-dev && sudo apt install libcriterion-dev libsfml-graphics libsfml-window libsfml-system
+        run: sudo apt-get install libconfig++-dev && sudo apt install libcriterion-dev libsfml-graphics2.6 libsfml-window2.6 libsfml-system2.6 libsfml-dev
       - name: CMake
         timeout-minutes: 2
         run: mkdir -p ./build/ ; cd ./build/ ; cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ; cd ..
