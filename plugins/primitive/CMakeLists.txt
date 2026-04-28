@@ -15,8 +15,6 @@ set(SRCS_SPHERE
 add_library(${SPHERE} SHARED ${SRCS_SPHERE} ${SHARED_SRCS})
 set_target_properties(${SPHERE} PROPERTIES PREFIX "")
 
-target_compile_options(${SPHERE} PRIVATE -g)
-
 add_custom_target(move ALL
     DEPENDS ${SPHERE}
     COMMAND mv *.so ../
