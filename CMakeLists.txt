@@ -62,10 +62,10 @@ add_custom_target(tests_run
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 
-add_custom_target(display ALL
-    COMMAND ${CMAKE_COMMAND} -B../plugins/display -S../plugins/display
-    COMMAND make -C ../plugins/display
-)
+add_subdirectory(plugins/display)
+
+add_custom_target(display
+        DEPENDS raytracer_sfml)
 
 file(GLOB_RECURSE LIBS
     "${CMAKE_SOURCE_DIR}/plugins/raytracer_*.so"
