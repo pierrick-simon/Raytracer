@@ -7,34 +7,36 @@
 
 #include <libconfig.h++>
 #include <utility>
-
-#include "ConfigFileParser.hpp"
-
 #include <iostream>
 #include <memory>
+#include <fstream>
 
+#include "ConfigFileParser.hpp"
 #include "Camera.hpp"
-#include "../../include/Objects/Lights/DirectionalLight.hpp"
-#include "../../include/Objects/Lights/Lights.hpp"
+#include "DirectionalLight.hpp"
+#include "Lights.hpp"
 #include "PointLight.hpp"
 #include "Shpere.hpp"
 
 namespace RayTracer {
-    ConfigFileParser::ConfigFileParser(std::string s) : _filepath(std::move(s))
+    ConfigFileParser::ConfigFileParser(std::string s)
     {
-    }
-
-    ConfigFileParser::ParserError::ParserError(char *s)
-    {
-        _err = s;
+        std::fstream file(s);
+    
+        if (!s.ends_with(FILE_EXT)
+            || s.size() <= FILE_EXT.size() + 1)
+            throw ParserError("Wrong Extenstion.");
+        if (!file.is_open())
+            throw ParserError("No Such File.");
+        _filepath = {std::move(s)};
     }
 
     const char *ConfigFileParser::ParserError::what() const noexcept
     {
-        return _err;
+        return _err.c_str();
     }
 
-    Maths::Vector3<int> ConfigFileParser::parseVector3I(
+    Maths::Vector3I ConfigFileParser::parseVector3I(
         libconfig::Setting const &element)
     {
         int x = 0;
@@ -61,11 +63,11 @@ namespace RayTracer {
         unsigned int resWidth = 0;
         reso.lookupValue("width", resWidth);
         reso.lookupValue("height", resHeight);
-        const Maths::Vector3<unsigned int> resolution{resWidth, resHeight, 0};
+        const Maths::Vector3U resolution{resWidth, resHeight, 0};
         const libconfig::Setting &pos = root["camera"]["position"];
-        const Maths::Vector3<int> position = parseVector3I(pos);
+        const Maths::Vector3I position = parseVector3I(pos);
         const libconfig::Setting &rot = root["camera"]["rotation"];
-        const Maths::Vector3<int> rotation = parseVector3I(rot);
+        const Maths::Vector3I rotation = parseVector3I(rot);
 
         return Camera{resolution, position, rotation, fov};
     }

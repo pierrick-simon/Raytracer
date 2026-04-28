@@ -15,6 +15,7 @@
 namespace RayTracer {
     class LightConfig {
     public:
+        LightConfig() {};
         LightConfig(double ambient, double diffuse, std::vector<std::unique_ptr<ILightSource>> lights);
         [[nodiscard]] double getAmbient() const;
         [[nodiscard]] double getDiffuse() const;

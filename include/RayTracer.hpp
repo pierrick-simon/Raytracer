@@ -15,6 +15,7 @@
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
+    #include "ConfigFileParser.hpp"
 
 namespace RayTracer {
 
@@ -24,7 +25,6 @@ namespace RayTracer {
     constexpr std::string_view HELP_FLAG = "--help";
     constexpr std::string_view DISPLAY_FLAG = "--display";
     constexpr std::string_view ARG_EXT = ".ppm";
-    constexpr auto CONFIG_FILEPATH = "test2.cfg";
 
     class RayTracer {
     public:
@@ -32,7 +32,7 @@ namespace RayTracer {
 
         void run();
 
-        static void showHelp();
+        static void showHelp(); 
 
         class HelpException : public std::exception {
         public:
@@ -47,10 +47,15 @@ namespace RayTracer {
 
     private:
         void runDisplay();
+        void parseOptionalArgs(std::queue<std::string> args);
+        void initVars(std::reference_wrapper<std::queue<std::string>> args);
 
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
         std::string _name;
+        Camera _camera;
+        LightConfig _lights;
+        std::vector<std::unique_ptr<IObject>> _objects;
     };
 };
 
