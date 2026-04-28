@@ -5,12 +5,12 @@
 ** ${descriptor}
 */
 
-#ifndef $LIGHTCONFIG_HPP
-#define $LIGHTCONFIG_HPP
-#include <memory>
-#include <vector>
+#ifndef LIGHTCONFIG_HPP
+    #define LIGHTCONFIG_HPP
+    #include <memory>
+    #include <vector>
 
-#include "ILightSource.hpp"
+    #include "ILightSource.hpp"
 
 namespace RayTracer {
     class LightConfig {
@@ -30,4 +30,4 @@ namespace RayTracer {
     };
 }
 
-#endif //$LIGHTCONFIG_HPP
+#endif //LIGHTCONFIG_HPP
