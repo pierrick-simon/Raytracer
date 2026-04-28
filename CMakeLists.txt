@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(MAIN
     src/Main.cpp
-    include/LibType.hpp
 )
 
 set(SRCS
@@ -32,8 +31,9 @@ set(HEADERS
     include/Objects/Lights
 )
 
+include_directories(${HEADERS})
+
 add_executable(raytracer ${MAIN} ${SRCS})
-target_include_directories(raytracer PRIVATE ${HEADERS})
 target_link_libraries(raytracer sfml-graphics sfml-window sfml-system config++)
 
 target_compile_options(raytracer PRIVATE -g)
@@ -50,7 +50,6 @@ set(SRCS_TESTS
 )
 
 add_executable(tests_run_bin EXCLUDE_FROM_ALL ${SRCS_TESTS} ${SRCS})
-target_include_directories(tests_run_bin PRIVATE ${HEADERS})
 target_compile_options(tests_run_bin PRIVATE --coverage)
 target_link_libraries(tests_run_bin criterion --coverage sfml-graphics sfml-window sfml-system config++)
 
