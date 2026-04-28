@@ -74,6 +74,5 @@ add_custom_target(display
 add_custom_target(primitives
         DEPENDS raytracer_sphere)
 
-
 add_custom_target(plugins
     DEPENDS primitives display)
