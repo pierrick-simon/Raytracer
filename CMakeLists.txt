@@ -1,7 +1,9 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.28.3)
 project(RayTracer)
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -61,15 +63,17 @@ add_custom_target(tests_run
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 
-add_subdirectory(plugins/display)
+list(TRANSFORM SRCS PREPEND ${CMAKE_SOURCE_DIR}/)
+
+add_subdirectory(plugins/display/raytracer_sfml)
+add_subdirectory(plugins/primitive/raytracer_sphere)
 
 add_custom_target(display
         DEPENDS raytracer_sfml)
 
-file(GLOB_RECURSE LIBS
-    "${CMAKE_SOURCE_DIR}/plugins/raytracer_*.so"
-)
+add_custom_target(primitives
+        DEPENDS raytracer_sphere)
 
-add_custom_target(clean_libs
-    COMMAND rm -f ${LIBS}
-)
+
+add_custom_target(plugins
+    DEPENDS primitives display)
