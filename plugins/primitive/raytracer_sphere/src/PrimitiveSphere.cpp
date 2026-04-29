@@ -6,7 +6,7 @@
 */
 
 #include "LibType.hpp"
-#include "PrimitiveSphere.hpp"
+#include "../include/PrimitiveSphere.hpp"
 
 std::optional<RayTracer::HitInfo> RayTracer::PrimitiveSphere::hits(RayTracer::Ray &ray)
 {

@@ -1,13 +1,14 @@
-cmake_minimum_required(VERSION 3.5)
-project(Raytracer)
+cmake_minimum_required(VERSION 3.28.3)
+project(RayTracer)
 
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(MAIN
     src/Main.cpp
-    include/LibType.hpp
 )
 
 set(SRCS
@@ -32,8 +33,9 @@ set(HEADERS
     include/Objects/Lights
 )
 
+include_directories(${HEADERS})
+
 add_executable(raytracer ${MAIN} ${SRCS})
-target_include_directories(raytracer PRIVATE ${HEADERS})
 target_link_libraries(raytracer sfml-graphics sfml-window sfml-system config++)
 
 target_compile_options(raytracer PRIVATE -g)
@@ -50,7 +52,6 @@ set(SRCS_TESTS
 )
 
 add_executable(tests_run_bin EXCLUDE_FROM_ALL ${SRCS_TESTS} ${SRCS})
-target_include_directories(tests_run_bin PRIVATE ${HEADERS})
 target_compile_options(tests_run_bin PRIVATE --coverage)
 target_link_libraries(tests_run_bin criterion --coverage sfml-graphics sfml-window sfml-system config++)
 
@@ -62,15 +63,16 @@ add_custom_target(tests_run
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 
-add_custom_target(display ALL
-    COMMAND ${CMAKE_COMMAND} -B../plugins/display -S../plugins/display
-    COMMAND make -C ../plugins/display
-)
+list(TRANSFORM SRCS PREPEND ${CMAKE_SOURCE_DIR}/)
 
-file(GLOB_RECURSE LIBS
-    "${CMAKE_SOURCE_DIR}/plugins/raytracer_*.so"
-)
+add_subdirectory(plugins/display/raytracer_sfml)
+add_subdirectory(plugins/primitive/raytracer_sphere)
 
-add_custom_target(clean_libs
-    COMMAND rm -f ${LIBS}
-)
+add_custom_target(display
+        DEPENDS raytracer_sfml)
+
+add_custom_target(primitives
+        DEPENDS raytracer_sphere)
+
+add_custom_target(plugins
+    DEPENDS primitives display)

@@ -5,7 +5,7 @@
 ** DisplaySFML
 */
 
-#include "DisplaySFML.hpp"
+#include "../include/DisplaySFML.hpp"
 
 #include "LibType.hpp"
 

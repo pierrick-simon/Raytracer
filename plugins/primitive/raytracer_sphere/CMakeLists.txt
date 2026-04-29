@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.28.3)
+project(RayTracer)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(SPHERE
+    raytracer_sphere
+)
+
+set(SRCS_SPHERE
+    src/PrimitiveSphere.cpp
+)
+
+add_library(${SPHERE} SHARED ${SRCS_SPHERE})
+set_target_properties(${SPHERE} PROPERTIES PREFIX "")
