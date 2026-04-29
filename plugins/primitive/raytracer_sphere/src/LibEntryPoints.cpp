@@ -5,7 +5,10 @@
 ** DESCRIPTION
 */
 
-extern "C" RayTracer::IObject *rayTracerLibEntryPoint()
+#include "IObjectPlugin.hpp"
+#include "RayTracer.hpp"
+
+extern "C" RayTracer::IObjectPlugin *rayTracerLibEntryPoint()
 {
     return new RayTracer::PrimitiveSphere();
 }

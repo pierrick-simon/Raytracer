@@ -10,7 +10,10 @@ set(SPHERE
 
 set(SRCS_SPHERE
     src/PrimitiveSphere.cpp
+    src/LibEntryPoints.cpp
+    src/SpherePlugin.cpp
 )
 
 add_library(${SPHERE} SHARED ${SRCS_SPHERE})
 set_target_properties(${SPHERE} PROPERTIES PREFIX "")
+target_include_directories(${SPHERE} PRIVATE include)

@@ -19,7 +19,7 @@ namespace RayTracer {
     public:
         virtual ~IObjectPlugin() = default;
 
-        virtual std::string getObjectsTypeName() = 0;
+        virtual const std::string_view &getObjectsTypeName() = 0;
 
         virtual std::vector<std::unique_ptr<IObject>> parseObjects(
             libconfig::Setting const &element) = 0;
