@@ -22,13 +22,3 @@ std::optional<RayTracer::HitInfo> RayTracer::PrimitiveSphere::hits(RayTracer::Ra
         return {};
     return {};
 }
-
-extern "C" RayTracer::IObject *rayTracerLibEntryPoint()
-{
-    return new RayTracer::PrimitiveSphere();
-}
-
-extern "C" RayTracer::LibType rayTracerType()
-{
-    return RayTracer::LibType::PRIMITIVE;
-}

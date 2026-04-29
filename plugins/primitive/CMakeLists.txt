@@ -16,6 +16,7 @@ set(SPHERE
 
 set(SRCS_SPHERE
     ${SPHERE}/PrimitiveSphere.cpp
+    ${SPHERE}/LibEntryPoints.cpp
 )
 
 add_library(${SPHERE} SHARED ${SRCS_SPHERE} ${SHARED_SRCS})

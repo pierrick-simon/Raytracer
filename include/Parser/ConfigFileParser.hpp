@@ -40,9 +40,12 @@ namespace RayTracer {
             [[nodiscard]] LightConfig parseLights() const;
             [[nodiscard]] std::vector<std::unique_ptr<IObject>>
             parsePrimitives() const;
-        private:
+
             static Maths::Vector3I parseVector3I(libconfig::Setting const &element);
+
             static Maths::RGB parseColor(libconfig::Setting const &element);
+
+        private:
             static std::unique_ptr<IObject> parseSphere(
                 libconfig::Setting const &element);
             static std::vector<std::unique_ptr<IObject>> parseSpheres(
