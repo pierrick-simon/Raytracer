@@ -5,7 +5,7 @@
 ** ${descriptor}
 */
 
-#include "../../../include/Objects/Lights/PointLight.hpp"
+#include "Objects/Lights/PointLight.hpp"
 
 namespace RayTracer {
     PointLight::PointLight(int x, int y, int z)

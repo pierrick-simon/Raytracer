@@ -50,12 +50,18 @@ namespace RayTracer {
         void parseOptionalArgs(std::queue<std::string> args);
         void initVars(std::reference_wrapper<std::queue<std::string>> args);
 
+        void loadPrimitivePlugins();
+
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
         std::string _name;
         Camera _camera;
         LightConfig _lights;
         std::vector<std::unique_ptr<IObject>> _objects;
+        std::vector<DLLoader<IObjectPlugin>> _primitivesPluginsLoaders;
+        std::vector<std::unique_ptr<IObjectPlugin>> _primitivesPlugins;
+
+        static constexpr std::string_view PLUGINS_FOLDER = "plugins";
     };
 };
 

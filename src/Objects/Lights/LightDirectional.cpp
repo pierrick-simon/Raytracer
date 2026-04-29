@@ -5,7 +5,7 @@
 ** ${descriptor}
 */
 
-#include "../../../include/Objects/Lights/DirectionalLight.hpp"
+#include "Objects/Lights/DirectionalLight.hpp"
 
 namespace RayTracer {
     DirectionalLight::DirectionalLight(int x, int y, int z)

@@ -7,10 +7,11 @@
 
 #include "IObjectPlugin.hpp"
 #include "RayTracer.hpp"
+#include "SpherePlugin.hpp"
 
 extern "C" RayTracer::IObjectPlugin *rayTracerLibEntryPoint()
 {
-    return new RayTracer::PrimitiveSphere();
+    return new RayTracer::SpherePlugin();
 }
 
 extern "C" RayTracer::LibType rayTracerType()
