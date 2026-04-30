@@ -18,22 +18,12 @@ namespace RayTracer {
             throw HelpException();
         }
         this->loadPrimitivePlugins();
-        try {
-            auto const parser = ConfigFileParser(args.front(), this->_primitivesPlugins);
-            _camera = parser.parseCamera();
-            _lights = parser.parseLights();
-            _objects = parser.parsePrimitives();
-        } catch (ConfigFileParser::ParserError &) {
-            throw;
-        }
+        auto const parser = ConfigFileParser(args.front(), this->_primitivesPlugins);
+        _camera = parser.parseCamera();
+        _lights = parser.parseLights();
+        _objects = parser.parsePrimitives();
         initVars(args);
-        try {
-            parseOptionalArgs(args);
-        } catch (HelpException &) {
-            throw;
-        } catch (IncorrectLibTypeException &) {
-            throw;
-        }
+        parseOptionalArgs(args);
     }
 
     void RayTracer::run()

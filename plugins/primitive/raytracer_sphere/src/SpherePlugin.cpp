@@ -20,9 +20,13 @@ namespace RayTracer {
         libconfig::Setting const &element)
     {
         std::cout << "Loading sphere..." << std::endl;
-        Maths::Point3D origin(element["x"], element["y"], element["z"]);
-        double r = element["r"];
-    
+        Maths::Point3D origin;
+        double r;
+
+        element.lookupValue("x", origin.x);
+        element.lookupValue("y", origin.x);
+        element.lookupValue("z", origin.x);
+        element.lookupValue("r", r);
         Maths::RGB color = ParserUtils::parseColor(element["color"]);
         return std::make_unique<PrimitiveSphere>(origin, r, color);
     }

@@ -21,12 +21,14 @@ namespace RayTracer {
     {
         std::cout << "Loading plane..." << std::endl;
         std::string axisName = element["axis"];
-        auto axis = PrimitivePlane::getAxisName().find(axisName);
-        if (axis == PrimitivePlane::getAxisName().end())
+        if (PrimitivePlane::getAxisName().find(axisName)
+            == PrimitivePlane::getAxisName().end())
             throw libconfig::SettingTypeException(element);
-        double pos = element["position"];
+        double pos;
+        element.lookupValue("position", pos);
         Maths::RGB color = ParserUtils::parseColor(element["color"]);
-        return std::make_unique<PrimitivePlane>(axis->second, pos, color);
+        return std::make_unique<PrimitivePlane>(PrimitivePlane::getAxisName()
+            .find(axisName)->second, pos, color);
     }
 
     std::vector<std::unique_ptr<IObject>> PlanePlugin::parseObjects(

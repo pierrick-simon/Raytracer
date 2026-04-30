@@ -57,9 +57,9 @@ namespace RayTracer {
         std::string _name;
         Camera _camera;
         LightConfig _lights;
-        std::vector<std::unique_ptr<IObject>> _objects;
         std::vector<DLLoader<IObjectPlugin>> _primitivesPluginsLoaders;
         std::vector<std::unique_ptr<IObjectPlugin>> _primitivesPlugins;
+        std::vector<std::unique_ptr<IObject>> _objects;
 
         static constexpr std::string_view PLUGINS_FOLDER = "plugins";
     };

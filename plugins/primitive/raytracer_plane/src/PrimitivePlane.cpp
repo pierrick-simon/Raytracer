@@ -57,7 +57,8 @@ namespace RayTracer {
         return _color;
     }
 
-    const std::unordered_map<std::string, PrimitivePlane::Axis> _axisName = {
+    const std::unordered_map<std::string, PrimitivePlane::Axis>
+        PrimitivePlane::_axisName = {
         {"X", PrimitivePlane::Axis::X},
         {"Y", PrimitivePlane::Axis::Y},
         {"Z", PrimitivePlane::Axis::Z},
