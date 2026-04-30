@@ -66,6 +66,8 @@ namespace RayTracer {
 
     void RayTracer::parseOptionalArgs(std::queue<std::string> args)
     {
+        if (args.empty())
+            return;
         if (!args.empty() && args.front() == DISPLAY_FLAG && args.size() == 2) {
             args.pop();
             _display.emplace(args.front());
