@@ -67,12 +67,14 @@ list(TRANSFORM SRCS PREPEND ${CMAKE_SOURCE_DIR}/)
 
 add_subdirectory(plugins/display/raytracer_sfml)
 add_subdirectory(plugins/primitive/raytracer_sphere)
+add_subdirectory(plugins/primitive/raytracer_plane)
 
 add_custom_target(display
         DEPENDS raytracer_sfml)
 
 add_custom_target(primitives
-        DEPENDS raytracer_sphere)
+        DEPENDS raytracer_sphere
+        DEPENDS raytracer_plane)
 
 add_custom_target(plugins
     DEPENDS primitives display)
