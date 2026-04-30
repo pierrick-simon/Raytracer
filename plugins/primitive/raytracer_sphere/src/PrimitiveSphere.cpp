@@ -41,36 +41,6 @@ namespace RayTracer {
         return {};
     }
 
-    void PrimitiveSphere::setX(float x)
-    {
-        this->_origin.x = x;
-    }
-
-    void PrimitiveSphere::setY(float y)
-    {
-        this->_origin.y = y;
-    }
-
-    void PrimitiveSphere::setZ(float z)
-    {
-        this->_origin.z = z;
-    }
-
-    void PrimitiveSphere::setOrigin(const Maths::Point3D &newOrigin)
-    {
-        this->_origin = newOrigin;
-    }
-
-    void PrimitiveSphere::setRadius(float r)
-    {
-        this->_radius = r;
-    }
-
-    void PrimitiveSphere::setColor(Maths::RGB const color)
-    {
-        _color = color;
-    }
-
     const Maths::Point3D &PrimitiveSphere::getOrigin() const
     {
         return this->_origin;
@@ -81,7 +51,7 @@ namespace RayTracer {
         return this->_origin;
     }
 
-    float PrimitiveSphere::getRadius() const
+    double PrimitiveSphere::getRadius() const
     {
         return this->_radius;
     }
