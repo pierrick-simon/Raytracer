@@ -82,6 +82,8 @@ namespace Maths {
 
         static double distance(const Vector3 &lhs, const Vector3 &rhs);
 
+        [[nodiscard]] double getAngle(const Vector3 &other);
+
         Type x;
         Type y;
         Type z;
@@ -90,7 +92,7 @@ namespace Maths {
     template<typename Type>
     Vector3<Type> Vector3<Type>::operator+(const Vector3 &other) const
     {
-        return Vector3D(this->x + other.x,
+        return Vector3<Type>(this->x + other.x,
             this->y + other.y,
             this->z + other.z);
     }
@@ -98,7 +100,7 @@ namespace Maths {
     template<typename Type>
     Vector3<Type> Vector3<Type>::operator-(const Vector3 &other) const
     {
-        return Vector3D(this->x - other.x,
+        return Vector3<Type>(this->x - other.x,
             this->y - other.y,
             this->z - other.z);
     }
@@ -106,7 +108,7 @@ namespace Maths {
     template<typename Type>
     Vector3<Type> Vector3<Type>::operator*(const Vector3 &other) const
     {
-        return Vector3D(this->x * other.x,
+        return Vector3<Type>(this->x * other.x,
             this->y * other.y,
             this->z * other.z);
     }
@@ -114,7 +116,7 @@ namespace Maths {
     template<typename Type>
     Vector3<Type> Vector3<Type>::operator/(const Vector3 &other) const
     {
-        return Vector3D(this->x / other.x,
+        return Vector3<Type>(this->x / other.x,
             this->y / other.y,
             this->z / other.z);
     }
@@ -122,7 +124,7 @@ namespace Maths {
     template<typename Type>
     Vector3<Type> Vector3<Type>::operator*(double m) const
     {
-        return Vector3D(this->x * m,
+        return Vector3<Type>(this->x * m,
             this->y * m,
             this->z * m);
     }
@@ -130,7 +132,7 @@ namespace Maths {
     template<typename Type>
     Vector3<Type> Vector3<Type>::operator/(double m) const
     {
-        return Vector3D(this->x / m,
+        return Vector3<Type>(this->x / m,
             this->y / m,
             this->z / m);
     }
@@ -250,6 +252,14 @@ namespace Maths {
         Vector3 delta = rhs - lhs;
 
         return delta.length();
+    }
+
+    template<typename Type>
+    double Vector3<Type>::getAngle(const Vector3 &other)
+    {
+        double angle = this->dot(other) / (this->length() * other.length());
+
+        return acos(angle);
     }
 
     using Vector3D = Vector3<double>;

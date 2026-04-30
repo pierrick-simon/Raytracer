@@ -7,34 +7,36 @@
 
 #ifndef POINT3_HPP
     #define POINT3_HPP
-    #include "Vector3.hpp"
+
+    #include <cmath>
 
 namespace Maths {
-
     template<typename Type>
     class Point3 {
     public:
         Point3() = default;
 
-        explicit Point3(Type x, Type y, Type z);
+        Point3(Type x, Type y, Type z);
 
-        explicit Point3(const Vector3<Type> &vec);
+        Point3(const Point3<Type> &vec);
 
-        Point3 operator+(const Vector3<Type> &other) const;
+        Point3 operator+(const Point3<Type> &other) const;
 
-        Point3 operator-(const Vector3<Type> &other) const;
+        Point3 operator+(const Type &other) const;
 
-        Point3 operator*(const Vector3<Type> &other) const;
+        Point3 operator-(const Point3<Type> &other) const;
 
-        Point3 operator/(const Vector3<Type> &other) const;
+        Point3 operator*(const Point3<Type> &other) const;
 
-        Point3 &operator+=(const Vector3<Type> &other);
+        Point3 operator/(const Point3<Type> &other) const;
 
-        Point3 &operator-=(const Vector3<Type> &other);
+        Point3 &operator+=(const Point3<Type> &other);
 
-        Point3 &operator*=(const Vector3<Type> &other);
+        Point3 &operator-=(const Point3<Type> &other);
 
-        Point3 &operator/=(const Vector3<Type> &other);
+        Point3 &operator*=(const Point3<Type> &other);
+
+        Point3 &operator/=(const Point3<Type> &other);
 
         bool operator==(const Point3 &other) const;
 
@@ -62,7 +64,7 @@ namespace Maths {
     }
 
     template<typename Type>
-    Point3<Type>::Point3(const Vector3<Type> &vec) :
+    Point3<Type>::Point3(const Point3<Type> &vec) :
         x(vec.x),
         y(vec.y),
         z(vec.z)
@@ -70,39 +72,47 @@ namespace Maths {
     }
 
     template<typename Type>
-    Point3<Type> Point3<Type>::operator+(const Vector3<Type> &other) const
+    Point3<Type> Point3<Type>::operator+(const Point3<Type> &other) const
     {
-        return Point3D(this->x + other.x,
+        return Point3<Type>(this->x + other.x,
             this->y + other.y,
             this->z + other.z);
     }
 
     template<typename Type>
-    Point3<Type> Point3<Type>::operator-(const Vector3<Type> &other) const
+    Point3<Type> Point3<Type>::operator+(const Type &other) const
     {
-        return Point3D(this->x - other.x,
+        return Point3<Type>(this->x + other,
+            this->y + other,
+            this->z + other);
+    }
+
+    template<typename Type>
+    Point3<Type> Point3<Type>::operator-(const Point3<Type> &other) const
+    {
+        return Point3<Type>(this->x - other.x,
             this->y - other.y,
             this->z - other.z);
     }
 
     template<typename Type>
-    Point3<Type> Point3<Type>::operator*(const Vector3<Type> &other) const
+    Point3<Type> Point3<Type>::operator*(const Point3<Type> &other) const
     {
-        return Point3D(this->x * other.x,
+        return Point3<Type>(this->x * other.x,
             this->y * other.y,
             this->z * other.z);
     }
 
     template<typename Type>
-    Point3<Type> Point3<Type>::operator/(const Vector3<Type> &other) const
+    Point3<Type> Point3<Type>::operator/(const Point3<Type> &other) const
     {
-        return Point3D(this->x / other.x,
+        return Point3<Type>(this->x / other.x,
             this->y / other.y,
             this->z / other.z);
     }
 
     template<typename Type>
-    Point3<Type> &Point3<Type>::operator+=(const Vector3<Type> &other)
+    Point3<Type> &Point3<Type>::operator+=(const Point3<Type> &other)
     {
         this->x = this->x + other.x;
         this->y = this->y + other.y;
@@ -111,7 +121,7 @@ namespace Maths {
     }
 
     template<typename Type>
-    Point3<Type> &Point3<Type>::operator-=(const Vector3<Type> &other)
+    Point3<Type> &Point3<Type>::operator-=(const Point3<Type> &other)
     {
         this->x = this->x - other.x;
         this->y = this->y - other.y;
@@ -120,7 +130,7 @@ namespace Maths {
     }
 
     template<typename Type>
-    Point3<Type> & Point3<Type>::operator*=(const Vector3<Type> &other)
+    Point3<Type> & Point3<Type>::operator*=(const Point3<Type> &other)
     {
         this->x = this->x * other.x;
         this->y = this->y * other.y;
@@ -129,7 +139,7 @@ namespace Maths {
     }
 
     template<typename Type>
-    Point3<Type> & Point3<Type>::operator/=(const Vector3<Type> &other)
+    Point3<Type> & Point3<Type>::operator/=(const Point3<Type> &other)
     {
         this->x = this->x / other.x;
         this->y = this->y / other.y;

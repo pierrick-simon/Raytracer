@@ -5,10 +5,8 @@
 ** DESCRIPTION
 */
 
-#include "SpherePlugin.hpp"
-
 #include <iostream>
-
+#include "SpherePlugin.hpp"
 #include "ParserUtils.hpp"
 #include "PrimitiveSphere.hpp"
 
@@ -21,17 +19,16 @@ namespace RayTracer {
     std::unique_ptr<IObject> SpherePlugin::parseSphere(
         libconfig::Setting const &element)
     {
-        int x = 0;
-        int y = 0;
-        int z = 0;
-        float r = 0;
+        std::cout << "Loading sphere..." << std::endl;
+        Maths::Point3D origin;
+        double r;
 
-        element.lookupValue("x", x);
-        element.lookupValue("y", y);
-        element.lookupValue("z", z);
+        element.lookupValue("x", origin.x);
+        element.lookupValue("y", origin.x);
+        element.lookupValue("z", origin.x);
         element.lookupValue("r", r);
         Maths::RGB color = ParserUtils::parseColor(element["color"]);
-        return std::make_unique<PrimitiveSphere>(PrimitiveSphere{Maths::Point3D(x, y, z), r,color});
+        return std::make_unique<PrimitiveSphere>(origin, r, color);
     }
 
     std::vector<std::unique_ptr<IObject>> SpherePlugin::parseObjects(
