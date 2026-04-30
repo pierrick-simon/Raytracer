@@ -21,7 +21,6 @@ namespace RayTracer {
     std::unique_ptr<IObject> SpherePlugin::parseSphere(
         libconfig::Setting const &element)
     {
-        std::cout << "Loading sphere..." << std::endl;
         int x = 0;
         int y = 0;
         int z = 0;
