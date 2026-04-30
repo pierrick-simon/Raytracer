@@ -8,9 +8,18 @@ set(SPHERE
     raytracer_sphere
 )
 
-set(SRCS_SPHERE
-    src/PrimitiveSphere.cpp
+set(SHARED_SRCS
+    Parser/ParserUtils.cpp
 )
 
-add_library(${SPHERE} SHARED ${SRCS_SPHERE})
+list(TRANSFORM SHARED_SRCS PREPEND ${CMAKE_SOURCE_DIR}/src/)
+
+set(SRCS_SPHERE
+    src/PrimitiveSphere.cpp
+    src/LibEntryPoints.cpp
+    src/SpherePlugin.cpp
+)
+
+add_library(${SPHERE} SHARED ${SRCS_SPHERE} ${SHARED_SRCS})
 set_target_properties(${SPHERE} PROPERTIES PREFIX "")
+target_include_directories(${SPHERE} PRIVATE include)

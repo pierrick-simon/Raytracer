@@ -5,5 +5,5 @@ DESCRIPTION
     SCENE_FILE
         scene configuration
     
-    OPTION (Mandatory arguments)
+    OPTION (Optional arguments)
         --display <PATH>

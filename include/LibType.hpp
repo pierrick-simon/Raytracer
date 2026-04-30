@@ -7,7 +7,6 @@
 
 #ifndef LIBTYPE_HPP
     #define LIBTYPE_HPP
-    #include <unordered_map>
 
 namespace RayTracer {
     enum class LibType {

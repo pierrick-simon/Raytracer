@@ -5,7 +5,7 @@
 ** ${descriptor}
 */
 
-#include "../../../include/Objects/Lights/LightConfig.hpp"
+#include "Objects/Lights/LightConfig.hpp"
 
 #include <utility>
 

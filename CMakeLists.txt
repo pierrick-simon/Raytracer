@@ -16,8 +16,8 @@ set(SRCS
     src/RayTracer.cpp
     src/PortablePixMap.cpp
     src/Parser/ConfigFileParser.cpp
+    src/Parser/ParserUtils.cpp
     src/Objects/Camera.cpp
-    src/Objects/Sphere.cpp
     src/Objects/Lights/Lights.cpp
     src/Objects/Lights/LightConfig.cpp
     src/Objects/Lights/LightDirectional.cpp
