@@ -9,8 +9,8 @@
     #define DLLOADER_HPP
     #include <dlfcn.h>
     #include <memory>
-    #include <stdexcept>
     #include <string>
+#include <utility>
 
 #include "LibType.hpp"
 
@@ -55,14 +55,14 @@ namespace RayTracer {
         {
             void *entryPoint = dlsym(this->_handle, ENTRY_POINT_SYMBOL.data());
             if (!entryPoint)
-                throw std::runtime_error(
+                throw NoEntrypointException(
                     std::string("Failed to open ") + ENTRY_POINT_SYMBOL.data() +
                     ": " + dlerror());
 
             using EntryPointFn = T*(*)();
             T *instance = reinterpret_cast<EntryPointFn>(entryPoint)();
             if (!instance)
-                throw std::runtime_error(
+                throw InstanceCreationException(
                     std::string("Failed to create a new instance using ") +
                     ENTRY_POINT_SYMBOL.data());
             std::unique_ptr<T> ptr(instance);
@@ -73,7 +73,7 @@ namespace RayTracer {
         {
             void *entryPoint = dlsym(this->_handle, TYPE_ENTRY_POINT_SYMBOL.data());
             if (!entryPoint)
-                throw std::runtime_error(
+                throw NoEntrypointException(
                     std::string("Failed to open ") + TYPE_ENTRY_POINT_SYMBOL.data() +
                     ": " + dlerror());
 
@@ -108,8 +108,8 @@ namespace RayTracer {
 
         class LibraryLoadException : public DLLoaderException {
         public:
-            explicit LibraryLoadException(const std::string &msg) : _libFile(
-                msg)
+            explicit LibraryLoadException(std::string msg) : _libFile(std::move(
+                msg))
             {
             }
 
@@ -124,7 +124,7 @@ namespace RayTracer {
 
         class NoEntrypointException : public DLLoaderException {
         public:
-            explicit NoEntrypointException(const std::string &msg) : _msg(msg)
+            explicit NoEntrypointException(std::string msg) : _msg(std::move(msg))
             {
             }
 
@@ -139,8 +139,8 @@ namespace RayTracer {
 
         class InstanceCreationException : public DLLoaderException {
         public:
-            explicit InstanceCreationException(const std::string &msg) : _msg(
-                msg)
+            explicit InstanceCreationException(std::string msg) : _msg(std::move(
+                msg))
             {
             }
 
