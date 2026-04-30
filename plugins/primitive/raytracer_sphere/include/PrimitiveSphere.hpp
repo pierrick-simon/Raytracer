@@ -14,9 +14,7 @@
 namespace RayTracer {
     class PrimitiveSphere : public IObject {
     public:
-        PrimitiveSphere(const Maths::Point3D &origin, float radius, Maths::RGB color);
-
-        PrimitiveSphere();
+        PrimitiveSphere(const Maths::Point3D &origin, double radius, Maths::RGB color);
 
         std::optional<HitInfo> hits(Ray &ray) override;
 

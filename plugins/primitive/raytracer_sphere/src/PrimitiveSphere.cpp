@@ -8,18 +8,11 @@
 #include "PrimitiveSphere.hpp"
 
 namespace RayTracer {
-    PrimitiveSphere::PrimitiveSphere(const Maths::Point3D &origin, float radius,
+    PrimitiveSphere::PrimitiveSphere(const Maths::Point3D &origin, double radius,
         Maths::RGB color):
         _origin(origin),
         _radius(radius),
         _color(color)
-    {
-    }
-
-    PrimitiveSphere::PrimitiveSphere():
-        _origin(0, 2, 0),
-        _radius(0.5),
-        _color(Maths::RGB())
     {
     }
 

@@ -5,10 +5,8 @@
 ** DESCRIPTION
 */
 
-#include "SpherePlugin.hpp"
-
 #include <iostream>
-
+#include "SpherePlugin.hpp"
 #include "ParserUtils.hpp"
 #include "PrimitiveSphere.hpp"
 
