@@ -15,13 +15,7 @@ namespace RayTracer {
     public:
         virtual ~ILightSource() = default;
 
-        virtual Maths::Vector3D getPosition() = 0;
-        virtual Maths::RGB getColor() = 0;
-        virtual double getLightAmount(const Ray &) = 0;
-    protected:
-        Maths::Vector3D _pos{};
-        Maths::RGB _color{};
-        double _strength = 0.0;
+        virtual Maths::RGB getLightAmount(const Ray &) = 0;
     };
 }
 
