@@ -6,29 +6,46 @@
 */
 
 #ifndef MATERIAL_HPP
-    #define MATERIAL_HPP
+#define MATERIAL_HPP
 
-    #include <optional>
-    #include "Vector3.hpp"
-    #include "Info.hpp"
+#include "Vector3.hpp"
+#include "Info.hpp"
 
-namespace RayTracer
-{
+namespace RayTracer {
+
     class Material {
         public:
-            Material(Maths::RGB color, double metallic, double specular,
-                double roughness, double opacity);
+            class Builder {
+                public:
+                    Builder() = default;
 
-            void scatter(Ray &, HitInfo &);
+                    Builder &color(Maths::RGB color);
+                    Builder &metallic(double metallic);
+                    Builder &specular(double specular);
+                    Builder &roughness(double roughness);
+                    Builder &opacity(double opacity);
+
+                    Material build() const {return Material(*this);}
 
         private:
-            void handleColor(Ray &);
-                
-            Maths::Vector3D _colorPercentage;
-            double _metallic;
-            double _specular;
-            double _roughness;
-            double _opacity;
+            friend class Material;
+            Maths::RGB _color = Maths::RGB(255, 255, 255);
+            double _metallic = 0;
+            double _specular = 0;
+            double _roughness = 0;
+            double _opacity = 1;
+        };
+
+        explicit Material(Builder const &builder);
+
+        void scatter(Ray &ray, HitInfo &info);
+
+    private:
+        Maths::Vector3D _colorPercentage;
+        double _metallic;
+        double _specular;
+        double _roughness;
+        double _opacity;
     };
 
 }

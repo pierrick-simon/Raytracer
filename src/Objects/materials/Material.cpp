@@ -9,19 +9,48 @@
 
 namespace RayTracer {
 
-    Material::Material(Maths::RGB color, double metallic, double specular,
-        double roughness, double opacity) :
-        _metallic(metallic),
-        _specular(specular),
-        _roughness(roughness),
-        _opacity(opacity)
+    Material::Builder &Material::Builder::color(Maths::RGB color)
     {
-        _colorPercentage.x =
-            (double)color.x / std::numeric_limits<unsigned char>::max();
-        _colorPercentage.x =
-            (double)color.x / std::numeric_limits<unsigned char>::max();
-        _colorPercentage.x =
-            (double)color.x / std::numeric_limits<unsigned char>::max();
+        _color = color;
+        return *this;
+    }
+
+    Material::Builder &Material::Builder::metallic(double metallic)
+    {
+        _metallic = metallic;
+        return *this;
+    }
+
+    Material::Builder &Material::Builder::specular(double specular)
+    {
+        _specular = specular;
+        return *this;
+    }
+
+    Material::Builder &Material::Builder::roughness(double roughness)
+    {
+        _roughness = roughness;
+        return *this;
+    }
+
+    Material::Builder &Material::Builder::opacity(double opacity)
+    {
+        _opacity = opacity;
+        return *this;
+    }
+
+    Material::Material(Builder const &b) :
+        _metallic(b._metallic),
+        _specular(b._specular),
+        _roughness(b._roughness),
+        _opacity(b._opacity)
+    {
+        _colorPercentage.x = 
+            (double)b._color.x / std::numeric_limits<unsigned char>::max();
+        _colorPercentage.y = 
+            (double)b._color.y / std::numeric_limits<unsigned char>::max();
+        _colorPercentage.z = 
+            (double)b._color.z / std::numeric_limits<unsigned char>::max();
     }
 
     void Material::scatter(Ray &ray, HitInfo &info)
