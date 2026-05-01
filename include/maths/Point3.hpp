@@ -9,6 +9,7 @@
     #define POINT3_HPP
 
     #include <cmath>
+    #include <ostream>
 
 namespace Maths {
     template<typename Type>
@@ -47,6 +48,8 @@ namespace Maths {
 
         bool operator!=(const Point3 &other) const;
         
+        void operator[](const Vector3<Type> &other);
+
         void setPosition(Type x, Type y, Type z);
 
         [[nodiscard]] double length() const;
@@ -173,6 +176,21 @@ namespace Maths {
     {
         return !(*this == other);
     }
+    
+    template<typename Type>
+    void Point3<Type>::operator[](const Vector3<Type> &other)
+    {
+        x = (cos(other.y) * cos(other.z) * x) +
+            (((-1.0 * cos(other.x) * sin(other.z)) + (sin(other.x) *
+            sin(other.y) * cos(other.z))) * y) + (((sin(other.x) * sin(other.z))
+            + (cos(other.x) * sin(other.y) * cos(other.z))) * z);
+        y = (cos(other.y) * sin(other.z) * x) + (((cos(other.x) * cos(other.z))
+            + (sin(other.x) * sin(other.y) * sin(other.z))) * y) +
+            (((-1.0 * sin(other.x) * cos(other.z)) + (cos(other.x) *
+            sin(other.y) * sin(other.z))) * z);
+        z = (-1.0 * sin(other.y) * x) + (sin(other.x) * cos(other.y) * y) +
+            (cos(other.x) * cos(other.y) * z);
+    }
 
     template<typename Type>
     void Point3<Type>::setPosition(Type x, Type y, Type z)
@@ -208,6 +226,12 @@ namespace Maths {
 
     using Point3D = Point3<double>;
 
-} // Math
+}
+
+template<typename T>
+std::ostream &operator<<(std::ostream &os, const Maths::Point3<T> &p) {
+    os << "(" << p.x << ";" << p.y << ";" << p.z << ")";
+    return os;
+} 
 
 #endif

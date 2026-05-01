@@ -6,6 +6,7 @@
 */
 
 #include "PrimitiveSphere.hpp"
+#include <iostream>
 
 namespace RayTracer {
     PrimitiveSphere::PrimitiveSphere(const Maths::Point3D &origin,
@@ -14,6 +15,28 @@ namespace RayTracer {
         _radius(radius),
         _color(color)
     {
+    }
+
+    HitInfo PrimitiveSphere::computeHitInfos(Ray &ray, double x) noexcept
+    {
+        HitInfo hit;
+        hit.hitPos.x = ray.origin.x + (ray.direction.x * x);
+        hit.hitPos.y = ray.origin.y + (ray.direction.y * x);
+        hit.hitPos.z = ray.origin.z + (ray.direction.z * x);
+        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
+        ray.color = _color;
+        return hit;
+    }
+
+    double PrimitiveSphere::solveQuadratic(double a, double b,
+            double c, double delta) noexcept
+    {
+        double x = 0;
+        if (delta == 0)
+            x = (b * -1.0) / (2.0 * a);
+        else
+            x = ((b * -1.0) - sqrt(delta)) / (2.0 * a);
+        return x;
     }
 
     std::optional<HitInfo> PrimitiveSphere::hits(Ray &ray)
@@ -29,9 +52,12 @@ namespace RayTracer {
         double c = (ray.origin.x * ray.origin.x) + (ray.origin.y * ray.origin.y)
                    + (ray.origin.z * ray.origin.z) - (_radius * _radius);
         double delta = (b * b) - (4 * a * c);
-        if (delta >= 0)
+        if (delta < 0)
             return {};
-        return {};
+        double x = solveQuadratic(a, b, c, delta);
+        if (x < 0)
+            return {};
+        return computeHitInfos(ray, x);
     }
 
     const Maths::Point3D &PrimitiveSphere::getOrigin() const

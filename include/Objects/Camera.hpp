@@ -36,7 +36,7 @@ namespace RayTracer {
             Maths::Point3D _position;
             Maths::Vector3D _rotation;
             double _fov;
-            RayTracer::Rectangle _screen;
+            Rectangle _screen;
     };
 }
 

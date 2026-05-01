@@ -9,6 +9,9 @@
     #define VECTOR3_HPP
 
     #include <cmath>
+    #include <ostream>
+
+    #define TORAD(X) (X * (M_PI / 180.0))
 
 namespace Maths {
 
@@ -37,8 +40,8 @@ namespace Maths {
         constexpr Vector3(const Point3<Type> &p1,
             const Point3<Type> &p2):
             x(p2.x - p1.x),
-            y(p2.y - p1.x),
-            z(p2.z - p1.x)
+            y(p2.y - p1.y),
+            z(p2.z - p1.z)
         {
         }
 
@@ -69,6 +72,10 @@ namespace Maths {
         bool operator==(const Vector3 &other) const;
 
         bool operator!=(const Vector3 &other) const;
+
+        // used to rotate vector with yaw, pitch and roll 
+        void operator[](const Vector3 &other);
+
 
         void setPosition(Type x, Type y, Type z);
 
@@ -266,6 +273,12 @@ namespace Maths {
     using RGB = Vector3<unsigned char>;
     using Vector3U = Vector3<unsigned int>;
     using Vector3I = Vector3<int>;
-} // bs
+}
+
+template<typename T>
+std::ostream &operator<<(std::ostream &os, const Maths::Vector3<T> &v) {
+    os << "(" << v.x << ";" << v.y << ";" << v.z << ")";
+    return os;
+} 
 
 #endif

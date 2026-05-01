@@ -6,6 +6,7 @@
 */
 
 #include "Parser/ParserUtils.hpp"
+    #include <iostream>
 
 namespace RayTracer {
 

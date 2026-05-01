@@ -6,6 +6,7 @@
 */
 
 #include "Camera.hpp"
+#include <iostream>
 
 namespace RayTracer {
     Camera::Camera(Maths::Vector3U const &resolution, Maths::Point3D const &position,
@@ -59,10 +60,16 @@ namespace RayTracer {
 
     void Camera::updateCamera() noexcept
     {
-        double dist = abs(_resolution.y / (tan(_fov) * 2));
+        double dist = abs(_resolution.y / (tan(TORAD(_fov / 2.0)) * 2.0));
         Maths::Point3D rectOrigin(dist, (_resolution.x * -1.0) / 2.0, _resolution.y / 2.0);
         Maths::Point3D pointU(dist, _resolution.x / 2.0, _resolution.y / 2.0);
         Maths::Point3D pointV(dist, (_resolution.x * -1.0) / 2.0, (_resolution.y * -1.0) / 2.0);
+        rectOrigin[_rotation];
+        pointU[_rotation];
+        pointV[_rotation];
+        rectOrigin += _position;
+        pointU += _position;
+        pointV += _position;
         _screen.setOrigin(rectOrigin);
         _screen.setTopSide(Maths::Vector3D(rectOrigin, pointU));
         _screen.setLeftSide(Maths::Vector3D(rectOrigin, pointV));
