@@ -7,7 +7,7 @@
 
 #include "Camera.hpp"
 #include <iostream>
-#define TORAD(X) ((180.0 / M_PI) * X)
+#define TORAD(X) ((M_PI / 180.0) * X)
 
 namespace RayTracer {
     Camera::Camera(Maths::Vector3U const &resolution, Maths::Point3D const &position,
@@ -61,7 +61,8 @@ namespace RayTracer {
 
     void Camera::updateCamera() noexcept
     {
-        double dist = abs(_resolution.y / (tan(_fov) * 2.0));
+        double dist = abs(_resolution.y / (tan(TORAD(_fov / 2.0)) * 2.0));
+        std::cout << TORAD(_fov) << std::endl;
         Maths::Point3D rectOrigin(dist, (_resolution.x * -1.0) / 2.0, _resolution.y / 2.0);
         Maths::Point3D pointU(dist, _resolution.x / 2.0, _resolution.y / 2.0);
         Maths::Point3D pointV(dist, (_resolution.x * -1.0) / 2.0, (_resolution.y * -1.0) / 2.0);

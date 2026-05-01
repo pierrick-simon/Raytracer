@@ -39,22 +39,15 @@ namespace RayTracer {
         Maths::Vector3U res = _camera.getResolution();
 
         for (auto &object: _objects) {
-            double u = (1.0 / res.x) * 25;
-            double v = (1.0 / res.y) * 25;
-            Ray r = _camera.ray(u, v);
-            if (object->hits(r))
-                std::cout << "hit" << std::endl;
-            else
-                std::cout << "no hit" << std::endl;
-            // for (std::size_t i = 0; i <= res.x; ++i) {
-            //     for (std::size_t j = 0; j <= res.y; ++j) {
-            //         double u = (1.0 / res.x) * i;
-            //         double v = (1.0 / res.y) * j;
-            //         Ray r = _camera.ray(u, v);
-            //         if (object->hits(r))
-            //             _ppm.setPix(i, j, r.color);
-            //     }
-            // }
+            for (std::size_t i = 0; i < res.x; ++i) {
+                for (std::size_t j = 0; j < res.y; ++j) {
+                    double u = (1.0 / res.x) * i;
+                    double v = (1.0 / res.y) * j;
+                    Ray r = _camera.ray(u, v);
+                    if (object->hits(r))
+                        _ppm.setPix(i, j, r.color);
+                }
+            }
         }
     }
 

@@ -30,9 +30,10 @@ namespace RayTracer {
         double c = (ray.origin.x * ray.origin.x) + (ray.origin.y * ray.origin.y)
                    + (ray.origin.z * ray.origin.z) - (_radius * _radius);
         double delta = (b * b) - (4 * a * c);
-        if (delta >= 0)
+        if (delta < 0)
             return {};
-        return {};
+        ray.color = _color;
+        return HitInfo{};
     }
 
     const Maths::Point3D &PrimitiveSphere::getOrigin() const
