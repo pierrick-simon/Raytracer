@@ -66,7 +66,9 @@ namespace RayTracer {
         Maths::Point3D rectOrigin(dist, (_resolution.x * -1.0) / 2.0, _resolution.y / 2.0);
         Maths::Point3D pointU(dist, _resolution.x / 2.0, _resolution.y / 2.0);
         Maths::Point3D pointV(dist, (_resolution.x * -1.0) / 2.0, (_resolution.y * -1.0) / 2.0);
-        _screen.setOrigin(rectOrigin);
+        _screen.setOrigin(rectOrigin + _position);
+        std::cout << rectOrigin << std::endl;
+        std::cout << _position << std::endl;
         _screen.setTopSide(Maths::Vector3D(rectOrigin, pointU));
         _screen.setLeftSide(Maths::Vector3D(rectOrigin, pointV));
     }
