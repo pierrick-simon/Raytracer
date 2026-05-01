@@ -60,7 +60,7 @@ namespace RayTracer {
         const libconfig::Setting &pos = root["camera"]["position"];
         const Maths::Point3D position = ParserUtils::parseVector3D(pos);
         const libconfig::Setting &rot = root["camera"]["rotation"];
-        const Maths::Vector3D rotation = ParserUtils::parseVector3D(rot);
+        const Maths::Vector3D rotation = TORAD(ParserUtils::parseVector3D(rot));
 
         return Camera{resolution, position, rotation, fov};
     }

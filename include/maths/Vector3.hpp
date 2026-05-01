@@ -11,6 +11,7 @@
     #include <cmath>
     #include <ostream>
 
+    #define TORAD(X) (X * (M_PI / 180.0))
 
 namespace Maths {
 
@@ -71,6 +72,10 @@ namespace Maths {
         bool operator==(const Vector3 &other) const;
 
         bool operator!=(const Vector3 &other) const;
+
+        // used to rotate vector with yaw, pitch and roll 
+        void operator[](const Vector3 &other);
+
 
         void setPosition(Type x, Type y, Type z);
 
@@ -206,6 +211,15 @@ namespace Maths {
     {
         return !(*this == other);
     }
+
+    template<typename Type>
+    void Vector3<Type>::operator[](const Vector3 &other)
+    {
+        x = -cos(other.z) * sin(other.y) * sin(other.x) * -sin(other.z) * cos(other.x);
+        y = -sin(other.z) * sin(other.y) * sin(other.x) + cos(other.z) * cos(other.x);
+        z = cos(other.y) * sin(other.x);
+    }
+
 
     template<typename Type>
     void Vector3<Type>::setPosition(Type x, Type y, Type z)
