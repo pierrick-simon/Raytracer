@@ -213,15 +213,6 @@ namespace Maths {
     }
 
     template<typename Type>
-    void Vector3<Type>::operator[](const Vector3 &other)
-    {
-        x = -cos(other.z) * sin(other.y) * sin(other.x) * -sin(other.z) * cos(other.x);
-        y = -sin(other.z) * sin(other.y) * sin(other.x) + cos(other.z) * cos(other.x);
-        z = cos(other.y) * sin(other.x);
-    }
-
-
-    template<typename Type>
     void Vector3<Type>::setPosition(Type x, Type y, Type z)
     {
         this->x = x;
