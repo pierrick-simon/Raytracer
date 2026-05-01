@@ -6,6 +6,7 @@
 */
 
 #include "PrimitiveSphere.hpp"
+#include <iostream>
 
 namespace RayTracer {
     PrimitiveSphere::PrimitiveSphere(const Maths::Point3D &origin,

@@ -9,6 +9,7 @@
     #define POINT3_HPP
 
     #include <cmath>
+    #include <ostream>
 
 namespace Maths {
     template<typename Type>
@@ -208,6 +209,12 @@ namespace Maths {
 
     using Point3D = Point3<double>;
 
-} // Math
+}
+
+template<typename T>
+std::ostream &operator<<(std::ostream &os, const Maths::Point3<T> &p) {
+    os << "(" << p.x << ";" << p.y << ";" << p.z << ")";
+    return os;
+} 
 
 #endif
