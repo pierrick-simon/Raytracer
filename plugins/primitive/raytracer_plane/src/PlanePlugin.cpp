@@ -16,8 +16,8 @@ namespace RayTracer {
         return PLANE_TYPE_NAME;
     }
 
-    std::unique_ptr<IObject> PlanePlugin::parsePlane(
-        libconfig::Setting const &element)
+     std::unique_ptr<IObject> PlanePlugin::parseObject(
+        libconfig::Setting const &element, std::shared_ptr<IMaterial> material)
     {
         std::cout << "Loading plane..." << std::endl;
         std::string axisName = element["axis"];
@@ -26,21 +26,7 @@ namespace RayTracer {
             throw libconfig::SettingTypeException(element);
         double pos;
         element.lookupValue("position", pos);
-        Maths::RGB color = ParserUtils::parseColor(element["color"]);
         return std::make_unique<PrimitivePlane>(PrimitivePlane::getAxisName()
-            .find(axisName)->second, pos, color);
-    }
-
-    std::vector<std::unique_ptr<IObject>> PlanePlugin::parseObjects(
-        libconfig::Setting const &element)
-    {
-        int count = element.getLength();
-        std::vector<std::unique_ptr<IObject>> plane;
-
-        for (int i = 0; i < count; ++i) {
-            const libconfig::Setting &sphere = element[i];
-            plane.push_back(parsePlane(sphere));
-        }
-        return std::move(plane);
+            .find(axisName)->second, pos, material);
     }
 } // RayTracer

@@ -19,7 +19,8 @@ namespace RayTracer {
         }
         this->loadPrimitivePlugins();
         this->loadMaterialPlugins();
-        auto const parser = ConfigFileParser(args.front(), this->_primitivesPlugins);
+        auto const parser = ConfigFileParser(args.front(),
+            this->_primitivesPlugins, this->_materialsPlugins);
         _camera = parser.parseCamera();
         _lights = parser.parseLights();
         _objects = parser.parsePrimitives();

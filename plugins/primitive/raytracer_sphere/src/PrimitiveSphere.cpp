@@ -9,10 +9,10 @@
 
 namespace RayTracer {
     PrimitiveSphere::PrimitiveSphere(const Maths::Point3D &origin,
-        double radius, Maths::RGB color):
+        double radius, std::shared_ptr<IMaterial> material):
         _origin(origin),
         _radius(radius),
-        _color(color)
+        _material(material)
     {
     }
 
@@ -47,10 +47,5 @@ namespace RayTracer {
     double PrimitiveSphere::getRadius() const
     {
         return this->_radius;
-    }
-
-    Maths::RGB PrimitiveSphere::getColor() const
-    {
-        return _color;
     }
 }

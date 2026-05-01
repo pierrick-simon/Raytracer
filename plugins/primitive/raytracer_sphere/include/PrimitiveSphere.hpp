@@ -8,27 +8,30 @@
 #ifndef PRIMITIVESPHERE_HPP
     #define PRIMITIVESPHERE_HPP
 
+    #include <memory>
     #include "IObject.hpp"
+    #include "IMaterial.hpp"
     #include "Vector3.hpp"
 
 namespace RayTracer {
     class PrimitiveSphere : public IObject {
     public:
-        PrimitiveSphere(const Maths::Point3D &origin, double radius, Maths::RGB color);
+        PrimitiveSphere(const Maths::Point3D &origin, double radius,
+            std::shared_ptr<IMaterial> material);
 
         std::optional<HitInfo> hits(Ray &ray) override;
+        std::shared_ptr<IMaterial> getIMaterial() override
+            {return _material;}
 
         [[nodiscard]] const Maths::Point3D &getOrigin() const;
         [[nodiscard]] Maths::Point3D &getOrigin();
 
         [[nodiscard]] double getRadius() const;
 
-        [[nodiscard]] Maths::RGB getColor() const;
-
     private:
         Maths::Point3D _origin;
         double _radius;
-        Maths::RGB _color;
+        std::shared_ptr<IMaterial> _material;
     };
 };
 

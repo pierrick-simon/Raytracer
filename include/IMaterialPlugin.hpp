@@ -21,7 +21,7 @@ namespace RayTracer {
 
         virtual const std::string_view &getMaterialsTypeName() = 0;
 
-        virtual std::vector<std::unique_ptr<IMaterial>> parseMaterials(
+        virtual std::shared_ptr<IMaterial> parseMaterial(
             libconfig::Setting const &element) = 0;
     };
 }

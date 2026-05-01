@@ -7,20 +7,21 @@
 
 #include <utility>
 #include <fstream>
-
-#include "ConfigFileParser.hpp"
-
 #include <algorithm>
 #include <filesystem>
 #include <ranges>
 
+#include "ConfigFileParser.hpp"
 #include "DirectionalLight.hpp"
 #include "ParserUtils.hpp"
 #include "PointLight.hpp"
 
 namespace RayTracer {
-    ConfigFileParser::ConfigFileParser(std::string s, std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins) :
-        _primitivePlugins(primitivePlugins)
+    ConfigFileParser::ConfigFileParser(std::string s,
+        std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
+        std::vector<std::unique_ptr<IMaterialPlugin>> &materialPlugins) :
+        _primitivePlugins(primitivePlugins),
+        _materialPlugins(materialPlugins)
     {
         std::fstream file(s);
 
@@ -127,10 +128,40 @@ namespace RayTracer {
             });
 
             if (it != this->_primitivePlugins.end()) {
-                auto pluginObjects = it->get()->parseObjects(primitive);
+                auto pluginObjects = parseSimilarPrimitives(
+                    primitive, *it);
                 std::ranges::move(pluginObjects, std::back_inserter(objects));
             }
         }
         return objects;
     }
+
+    std::vector<std::unique_ptr<IObject>> ConfigFileParser::
+        parseSimilarPrimitives(libconfig::Setting const &element,
+            std::unique_ptr<RayTracer::IObjectPlugin> const &plugins) const
+    {
+        int count = element.getLength();
+        std::vector<std::unique_ptr<IObject>> object;
+
+        for (int i = 0; i < count; ++i) {
+            const libconfig::Setting &prim = element[i];
+            object.push_back(plugins->parseObject(
+                prim, parseMaterial(prim)));
+        }
+        return std::move(object);
+    }
+
+    std::shared_ptr<IMaterial> ConfigFileParser::parseMaterial(
+        libconfig::Setting const &element) const
+    {
+        std::string name = element["material"];
+
+        auto it = std::ranges::find_if(this->_materialPlugins, [&](auto &plugin) {
+            return plugin->getMaterialsTypeName() == name;
+        });
+
+        if (it == this->_materialPlugins.end())
+            throw libconfig::SettingTypeException(element);
+        return it->get()->parseMaterial(element);
+    };
 }

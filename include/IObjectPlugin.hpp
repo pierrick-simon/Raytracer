@@ -13,6 +13,7 @@
     #include <vector>
 
     #include "IObject.hpp"
+    #include "IMaterial.hpp"
 
 namespace RayTracer {
     class IObjectPlugin {
@@ -21,8 +22,8 @@ namespace RayTracer {
 
         virtual const std::string_view &getObjectsTypeName() = 0;
 
-        virtual std::vector<std::unique_ptr<IObject>> parseObjects(
-            libconfig::Setting const &element) = 0;
+        virtual std::unique_ptr<IObject> parseObject(
+            libconfig::Setting const &element, std::shared_ptr<IMaterial>) = 0;
     };
 }
 

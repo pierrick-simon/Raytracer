@@ -16,8 +16,8 @@ namespace RayTracer {
         return SPHERE_TYPE_NAME;
     }
 
-    std::unique_ptr<IObject> SpherePlugin::parseSphere(
-        libconfig::Setting const &element)
+    std::unique_ptr<IObject> SpherePlugin::parseObject(
+        libconfig::Setting const &element, std::shared_ptr<IMaterial> material)
     {
         std::cout << "Loading sphere..." << std::endl;
         Maths::Point3D origin;
@@ -27,20 +27,6 @@ namespace RayTracer {
         element.lookupValue("y", origin.x);
         element.lookupValue("z", origin.x);
         element.lookupValue("r", r);
-        Maths::RGB color = ParserUtils::parseColor(element["color"]);
-        return std::make_unique<PrimitiveSphere>(origin, r, color);
-    }
-
-    std::vector<std::unique_ptr<IObject>> SpherePlugin::parseObjects(
-        libconfig::Setting const &element)
-    {
-        int count = element.getLength();
-        std::vector<std::unique_ptr<IObject>> spheres;
-
-        for (int i = 0; i < count; ++i) {
-            const libconfig::Setting &sphere = element[i];
-            spheres.push_back(parseSphere(sphere));
-        }
-        return std::move(spheres);
+        return std::make_unique<PrimitiveSphere>(origin, r, material);
     }
 } // RayTracer

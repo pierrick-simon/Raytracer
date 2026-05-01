@@ -8,10 +8,11 @@
 #include "PrimitivePlane.hpp"
 
 namespace RayTracer {
-    PrimitivePlane::PrimitivePlane(PrimitivePlane::Axis axis, double pos, Maths::RGB color) :
+    PrimitivePlane::PrimitivePlane(PrimitivePlane::Axis axis, double pos,
+        std::shared_ptr<IMaterial> material) :
         _axis(axis),
         _pos(pos),
-        _color(color)
+        _material(material)
     {
     }
 
@@ -50,11 +51,6 @@ namespace RayTracer {
     double PrimitivePlane::getPos() const
     {
         return _pos;
-    }
-
-    Maths::RGB PrimitivePlane::getColor() const
-    {
-        return _color;
     }
 
     const std::unordered_map<std::string, PrimitivePlane::Axis>
