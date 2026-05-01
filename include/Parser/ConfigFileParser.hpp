@@ -13,12 +13,13 @@
     #include <libconfig.h++>
     #include <memory>
     #include <vector>
+    #include <unordered_map>
 
     #include "Camera.hpp"
     #include "IObjectPlugin.hpp"
-    #include "IMaterialPlugin.hpp"
     #include "LightConfig.hpp"
     #include "Lights.hpp"
+    #include "Material.hpp"
 
 namespace RayTracer {
     constexpr std::string_view FILE_EXT = ".cfg";
@@ -27,7 +28,7 @@ namespace RayTracer {
     public:
         ConfigFileParser(std::string s,
             std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
-            std::vector<std::unique_ptr<IMaterialPlugin>> &materialPlugins);
+            BuilderMap &materials);
 
         class ParserError : public std::exception {
         public:
@@ -43,16 +44,16 @@ namespace RayTracer {
 
         [[nodiscard]] LightConfig parseLights() const;
 
+        void parseMaterials(
+            libconfig::Setting const &element);
+
         [[nodiscard]] std::vector<std::unique_ptr<IObject>>
-        parsePrimitives() const;
+            parsePrimitives() const;
 
         [[nodiscard]] std::vector<std::unique_ptr<IObject>>
             parseSimilarPrimitives(libconfig::Setting const &element,
                 std::unique_ptr<RayTracer::IObjectPlugin> const &plugins) const;
-
-        [[nodiscard]] std::shared_ptr<IMaterial> parseMaterial(
-            libconfig::Setting const &element) const;
-
+        
     private:
         static std::unique_ptr<ILightSource> parseDirectionalLight(
             libconfig::Setting const &);
@@ -62,7 +63,7 @@ namespace RayTracer {
 
         std::string _filepath;
         std::vector<std::unique_ptr<IObjectPlugin>> &_primitivePlugins;
-        std::vector<std::unique_ptr<IMaterialPlugin>> &_materialPlugins;
+        std::unordered_map<std::string, Material::Builder> _presetMaterialBuilders;
     };
 }
 

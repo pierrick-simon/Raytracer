@@ -23,6 +23,7 @@ set(SRCS
     src/Objects/Lights/LightDirectional.cpp
     src/Objects/Lights/PointLight.cpp
     src/Objects/materials/Material.cpp
+    src/Objects/materials/PresetMaterialBuilders.cpp
 )
 
 set(HEADERS
@@ -79,10 +80,5 @@ add_custom_target(primitives
     DEPENDS raytracer_sphere
         raytracer_plane)
 
-add_subdirectory(plugins/material/raytracer_flatColor)
-
-add_custom_target(materials
-    DEPENDS raytracer_flatColor)
-
 add_custom_target(plugins
-    DEPENDS primitives display materials)
+    DEPENDS primitives display)

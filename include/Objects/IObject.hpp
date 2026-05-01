@@ -8,7 +8,7 @@
 #ifndef IOBJECT_HPP
     #define IOBJECT_HPP
     #include <optional>
-    #include "IMaterial.hpp"
+    #include "Material.hpp"
     #include "Info.hpp"
 
 namespace RayTracer {
@@ -17,7 +17,6 @@ namespace RayTracer {
         virtual ~IObject() = default;
 
         virtual std::optional<HitInfo> hits(Ray &) = 0;
-        virtual std::shared_ptr<IMaterial> getIMaterial() = 0;
     };
 }
 

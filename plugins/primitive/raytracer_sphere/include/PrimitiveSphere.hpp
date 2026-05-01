@@ -10,18 +10,16 @@
 
     #include <memory>
     #include "IObject.hpp"
-    #include "IMaterial.hpp"
+    #include "Material.hpp"
     #include "Vector3.hpp"
 
 namespace RayTracer {
     class PrimitiveSphere : public IObject {
     public:
-        PrimitiveSphere(const Maths::Point3D &origin, double radius,
-            std::shared_ptr<IMaterial> material);
+        PrimitiveSphere(const Maths::Point3D &origin,
+            double radius, Material Material);
 
         std::optional<HitInfo> hits(Ray &ray) override;
-        std::shared_ptr<IMaterial> getIMaterial() override
-            {return _material;}
 
         [[nodiscard]] const Maths::Point3D &getOrigin() const;
         [[nodiscard]] Maths::Point3D &getOrigin();
@@ -31,7 +29,7 @@ namespace RayTracer {
     private:
         Maths::Point3D _origin;
         double _radius;
-        std::shared_ptr<IMaterial> _material;
+        Material _material;
     };
 };
 

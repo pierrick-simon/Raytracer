@@ -9,7 +9,7 @@
 
 namespace RayTracer {
     PrimitiveSphere::PrimitiveSphere(const Maths::Point3D &origin,
-        double radius, std::shared_ptr<IMaterial> material):
+        double radius, Material material) :
         _origin(origin),
         _radius(radius),
         _material(material)

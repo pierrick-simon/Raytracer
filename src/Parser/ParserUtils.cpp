@@ -7,6 +7,8 @@
 
 #include "Parser/ParserUtils.hpp"
 
+#include <iostream>
+
 namespace RayTracer {
 
     Maths::Vector3I ParserUtils::parseVector3I(
@@ -20,6 +22,39 @@ namespace RayTracer {
         element.lookupValue("y", y);
         element.lookupValue("z", z);
         return Maths::Vector3{x, y, z};
+    }
+
+    double ParserUtils::parseDouble(
+        libconfig::Setting const &element, std::string value)
+    {
+        double nb = 0;
+        if (!element.lookupValue(value, nb)) {
+            int tmp = 0;
+            if (!element.lookupValue(value, tmp))
+                throw libconfig::SettingTypeException(element);
+            nb = static_cast<double>(tmp);
+        }
+        return nb;
+    }
+
+    Maths::Vector3D ParserUtils::parseVector3D(
+        libconfig::Setting const &element)
+    {
+        double x = parseDouble(element, "x");
+        double y = parseDouble(element, "y");
+        double z = parseDouble(element, "z");
+
+        return Maths::Vector3D{x, y, z};
+    }
+
+    Maths::Point3D ParserUtils::parsePoint3D(
+        libconfig::Setting const &element)
+    {
+        double x = parseDouble(element, "x");
+        double y = parseDouble(element, "y");
+        double z = parseDouble(element, "z");
+
+        return Maths::Point3D{x, y, z};
     }
 
     Maths::RGB ParserUtils::parseColor(libconfig::Setting const &element)
@@ -39,4 +74,41 @@ namespace RayTracer {
             static_cast<unsigned char>(b)
         };
     }
+
+    Material::Builder ParserUtils::parseMaterial(
+        libconfig::Setting const &element,
+        Material::Builder builder)
+    {
+        if (element.exists("color"))
+            builder.color(ParserUtils::parseColor(element["color"]));
+        if (element.exists("metallic"))
+            builder.metallic(ParserUtils::parseDouble(element, "metallic"));
+        if (element.exists("specular"))
+            builder.specular(ParserUtils::parseDouble(element, "specular"));
+        if (element.exists("roughness"))
+            builder.roughness(ParserUtils::parseDouble(element, "roughness"));
+        if (element.exists("opacity"))
+            builder.opacity(ParserUtils::parseDouble(element, "opacity"));
+        return builder;
+    }
+
+    Material::Builder ParserUtils::getBuilder(
+        libconfig::Setting const &element,
+        BuilderMap &builders)
+    {
+        Material::Builder builder;
+
+        if (element["material"].isGroup()) {
+            libconfig::Setting const &material = element["material"];
+            if (material.exists("name")
+                && builders.find(material["name"]) != builders.end())
+                    builder = builders.find(material["name"])->second;
+            builder = parseMaterial(material, builder);
+        } else if (builders.find(element["material"]) != builders.end())
+            builder = builders.find(element["material"])->second;
+        else
+            throw libconfig::SettingTypeException(element);
+        return builder;
+    }
+
 } // RayTracer

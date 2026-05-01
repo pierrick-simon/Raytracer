@@ -12,14 +12,14 @@
     #include <string>
     #include <optional>
     #include <exception>
+    #include <unordered_map>
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
-    #include "IMaterialPlugin.hpp"
     #include "ConfigFileParser.hpp"
+    #include "Material.hpp"
 
 namespace RayTracer {
-
     constexpr int EPISUCCESS = 0;
     constexpr int EPIERROR = 84;
     constexpr std::string_view HELP = "docs/help.txt";
@@ -52,7 +52,6 @@ namespace RayTracer {
         void initVars(std::reference_wrapper<std::queue<std::string>> args);
 
         void loadPrimitivePlugins();
-        void loadMaterialPlugins();
 
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
@@ -61,10 +60,10 @@ namespace RayTracer {
         LightConfig _lights;
         std::vector<DLLoader<IObjectPlugin>> _primitivesPluginsLoaders;
         std::vector<std::unique_ptr<IObjectPlugin>> _primitivesPlugins;
-        std::vector<DLLoader<IMaterialPlugin>> _materialsPluginsLoaders;
-        std::vector<std::unique_ptr<IMaterialPlugin>> _materialsPlugins;
         std::vector<std::unique_ptr<IObject>> _objects;
 
+        static BuilderMap
+            _presetMaterialBuilders;
         static constexpr std::string_view PLUGINS_FOLDER = "plugins";
     };
 };

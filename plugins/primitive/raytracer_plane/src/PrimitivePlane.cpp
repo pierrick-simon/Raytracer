@@ -8,8 +8,8 @@
 #include "PrimitivePlane.hpp"
 
 namespace RayTracer {
-    PrimitivePlane::PrimitivePlane(PrimitivePlane::Axis axis, double pos,
-        std::shared_ptr<IMaterial> material) :
+    PrimitivePlane::PrimitivePlane(PrimitivePlane::Axis axis,
+        double pos, Material material) :
         _axis(axis),
         _pos(pos),
         _material(material)

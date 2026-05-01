@@ -11,11 +11,17 @@
     #include <memory>
     #include <string>
     #include <vector>
+    #include <unordered_map>
+
 
     #include "IObject.hpp"
-    #include "IMaterial.hpp"
+    #include "Material.hpp"
 
 namespace RayTracer {
+
+    using BuilderMap =
+        const std::unordered_map<std::string, Material::Builder>;
+
     class IObjectPlugin {
     public:
         virtual ~IObjectPlugin() = default;
@@ -23,7 +29,8 @@ namespace RayTracer {
         virtual const std::string_view &getObjectsTypeName() = 0;
 
         virtual std::unique_ptr<IObject> parseObject(
-            libconfig::Setting const &element, std::shared_ptr<IMaterial>) = 0;
+            libconfig::Setting const &element,
+            BuilderMap &) = 0;
     };
 }
 

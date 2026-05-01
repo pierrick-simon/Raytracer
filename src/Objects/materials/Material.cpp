@@ -40,17 +40,17 @@ namespace RayTracer {
     }
 
     Material::Material(Builder const &b) :
-        _metallic(b._metallic),
-        _specular(b._specular),
-        _roughness(b._roughness),
-        _opacity(b._opacity)
+        _metallic(b.getMetallic()),
+        _specular(b.getSpecular()),
+        _roughness(b.getRoughness()),
+        _opacity(b.getOpacity())
     {
         _colorPercentage.x = 
-            (double)b._color.x / std::numeric_limits<unsigned char>::max();
+            (double)b.getColor().x / std::numeric_limits<unsigned char>::max();
         _colorPercentage.y = 
-            (double)b._color.y / std::numeric_limits<unsigned char>::max();
+            (double)b.getColor().y / std::numeric_limits<unsigned char>::max();
         _colorPercentage.z = 
-            (double)b._color.z / std::numeric_limits<unsigned char>::max();
+            (double)b.getColor().z / std::numeric_limits<unsigned char>::max();
     }
 
     void Material::scatter(Ray &ray, HitInfo &info)

@@ -17,16 +17,16 @@ namespace RayTracer {
     }
 
      std::unique_ptr<IObject> PlanePlugin::parseObject(
-        libconfig::Setting const &element, std::shared_ptr<IMaterial> material)
+        libconfig::Setting const &element, BuilderMap &map)
     {
         std::cout << "Loading plane..." << std::endl;
         std::string axisName = element["axis"];
         if (PrimitivePlane::getAxisName().find(axisName)
             == PrimitivePlane::getAxisName().end())
             throw libconfig::SettingTypeException(element);
-        double pos;
-        element.lookupValue("position", pos);
+        double pos = ParserUtils::parseDouble(element, "position");
         return std::make_unique<PrimitivePlane>(PrimitivePlane::getAxisName()
-            .find(axisName)->second, pos, material);
+            .find(axisName)->second, pos,
+            ParserUtils::getBuilder(element, map).build());
     }
 } // RayTracer

@@ -24,12 +24,9 @@ namespace RayTracer {
             Z
         };
 
-        PrimitivePlane(Axis axis, double pos,
-            std::shared_ptr<IMaterial> material);
+        PrimitivePlane(Axis axis, double pos, Material material);
 
         std::optional<HitInfo> hits(Ray &ray) override;
-        std::shared_ptr<IMaterial> getIMaterial() override
-            {return _material;}
 
         static const std::unordered_map<std::string, Axis> getAxisName()
             {return _axisName;}
@@ -40,7 +37,7 @@ namespace RayTracer {
     private:
         Axis _axis;
         double _pos;
-        std::shared_ptr<IMaterial> _material;
+        Material _material;
         
         static const std::unordered_map<std::string, Axis> _axisName;
     };
