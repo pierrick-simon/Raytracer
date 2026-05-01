@@ -14,7 +14,7 @@
 namespace RayTracer {
     class ParserUtils {
     public:
-        static Maths::Vector3I parseVector3I(libconfig::Setting const &element);
+        static Maths::Vector3D parseVector3D(libconfig::Setting const &element);
 
         static Maths::RGB parseColor(libconfig::Setting const &element);
 

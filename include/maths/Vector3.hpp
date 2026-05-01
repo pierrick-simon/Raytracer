@@ -20,21 +20,21 @@ namespace Maths {
     public:
         constexpr Vector3() = default;
 
-        constexpr explicit Vector3(Type x, Type y, Type z) :
+        constexpr Vector3(Type x, Type y, Type z) :
             x(x),
             y(y),
             z(z)
         {
         }
 
-        constexpr explicit Vector3(const Point3<Type> &p):
+        constexpr Vector3(const Point3<Type> &p):
             x(p.x),
             y(p.y),
             z(p.z)
         {
         }
 
-        constexpr explicit Vector3(const Point3<Type> &p1,
+        constexpr Vector3(const Point3<Type> &p1,
             const Point3<Type> &p2):
             x(p2.x - p1.x),
             y(p2.y - p1.x),

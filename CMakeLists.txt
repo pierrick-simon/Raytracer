@@ -22,6 +22,7 @@ set(SRCS
     src/Objects/Lights/LightConfig.cpp
     src/Objects/Lights/LightDirectional.cpp
     src/Objects/Lights/PointLight.cpp
+    src/Objects/Rectangle.cpp
 )
 
 set(HEADERS

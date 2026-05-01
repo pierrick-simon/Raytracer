@@ -12,6 +12,9 @@
 
 namespace Maths {
     template<typename Type>
+    class Vector3;
+
+    template<typename Type>
     class Point3 {
     public:
         Point3() = default;
@@ -19,6 +22,8 @@ namespace Maths {
         Point3(Type x, Type y, Type z);
 
         Point3(const Point3<Type> &vec);
+        
+        Point3(const Vector3<Type> &vec);
 
         Point3 operator+(const Point3<Type> &other) const;
 
@@ -68,6 +73,14 @@ namespace Maths {
         x(vec.x),
         y(vec.y),
         z(vec.z)
+    {
+    }
+
+    template<typename Type>
+    Point3<Type>::Point3(const Vector3<Type> &point) :
+        x(point.x),
+        y(point.y),
+        z(point.z)
     {
     }
 
