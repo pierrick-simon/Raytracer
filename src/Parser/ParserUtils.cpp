@@ -9,17 +9,17 @@
 
 namespace RayTracer {
 
-    Maths::Vector3I ParserUtils::parseVector3I(
+    Maths::Vector3D ParserUtils::parseVector3D(
         libconfig::Setting const &element)
     {
-        int x = 0;
-        int y = 0;
-        int z = 0;
+        double x = 0;
+        double y = 0;
+        double z = 0;
 
         element.lookupValue("x", x);
         element.lookupValue("y", y);
         element.lookupValue("z", z);
-        return Maths::Vector3{x, y, z};
+        return Maths::Vector3D{x, y, z};
     }
 
     Maths::RGB ParserUtils::parseColor(libconfig::Setting const &element)
