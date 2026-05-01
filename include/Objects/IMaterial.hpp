@@ -8,6 +8,7 @@
 #ifndef IMATERIAL_HPP
     #define IMATERIAL_HPP
 
+#include <optional>
 #include "Info.hpp"
 
 namespace RayTracer {
