@@ -18,6 +18,7 @@ namespace RayTracer {
             throw HelpException();
         }
         this->loadPrimitivePlugins();
+        this->loadMaterialPlugins();
         auto const parser = ConfigFileParser(args.front(), this->_primitivesPlugins);
         _camera = parser.parseCamera();
         _lights = parser.parseLights();
@@ -104,7 +105,7 @@ namespace RayTracer {
         for (auto const &plugin : std::filesystem::directory_iterator(path)) {
             if (!std::filesystem::is_regular_file(plugin))
                 continue;
-            DLLoader<IObjectPlugin> loader(plugin.path().string());
+            DLLoader<IMaterialPlugin> loader(plugin.path().string());
 
             if (loader.getType() == LibType::MATERIAL) {
                 this->_materialsPlugins.emplace_back(loader.getInstance());

@@ -15,7 +15,7 @@
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
-    #include "IMaterial.hpp"
+    #include "IMaterialPlugin.hpp"
     #include "ConfigFileParser.hpp"
 
 namespace RayTracer {
