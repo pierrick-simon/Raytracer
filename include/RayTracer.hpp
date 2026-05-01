@@ -15,6 +15,7 @@
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
+    #include "IMaterial.hpp"
     #include "ConfigFileParser.hpp"
 
 namespace RayTracer {
@@ -51,6 +52,7 @@ namespace RayTracer {
         void initVars(std::reference_wrapper<std::queue<std::string>> args);
 
         void loadPrimitivePlugins();
+        void loadMaterialPlugins();
 
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
@@ -59,6 +61,8 @@ namespace RayTracer {
         LightConfig _lights;
         std::vector<DLLoader<IObjectPlugin>> _primitivesPluginsLoaders;
         std::vector<std::unique_ptr<IObjectPlugin>> _primitivesPlugins;
+        std::vector<DLLoader<IMaterialPlugin>> _materialsPluginsLoaders;
+        std::vector<std::unique_ptr<IMaterialPlugin>> _materialsPlugins;
         std::vector<std::unique_ptr<IObject>> _objects;
 
         static constexpr std::string_view PLUGINS_FOLDER = "plugins";

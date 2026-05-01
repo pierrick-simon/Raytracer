@@ -96,4 +96,20 @@ namespace RayTracer {
             }
         }
     }
+
+    void RayTracer::loadMaterialPlugins()
+    {
+        std::filesystem::path path(PLUGINS_FOLDER);
+
+        for (auto const &plugin : std::filesystem::directory_iterator(path)) {
+            if (!std::filesystem::is_regular_file(plugin))
+                continue;
+            DLLoader<IObjectPlugin> loader(plugin.path().string());
+
+            if (loader.getType() == LibType::MATERIAL) {
+                this->_materialsPlugins.emplace_back(loader.getInstance());
+                this->_materialsPluginsLoaders.emplace_back(std::move(loader));
+            }
+        }
+    }
 }
