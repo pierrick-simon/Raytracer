@@ -32,8 +32,20 @@ namespace RayTracer {
         double delta = (b * b) - (4 * a * c);
         if (delta < 0)
             return {};
+        double x = 0;
+        if (delta == 0)
+            x = (b * -1.0) / (2.0 * a);
+        else
+            x = ((b * -1.0) - sqrt(delta)) / (2.0 * a);
+        if (x < 0)
+            return {};
         ray.color = _color;
-        return HitInfo{};
+        HitInfo hit;
+        hit.hitPos.x = ray.origin.x + (ray.direction.x * x);
+        hit.hitPos.y = ray.origin.y + (ray.direction.y * x);
+        hit.hitPos.z = ray.origin.z + (ray.direction.z * x);
+        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
+        return hit;
     }
 
     const Maths::Point3D &PrimitiveSphere::getOrigin() const

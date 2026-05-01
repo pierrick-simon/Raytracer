@@ -15,6 +15,7 @@ namespace RayTracer {
     struct HitInfo {
         Maths::Point3D hitPos;
         Maths::Vector3D impactNormal;
+        double hitDist;
     };
 
     class IObject {
