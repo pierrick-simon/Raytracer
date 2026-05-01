@@ -19,7 +19,7 @@ namespace RayTracer {
     std::shared_ptr<IMaterial> FlatColorPlugin::parseMaterial(
             libconfig::Setting const &element)
     {
-        Maths::RGB color = ParserUtils::parseColor(element);
+        Maths::RGB color = ParserUtils::parseColor(element["color"]);
         return std::make_shared<MaterialFlatColor>(color);
     }
 } // RayTracer

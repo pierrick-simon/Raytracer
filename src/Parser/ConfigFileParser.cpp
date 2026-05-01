@@ -154,14 +154,16 @@ namespace RayTracer {
     std::shared_ptr<IMaterial> ConfigFileParser::parseMaterial(
         libconfig::Setting const &element) const
     {
-        std::string name = element["material"];
+        const libconfig::Setting &setting = element["material"];
+        std::string name;
+        setting.lookupValue("type", name);
 
         auto it = std::ranges::find_if(this->_materialPlugins, [&](auto &plugin) {
             return plugin->getMaterialsTypeName() == name;
         });
-
         if (it == this->_materialPlugins.end())
-            throw libconfig::SettingTypeException(element);
-        return it->get()->parseMaterial(element);
+            throw ConfigFileParser::ParserError("Unknown material type: " + name);
+
+        return it->get()->parseMaterial(setting);
     };
 }
