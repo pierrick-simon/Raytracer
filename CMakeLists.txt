@@ -22,6 +22,7 @@ set(SRCS
     src/Objects/Lights/LightConfig.cpp
     src/Objects/Lights/LightDirectional.cpp
     src/Objects/Lights/PointLight.cpp
+    src/Objects/materials/Material.cpp
 )
 
 set(HEADERS
@@ -31,6 +32,7 @@ set(HEADERS
     include/Objects
     include/Parser
     include/Objects/Lights
+    include/Objects/materials
 )
 
 include_directories(${HEADERS})
