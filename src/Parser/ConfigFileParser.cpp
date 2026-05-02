@@ -35,7 +35,7 @@ namespace RayTracer {
             _presetMaterialBuilders.insert(builder);
         libconfig::Config cfg;
         cfg.readFile(_filepath.c_str());
-        const libconfig::Setting &root = cfg.getRoot()["primitives"];
+        const libconfig::Setting &root = cfg.getRoot();
         if (root.exists("materials"))
             parseMaterials(root["materials"]);
     }
