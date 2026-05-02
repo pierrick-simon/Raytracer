@@ -18,10 +18,8 @@ set(SRCS
     src/Parser/ConfigFileParser.cpp
     src/Parser/ParserUtils.cpp
     src/Objects/Camera.cpp
-    src/Objects/Lights/Lights.cpp
-    src/Objects/Lights/LightConfig.cpp
+        src/Objects/Lights/LightConfig.cpp
     src/Objects/Lights/LightDirectional.cpp
-    src/Objects/Lights/PointLight.cpp
     src/Objects/Rectangle.cpp
 )
 
@@ -69,6 +67,7 @@ list(TRANSFORM SRCS PREPEND ${CMAKE_SOURCE_DIR}/)
 add_subdirectory(plugins/display/raytracer_sfml)
 add_subdirectory(plugins/primitive/raytracer_sphere)
 add_subdirectory(plugins/primitive/raytracer_plane)
+add_subdirectory(plugins/light/raytracer_point_light)
 
 add_custom_target(display
         DEPENDS raytracer_sfml)
@@ -77,5 +76,8 @@ add_custom_target(primitives
         DEPENDS raytracer_sphere
         DEPENDS raytracer_plane)
 
+add_custom_target(lights
+        DEPENDS raytracer_point_light)
+
 add_custom_target(plugins
-    DEPENDS primitives display)
+    DEPENDS primitives display lights)

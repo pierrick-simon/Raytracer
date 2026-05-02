@@ -14,9 +14,11 @@ namespace RayTracer {
     public:
         DirectionalLight(int x, int y, int z);
 
-        Maths::Vector3D getPosition() override;
-        Maths::RGB getColor() override;
-        double getLightAmount(const Ray &ray) override;
+        Maths::RGB getLightAmount(const Ray &ray) override;
+    private:
+        Maths::Point3D _pos;
+        Maths::RGB _color;
+        double _strength;
     };
 }
 
