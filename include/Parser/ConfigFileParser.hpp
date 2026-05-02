@@ -61,9 +61,6 @@ namespace RayTracer {
                 std::unique_ptr<RayTracer::IObjectPlugin> const &plugins) const;
 
     private:
-        static std::unique_ptr<ILightSource> parseDirectionalLight(
-            libconfig::Setting const &);
-
         std::string _filepath;
         std::vector<std::unique_ptr<IObjectPlugin>> &_primitivePlugins;
         std::vector<std::unique_ptr<ILightSourcePlugin>> &_lightPlugins;

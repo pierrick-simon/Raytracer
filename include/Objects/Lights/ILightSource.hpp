@@ -14,8 +14,9 @@ namespace RayTracer {
     class ILightSource {
     public:
         virtual ~ILightSource() = default;
+        [[nodiscard]] virtual Maths::Point3D getPosition() const = 0;
 
-        virtual Maths::RGB getLightAmount(const Ray &) = 0;
+        [[nodiscard]] virtual Maths::RGB getLightAmount(const Ray &) const = 0;
     };
 }
 

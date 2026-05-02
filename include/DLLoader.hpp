@@ -93,7 +93,7 @@ namespace RayTracer {
         void loadFile(const std::string &libFile)
         {
             this->close();
-            this->_handle = dlopen(libFile.c_str(), RTLD_NOW);
+            this->_handle = dlopen(libFile.c_str(), RTLD_LAZY);
             if (!this->_handle)
                 throw LibraryLoadException(dlerror());
         }

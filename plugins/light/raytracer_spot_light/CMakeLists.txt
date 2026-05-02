@@ -12,17 +12,17 @@ set(SHARED_SRCS
 
 list(TRANSFORM SHARED_SRCS PREPEND ${CMAKE_SOURCE_DIR}/src/)
 
-set(POINT_LIGHT
-    raytracer_point_light
+set(SPOT_LIGHT
+    raytracer_spot_light
 )
 
-set(SRCS_POINT_LIGHT
-        src/PointLight.cpp
+set(SRCS_SPOT_LIGHT
+        src/SpotLight.cpp
         src/LibEntryPoints.cpp
-        src/PointLightPlugin.cpp
+        src/SpotLightPlugin.cpp
 )
 
 
-add_library(${POINT_LIGHT} SHARED ${SRCS_POINT_LIGHT} ${SHARED_SRCS})
-set_target_properties(${POINT_LIGHT} PROPERTIES PREFIX "")
-target_include_directories(${POINT_LIGHT} PRIVATE include)
+add_library(${SPOT_LIGHT} SHARED ${SRCS_SPOT_LIGHT} ${SHARED_SRCS})
+set_target_properties(${SPOT_LIGHT} PROPERTIES PREFIX "")
+target_include_directories(${SPOT_LIGHT} PRIVATE include)

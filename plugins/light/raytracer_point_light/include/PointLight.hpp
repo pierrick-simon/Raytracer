@@ -8,19 +8,18 @@
 #ifndef PRIMITIVESPHERE_HPP
     #define PRIMITIVESPHERE_HPP
 
-    #include "ILightSource.hpp"
+    #include "ALightSource.hpp"
     #include "Vector3.hpp"
 
 namespace RayTracer {
-    class PointLight : public ILightSource {
+    class PointLight : public ALightSource {
     public:
         PointLight(const Maths::Point3D &pos, Maths::RGB color, double falloutDistance);
 
-        Maths::RGB getLightAmount(const Ray &) override;
+        [[nodiscard]] Maths::RGB getLightAmount(const Ray &) const override;
     private:
-        Maths::Point3D _pos;
         Maths::RGB _color;
-        double falloutDistance;
+        double _falloutDistance;
     };
 }
 

@@ -19,7 +19,7 @@ set(SRCS
     src/Parser/ParserUtils.cpp
     src/Objects/Camera.cpp
     src/Objects/Lights/LightConfig.cpp
-    src/Objects/Lights/LightDirectional.cpp
+    src/Objects/Lights/ALightSource.cpp
     src/Objects/materials/Material.cpp
     src/Objects/materials/PresetMaterialBuilders.cpp
     src/Objects/Rectangle.cpp
@@ -85,7 +85,6 @@ add_subdirectory(plugins/light/raytracer_spot_light)
 add_custom_target(lights
         DEPENDS raytracer_point_light
             raytracer_spot_light)
-
 
 add_custom_target(plugins
     DEPENDS primitives display lights)

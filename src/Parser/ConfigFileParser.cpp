@@ -12,7 +12,6 @@
 #include <ranges>
 
 #include "ConfigFileParser.hpp"
-#include "DirectionalLight.hpp"
 #include "ParserUtils.hpp"
 
 namespace RayTracer {
@@ -30,7 +29,7 @@ namespace RayTracer {
         if (!file.is_open())
             throw ParserError("No Such File.");
         _filepath = {std::move(filepath)};
-        for (auto builder: materials)
+        for (const auto& builder: materials)
             _presetMaterialBuilders.insert(builder);
         libconfig::Config cfg;
         cfg.readFile(_filepath.c_str());
@@ -105,7 +104,7 @@ namespace RayTracer {
     void ConfigFileParser::parseMaterials(libconfig::Setting const &element)
     {
         for (int i = 0; i < element.getLength(); ++i) {
-            Material::Builder builder;
+            Material::Builder builder{};
             if (element[i].exists("type")
                 && _presetMaterialBuilders.find(element[i]["type"])
                     != _presetMaterialBuilders.end())
@@ -150,24 +149,9 @@ namespace RayTracer {
         return std::move(lights);
     }
 
-    std::unique_ptr<ILightSource> ConfigFileParser::parseDirectionalLight(
-        libconfig::Setting const &element)
-    {
-        int x = 0;
-        int y = 0;
-        int z = 0;
-
-        for (int i = 0; i < element.getLength(); ++i) {
-            element[i].lookupValue("x", x);
-            element[i].lookupValue("y", y);
-            element[i].lookupValue("z", z);
-        }
-        return std::make_unique<DirectionalLight>(x, y, z);
-    }
-
     std::vector<std::unique_ptr<IObject>> ConfigFileParser::
         parseSimilarPrimitives(libconfig::Setting const &element,
-            std::unique_ptr<RayTracer::IObjectPlugin> const &plugins) const
+            std::unique_ptr<IObjectPlugin> const &plugins) const
     {
         int count = element.getLength();
         std::vector<std::unique_ptr<IObject>> object;
