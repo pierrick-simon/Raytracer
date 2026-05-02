@@ -36,8 +36,8 @@ namespace RayTracer {
             .withDirection(direction)
             .withColor(color)
             .withFalloutDistance(falloutDistance)
-            .withInnerConeAngle(innerAngler)
-            .withOuterConeAngle(outerAngle)
+            .withInnerConeAngle(TORAD(innerAngler))
+            .withOuterConeAngle(TORAD(outerAngle))
         );
     }
 } // RayTracer
