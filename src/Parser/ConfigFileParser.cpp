@@ -14,7 +14,6 @@
 #include "ConfigFileParser.hpp"
 #include "DirectionalLight.hpp"
 #include "ParserUtils.hpp"
-#include "PointLight.hpp"
 
 namespace RayTracer {
     ConfigFileParser::ConfigFileParser(std::string filepath, std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
@@ -164,21 +163,6 @@ namespace RayTracer {
             element[i].lookupValue("z", z);
         }
         return std::make_unique<DirectionalLight>(x, y, z);
-    }
-
-    std::unique_ptr<ILightSource> ConfigFileParser::parsePointLight(
-        libconfig::Setting const &element)
-    {
-        int x = 0;
-        int y = 0;
-        int z = 0;
-
-        for (int i = 0; i < element.getLength(); ++i) {
-            element[i].lookupValue("x", x);
-            element[i].lookupValue("y", y);
-            element[i].lookupValue("z", z);
-        }
-        return std::make_unique<PointLight>(x, y, z);
     }
 
     std::vector<std::unique_ptr<IObject>> ConfigFileParser::

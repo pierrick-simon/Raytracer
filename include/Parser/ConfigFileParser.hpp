@@ -16,10 +16,9 @@
     #include <unordered_map>
 
     #include "Camera.hpp"
-#include "ILightSourcePlugin.hpp"
+    #include "ILightSourcePlugin.hpp"
     #include "IObjectPlugin.hpp"
     #include "LightConfig.hpp"
-    #include "Lights.hpp"
     #include "Material.hpp"
 
 namespace RayTracer {
@@ -63,9 +62,6 @@ namespace RayTracer {
 
     private:
         static std::unique_ptr<ILightSource> parseDirectionalLight(
-            libconfig::Setting const &);
-
-        static std::unique_ptr<ILightSource> parsePointLight(
             libconfig::Setting const &);
 
         std::string _filepath;
