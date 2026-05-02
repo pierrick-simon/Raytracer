@@ -18,6 +18,7 @@ namespace RayTracer {
             throw HelpException();
         }
         this->loadPrimitivePlugins();
+        this->loadLightPlugins();
         auto const parser = ConfigFileParser(args.front(), this->_primitivesPlugins);
         _camera = parser.parseCamera();
         _lights = parser.parseLights();
@@ -93,6 +94,22 @@ namespace RayTracer {
             if (loader.getType() == LibType::PRIMITIVE) {
                 this->_primitivesPlugins.emplace_back(loader.getInstance());
                 this->_primitivesPluginsLoaders.emplace_back(std::move(loader));
+            }
+        }
+    }
+
+    void RayTracer::loadLightPlugins()
+    {
+        std::filesystem::path path(PLUGINS_FOLDER);
+
+        for (auto const &plugin : std::filesystem::directory_iterator(path)) {
+            if (!std::filesystem::is_regular_file(plugin))
+                continue;
+            DLLoader<ILightSourcePlugin> loader(plugin.path().string());
+
+            if (loader.getType() == LibType::LIGHT_SOURCE) {
+                this->_lightsPlugins.emplace_back(loader.getInstance());
+                this->_lightsPluginsLoaders.emplace_back(std::move(loader));
             }
         }
     }
