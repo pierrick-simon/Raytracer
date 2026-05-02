@@ -20,9 +20,19 @@ namespace RayTracer {
     std::unique_ptr<IObject> TrianglePlugin::parseTriangle(
         libconfig::Setting const &element)
     {
-        // TODO
-        return std::make_unique<PrimitiveTriangle>(Maths::Point3D(0, 0, 0), 0, 0, 0,
-            Maths::RGB(0, 0, 0));
+        double h = 0;
+        double w = 0;
+        double l = 0;
+
+        std::cout << "Loading triangles..." << std::endl;
+
+        Maths::Point3D origin = ParserUtils::parseVector3D(element["origin"]);
+        Maths::RGB color = ParserUtils::parseColor(element["color"]);
+        element.lookupValue("h", h);
+        element.lookupValue("w", w);
+        element.lookupValue("l", l);
+
+        return std::make_unique<PrimitiveTriangle>(origin, h, w, l, color);
     }
 
     std::vector<std::unique_ptr<IObject>> TrianglePlugin::parseObjects(
