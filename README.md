@@ -17,7 +17,7 @@ This project requires the following dependencies:
 ## Requirements
 
 - C++ 20
-- **Libraries:** SFML
+- **Libraries:** SFML, Libconfig++
 
 ### Installation for Linux
 
@@ -36,6 +36,7 @@ cd Raytracer
 3. **install dependencies:**
 
 ```sh
+sudo apt-get install libconfig++-dev
 ```
 
 ## Documentation
