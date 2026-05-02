@@ -8,6 +8,7 @@
 #ifndef PRIMITIVEPLANE_HPP
     #define PRIMITIVEPLANE_HPP
 
+    #include <memory>
     #include <unordered_map>
     #include <string>
     #include "IObject.hpp"
@@ -23,7 +24,7 @@ namespace RayTracer {
             Z
         };
 
-        PrimitivePlane(Axis axis, double pos, Maths::RGB color);
+        PrimitivePlane(Axis axis, double pos, Material material);
 
         std::optional<HitInfo> hits(Ray &ray) override;
 
@@ -33,15 +34,15 @@ namespace RayTracer {
         [[nodiscard]] Axis getAxis() const;
         [[nodiscard]] double getPos() const;
 
-        [[nodiscard]] Maths::RGB getColor() const;
-
     private:
+        Maths::Vector3D getNormal(double);
+
         Axis _axis;
         double _pos;
-        Maths::RGB _color;
+        Material _material;
+        Maths::Vector3D _normal;
 
         static const std::unordered_map<std::string, Axis> _axisName;
-
     };
 };
 

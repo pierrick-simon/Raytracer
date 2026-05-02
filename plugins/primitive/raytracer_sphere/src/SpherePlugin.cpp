@@ -16,34 +16,15 @@ namespace RayTracer {
         return SPHERE_TYPE_NAME;
     }
 
-    std::unique_ptr<IObject> SpherePlugin::parseSphere(
-        libconfig::Setting const &element)
+    std::unique_ptr<IObject> SpherePlugin::parseObject(
+        libconfig::Setting const &element, BuilderMap &map)
     {
         std::cout << "Loading sphere..." << std::endl;
-        double x = 0;
-        double y = 0;
-        double z = 0;
-        double r = 0;
+        Maths::Point3D origin = ParserUtils::parsePoint3D(element);
+        double r = ParserUtils::parseDouble(element, "r");
 
-        element.lookupValue("x", x);
-        element.lookupValue("y", y);
-        element.lookupValue("z", z);
-        element.lookupValue("r", r);
-        Maths::RGB color = ParserUtils::parseColor(element["color"]);
-        return std::make_unique<PrimitiveSphere>(Maths::Vector3D(x, y, z),
-            r, color);
+        return std::make_unique<PrimitiveSphere>(origin, r,
+            ParserUtils::getBuilder(element, map).build());
     }
 
-    std::vector<std::unique_ptr<IObject>> SpherePlugin::parseObjects(
-        libconfig::Setting const &element)
-    {
-        int count = element.getLength();
-        std::vector<std::unique_ptr<IObject>> spheres;
-
-        for (int i = 0; i < count; ++i) {
-            const libconfig::Setting &sphere = element[i];
-            spheres.push_back(parseSphere(sphere));
-        }
-        return std::move(spheres);
-    }
 } // RayTracer

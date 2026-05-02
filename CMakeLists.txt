@@ -22,6 +22,8 @@ set(SRCS
     src/Objects/Lights/LightConfig.cpp
     src/Objects/Lights/LightDirectional.cpp
     src/Objects/Lights/PointLight.cpp
+    src/Objects/materials/Material.cpp
+    src/Objects/materials/PresetMaterialBuilders.cpp
     src/Objects/Rectangle.cpp
 )
 
@@ -32,6 +34,7 @@ set(HEADERS
     include/Objects
     include/Parser
     include/Objects/Lights
+    include/Objects/materials
 )
 
 include_directories(${HEADERS})
@@ -67,15 +70,16 @@ add_custom_target(tests_run
 list(TRANSFORM SRCS PREPEND ${CMAKE_SOURCE_DIR}/)
 
 add_subdirectory(plugins/display/raytracer_sfml)
+
+add_custom_target(display
+    DEPENDS raytracer_sfml)
+
 add_subdirectory(plugins/primitive/raytracer_sphere)
 add_subdirectory(plugins/primitive/raytracer_plane)
 
-add_custom_target(display
-        DEPENDS raytracer_sfml)
-
 add_custom_target(primitives
-        DEPENDS raytracer_sphere
-        DEPENDS raytracer_plane)
+    DEPENDS raytracer_sphere
+        raytracer_plane)
 
 add_custom_target(plugins
     DEPENDS primitives display)

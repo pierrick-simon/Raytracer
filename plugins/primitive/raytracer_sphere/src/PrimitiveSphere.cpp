@@ -10,10 +10,10 @@
 
 namespace RayTracer {
     PrimitiveSphere::PrimitiveSphere(const Maths::Point3D &origin,
-        double radius, Maths::RGB color):
+        double radius, Material material) :
         _origin(origin),
         _radius(radius),
-        _color(color)
+        _material(material)
     {
     }
 
@@ -24,7 +24,7 @@ namespace RayTracer {
         hit.hitPos.y = ray.origin.y + (ray.direction.y * x);
         hit.hitPos.z = ray.origin.z + (ray.direction.z * x);
         hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
-        ray.color = _color;
+        hit.material = _material;
         return hit;
     }
 
@@ -73,10 +73,5 @@ namespace RayTracer {
     double PrimitiveSphere::getRadius() const
     {
         return this->_radius;
-    }
-
-    Maths::RGB PrimitiveSphere::getColor() const
-    {
-        return _color;
     }
 }

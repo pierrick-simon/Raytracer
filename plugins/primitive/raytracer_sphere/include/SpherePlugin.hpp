@@ -14,11 +14,8 @@ namespace RayTracer {
     public:
         const std::string_view &getObjectsTypeName() override;
 
-        static std::unique_ptr<IObject> parseSphere(
-            libconfig::Setting const &element);
-
-        std::vector<std::unique_ptr<IObject>> parseObjects(
-            libconfig::Setting const &element) override;
+        std::unique_ptr<IObject> parseObject(
+            libconfig::Setting const &, BuilderMap &) override;
 
     private:
         static constexpr std::string_view SPHERE_TYPE_NAME = "spheres";
