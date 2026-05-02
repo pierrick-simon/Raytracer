@@ -24,6 +24,7 @@ set(SRCS
     src/Objects/Lights/PointLight.cpp
     src/Objects/materials/Material.cpp
     src/Objects/materials/PresetMaterialBuilders.cpp
+    src/Objects/Rectangle.cpp
 )
 
 set(HEADERS

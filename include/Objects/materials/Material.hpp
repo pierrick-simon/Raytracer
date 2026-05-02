@@ -10,9 +10,10 @@
 
     #include "Vector3.hpp"
     #include "Ray.hpp"
-    #include "Info.hpp"
 
 namespace RayTracer {
+
+    struct HitInfo;
 
     class Material {
         public:

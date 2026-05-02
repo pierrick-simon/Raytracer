@@ -66,9 +66,9 @@ namespace RayTracer {
         reso.lookupValue("height", resHeight);
         const Maths::Vector3U resolution{resWidth, resHeight, 0};
         const libconfig::Setting &pos = root["camera"]["position"];
-        const Maths::Vector3I position = ParserUtils::parseVector3I(pos);
+        const Maths::Point3D position = ParserUtils::parseVector3D(pos);
         const libconfig::Setting &rot = root["camera"]["rotation"];
-        const Maths::Vector3I rotation = ParserUtils::parseVector3I(rot);
+        const Maths::Vector3D rotation = TORAD(ParserUtils::parseVector3D(rot));
 
         return Camera{resolution, position, rotation, fov};
     }

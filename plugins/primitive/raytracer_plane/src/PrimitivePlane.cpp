@@ -37,7 +37,7 @@ namespace RayTracer {
                 Maths::Point3D point(ray.origin + t);
                 point = Maths::Point3D(point.x * ray.direction.x, point.y
                     * ray.direction.y, point.z * ray.direction.z);
-                info = {point, normal};
+                info = {point, normal, Maths::Vector3D(point, ray.origin).length(), _material};
             }
         }
         return info;

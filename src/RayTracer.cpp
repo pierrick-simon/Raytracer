@@ -27,12 +27,40 @@ namespace RayTracer {
         parseOptionalArgs(args);
     }
 
-    void RayTracer::run()
+    void RayTracer::run() noexcept
     {
+        throwRays();
         if (_display.has_value())
             runDisplay();
         _ppm.save(_name);
     }
+
+    void RayTracer::throwRays() noexcept
+    {
+        Maths::Vector3U res = _camera.getResolution();
+
+        for (std::size_t i = 0; i < res.x; ++i) {
+            for (std::size_t j = 0; j < res.y; ++j) {
+                double u = (1.0 / res.x) * i;
+                double v = (1.0 / res.y) * j;
+                Ray closerRay{};
+                HitInfo closerHit{.hitDist = -1.0};
+                for (auto &object: _objects) {
+                    Ray r = _camera.ray(u, v);
+                    auto hit = object->hits(r);
+                    if (hit.has_value() && (closerHit.hitDist == -1.0 || hit.value().hitDist < closerHit.hitDist)) {
+                        closerRay = r;
+                        closerHit = hit.value();
+                    }
+                }
+                closerHit.material.scatter(closerRay, closerHit);
+                Maths::Vector3D tmp = closerRay.colorPercentage * std::numeric_limits<unsigned char>::max();
+                Maths::RGB color = {(unsigned char)tmp.x, (unsigned char)tmp.y, (unsigned char)tmp.z};
+                _ppm.setPix(i, j, color);
+            }
+        }
+    }
+
 
     void RayTracer::showHelp()
     {

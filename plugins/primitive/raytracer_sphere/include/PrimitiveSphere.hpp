@@ -27,6 +27,11 @@ namespace RayTracer {
         [[nodiscard]] double getRadius() const;
 
     private:
+
+        HitInfo computeHitInfos(Ray &, double) noexcept;
+        double solveQuadratic(double a, double b,
+            double c, double delta) noexcept;
+
         Maths::Point3D _origin;
         double _radius;
         Material _material;

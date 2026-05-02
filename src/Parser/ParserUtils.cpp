@@ -6,23 +6,11 @@
 */
 
 #include "Parser/ParserUtils.hpp"
+    #include <iostream>
 
 #include <iostream>
 
 namespace RayTracer {
-
-    Maths::Vector3I ParserUtils::parseVector3I(
-        libconfig::Setting const &element)
-    {
-        int x = 0;
-        int y = 0;
-        int z = 0;
-
-        element.lookupValue("x", x);
-        element.lookupValue("y", y);
-        element.lookupValue("z", z);
-        return Maths::Vector3{x, y, z};
-    }
 
     double ParserUtils::parseDouble(
         libconfig::Setting const &element, std::string value)

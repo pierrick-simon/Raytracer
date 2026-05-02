@@ -31,9 +31,10 @@ namespace RayTracer {
     public:
         RayTracer(std::queue<std::string> args);
 
-        void run();
+        void run() noexcept;
+        void throwRays() noexcept;
 
-        static void showHelp(); 
+        static void showHelp();
 
         class HelpException : public std::exception {
         public:
