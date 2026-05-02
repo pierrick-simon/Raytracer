@@ -25,7 +25,7 @@ namespace RayTracer {
     constexpr std::string_view HELP = "docs/help.txt";
     constexpr std::string_view HELP_FLAG = "--help";
     constexpr std::string_view DISPLAY_FLAG = "--display";
-    constexpr std::string_view ARG_EXT = ".ppm";
+    constexpr std::string_view ARG_EXT = ".cfg";
 
     class RayTracer {
     public:
@@ -33,6 +33,8 @@ namespace RayTracer {
 
         void run() noexcept;
         void throwRays() noexcept;
+        void setPixel(
+            std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept; 
 
         static void showHelp();
 

@@ -41,26 +41,35 @@ namespace RayTracer {
 
         for (std::size_t i = 0; i < res.x; ++i) {
             for (std::size_t j = 0; j < res.y; ++j) {
-                double u = (1.0 / res.x) * i;
-                double v = (1.0 / res.y) * j;
-                Ray closerRay{};
-                HitInfo closerHit{.hitDist = -1.0};
-                for (auto &object: _objects) {
-                    Ray r = _camera.ray(u, v);
-                    auto hit = object->hits(r);
-                    if (hit.has_value() && (closerHit.hitDist == -1.0 || hit.value().hitDist < closerHit.hitDist)) {
-                        closerRay = r;
-                        closerHit = hit.value();
-                    }
-                }
-                closerHit.material.scatter(closerRay, closerHit);
-                Maths::Vector3D tmp = closerRay.colorPercentage * std::numeric_limits<unsigned char>::max();
-                Maths::RGB color = {(unsigned char)tmp.x, (unsigned char)tmp.y, (unsigned char)tmp.z};
-                _ppm.setPix(i, j, color);
+                setPixel(i, j, res);
             }
         }
     }
 
+    void RayTracer::setPixel(
+        std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept
+    {
+        double u = (1.0 / resolution.x) * x;
+        double v = (1.0 / resolution.y) * y;
+        Ray closerRay{};
+        HitInfo closerHit{.hitDist = -1.0};
+        for (auto &object: _objects) {
+            Ray r = _camera.ray(u, v);
+            auto hit = object->hits(r);
+            if (hit.has_value() && (closerHit.hitDist == -1.0
+                || hit.value().hitDist < closerHit.hitDist)) {
+                closerRay = r;
+                closerHit = hit.value();
+            }
+        }
+        closerHit.material.scatter(closerRay, closerHit);
+        Maths::Vector3D tmp = closerRay.colorPercentage
+            * std::numeric_limits<unsigned char>::max();
+        Maths::RGB color = {(unsigned char)tmp.x,
+            (unsigned char)tmp.y,
+            (unsigned char)tmp.z};
+        _ppm.setPix(x, y, color);
+    }
 
     void RayTracer::showHelp()
     {

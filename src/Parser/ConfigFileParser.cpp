@@ -57,7 +57,8 @@ namespace RayTracer {
         cfg.readFile(_filepath.c_str());
 
         const libconfig::Setting &root = cfg.getRoot();
-        const double fov = root["camera"]["fieldOfView"];
+        const double fov =
+            ParserUtils::parseDouble(root["camera"], "fieldOfView");
 
         const libconfig::Setting &reso = root["camera"]["resolution"];
         unsigned int resHeight = 0;
@@ -110,11 +111,9 @@ namespace RayTracer {
         cfg.readFile(_filepath.c_str());
         const libconfig::Setting &root = cfg.getRoot()["lights"];
 
-        double ambient = 0.0;
-        double diffuse = 0.0;
+        double ambient = ParserUtils::parseDouble(root, "ambient");
+        double diffuse = ParserUtils::parseDouble(root, "diffuse");
         std::vector<std::unique_ptr<ILightSource>> lights;
-        root.lookupValue("ambient", ambient);
-        root.lookupValue("diffuse", diffuse);
         lights.push_back(parsePointLight(root["point"]));
         lights.push_back(parseDirectionalLight(root["directional"]));
         return LightConfig{ambient, diffuse, std::move(lights)};
