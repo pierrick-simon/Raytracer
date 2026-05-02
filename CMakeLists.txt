@@ -80,9 +80,12 @@ add_custom_target(primitives
         raytracer_plane)
 
 add_subdirectory(plugins/light/raytracer_point_light)
+add_subdirectory(plugins/light/raytracer_spot_light)
 
 add_custom_target(lights
-        DEPENDS raytracer_point_light)
+        DEPENDS raytracer_point_light
+            raytracer_spot_light)
+
 
 add_custom_target(plugins
     DEPENDS primitives display lights)
