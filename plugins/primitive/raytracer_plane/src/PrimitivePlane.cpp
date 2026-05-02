@@ -8,7 +8,8 @@
 #include "PrimitivePlane.hpp"
 
 namespace RayTracer {
-    PrimitivePlane::PrimitivePlane(PrimitivePlane::Axis axis, double pos, Maths::RGB color) :
+    PrimitivePlane::PrimitivePlane(Axis const axis, double const pos,
+        Maths::RGB const color) :
         _axis(axis),
         _pos(pos),
         _color(color)
@@ -20,11 +21,11 @@ namespace RayTracer {
         std::optional<HitInfo> info = std::nullopt;
         Maths::Vector3D normal;
 
-        if (_axis == PrimitivePlane::Axis::X)
+        if (_axis == Axis::X)
             normal = Maths::Vector3D(1, 0, 0);
-        if (_axis == PrimitivePlane::Axis::Y)
+        if (_axis == Axis::Y)
             normal = Maths::Vector3D(0, 1, 0);
-        if (_axis == PrimitivePlane::Axis::Z)
+        if (_axis == Axis::Z)
             normal = Maths::Vector3D(0, 0, 1);
         double origin = ray.origin.x * normal.x + ray.origin.y
             * normal.y + ray.origin.z * normal.z;
@@ -59,8 +60,8 @@ namespace RayTracer {
 
     const std::unordered_map<std::string, PrimitivePlane::Axis>
         PrimitivePlane::_axisName = {
-        {"X", PrimitivePlane::Axis::X},
-        {"Y", PrimitivePlane::Axis::Y},
-        {"Z", PrimitivePlane::Axis::Z},
+        {"X", Axis::X},
+        {"Y", Axis::Y},
+        {"Z", Axis::Z},
     };
 }
