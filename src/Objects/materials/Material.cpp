@@ -57,10 +57,5 @@ namespace RayTracer {
     void Material::scatter(Ray &ray, HitInfo &info)
     {
         ray.colorPercentage = _colorPercentage;
-        ray.strenght *= _metallic;
-        ray.origin = info.hitPos;
-        if (ray.strenght)
-            ray.direction = ray.direction - (info.impactNormal * 2 * 
-                (ray.direction.dot(info.impactNormal)));
     }
 }

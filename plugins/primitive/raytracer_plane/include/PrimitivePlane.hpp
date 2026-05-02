@@ -35,10 +35,13 @@ namespace RayTracer {
         [[nodiscard]] double getPos() const;
 
     private:
+        Maths::Vector3D getNormal(double);
+
         Axis _axis;
         double _pos;
         Material _material;
-        
+        Maths::Vector3D _normal;
+
         static const std::unordered_map<std::string, Axis> _axisName;
     };
 };
