@@ -16,6 +16,7 @@
     #include <unordered_map>
 
     #include "Camera.hpp"
+#include "ILightSourcePlugin.hpp"
     #include "IObjectPlugin.hpp"
     #include "LightConfig.hpp"
     #include "Lights.hpp"
@@ -26,8 +27,9 @@ namespace RayTracer {
 
     class ConfigFileParser {
     public:
-        ConfigFileParser(std::string s,
-            std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
+        ConfigFileParser(std::string filepath,
+        std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
+        std::vector<std::unique_ptr<ILightSourcePlugin>> &lightPlugins,
             BuilderMap &materials);
 
         class ParserError : public std::exception {
@@ -50,10 +52,15 @@ namespace RayTracer {
         [[nodiscard]] std::vector<std::unique_ptr<IObject>>
             parsePrimitives() const;
 
+        [[nodiscard]] static std::vector<std::unique_ptr<ILightSource>>
+        parseSimilarLight(
+            libconfig::Setting const &lightsSetting,
+            std::unique_ptr<ILightSourcePlugin> const &plugin);
+
         [[nodiscard]] std::vector<std::unique_ptr<IObject>>
             parseSimilarPrimitives(libconfig::Setting const &element,
                 std::unique_ptr<RayTracer::IObjectPlugin> const &plugins) const;
-        
+
     private:
         static std::unique_ptr<ILightSource> parseDirectionalLight(
             libconfig::Setting const &);
@@ -63,6 +70,7 @@ namespace RayTracer {
 
         std::string _filepath;
         std::vector<std::unique_ptr<IObjectPlugin>> &_primitivePlugins;
+        std::vector<std::unique_ptr<ILightSourcePlugin>> &_lightPlugins;
         std::unordered_map<std::string, Material::Builder> _presetMaterialBuilders;
     };
 }

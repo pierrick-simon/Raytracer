@@ -13,6 +13,7 @@
     #include <optional>
     #include <exception>
     #include <unordered_map>
+
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
@@ -34,7 +35,7 @@ namespace RayTracer {
         void run() noexcept;
         void throwRays() noexcept;
         void setPixel(
-            std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept; 
+            std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept;
 
         static void showHelp();
 
@@ -55,15 +56,18 @@ namespace RayTracer {
         void initVars(std::reference_wrapper<std::queue<std::string>> args);
 
         void loadPrimitivePlugins();
+        void loadLightPlugins();
 
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
         std::string _name;
         Camera _camera;
-        LightConfig _lights;
         std::vector<DLLoader<IObjectPlugin>> _primitivesPluginsLoaders;
         std::vector<std::unique_ptr<IObjectPlugin>> _primitivesPlugins;
         std::vector<std::unique_ptr<IObject>> _objects;
+        std::vector<DLLoader<ILightSourcePlugin>> _lightsPluginsLoaders;
+        std::vector<std::unique_ptr<ILightSourcePlugin>> _lightsPlugins;
+        LightConfig _lights;
 
         static BuilderMap
             _presetMaterialBuilders;
