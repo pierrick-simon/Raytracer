@@ -5,6 +5,7 @@
 ** Material
 */
 
+#include <algorithm>
 #include "RayTracer.hpp"
 #include "Material.hpp"
 #include "Info.hpp"
@@ -60,6 +61,10 @@ namespace RayTracer {
             (double)b.getColor().y / std::numeric_limits<unsigned char>::max();
         _colorPercentage.z = 
             (double)b.getColor().z / std::numeric_limits<unsigned char>::max();
+        _metallic = std::max(0.0, std::min(_metallic, 1.0));
+        _specular = std::max(0.0, std::min(_specular, 1.0));
+        _roughness = std::max(0.0, std::min(_roughness, 1.0));
+        _opacity = std::max(0.0, std::min(_opacity, 1.0));
     }
 
     Ray Material::reflect(const Ray &ray, const HitInfo &hit) const
