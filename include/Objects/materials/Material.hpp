@@ -8,6 +8,7 @@
 #ifndef MATERIAL_HPP
     #define MATERIAL_HPP
 
+    #include <optional>
     #include "Vector3.hpp"
     #include "Ray.hpp"
 
@@ -26,6 +27,7 @@ namespace RayTracer {
                     Builder &specular(double specular);
                     Builder &roughness(double roughness);
                     Builder &opacity(double opacity);
+                    Builder &refraction(double refraction);
 
                     Material build() const {return Material(*this);}
 
@@ -34,25 +36,32 @@ namespace RayTracer {
                     [[nodiscard]] double getSpecular() const {return _specular;}
                     [[nodiscard]] double getRoughness() const {return _roughness;}
                     [[nodiscard]] double getOpacity() const {return _opacity;}
+                    [[nodiscard]] double getRefraction() const {return _refraction;}
 
                 private:
-                    Maths::RGB _color;
+                    Maths::RGB _color = Maths::RGB(255, 255, 255);
                     double _metallic;
                     double _specular;
                     double _roughness;
                     double _opacity;
+                    double _refraction;
             };
 
             explicit Material(Builder const &builder);
 
-            void scatter(Ray &ray, HitInfo &info);
+            Ray reflect(const Ray &ray, const HitInfo &hit) const;
+            std::optional<Ray> through(const Ray &ray, const HitInfo &hit) const;
+            Ray diffuse(const Ray &ray, const HitInfo &hit) const;
 
         private:
+            std::optional<Ray> getTransmitted(const Ray &ray, const HitInfo &hit) const;
+
             Maths::Vector3D _colorPercentage;
             double _metallic;
             double _specular;
             double _roughness;
             double _opacity;
+            double _refraction;
     };
 
 }

@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <filesystem>
+#include <algorithm>
+#include <cmath>
 
 #include "RayTracer.hpp"
 
@@ -46,28 +48,67 @@ namespace RayTracer {
         }
     }
 
+    Maths::Vector3D RayTracer::hitColor(const Ray &ray,
+        const HitInfo &info, std::size_t depth)
+    {
+        Maths::Vector3D color(0,0,0);
+        Ray reflected = info.material.reflect(ray, info);
+        Ray diffuse = info.material.diffuse(ray, info);
+        auto through = info.material.through(ray, info);
+
+        if (reflected.strength > 0)
+            color += parseObject(reflected,  depth + 1);
+        if (diffuse.strength > 0)
+            color += parseObject(diffuse,  depth + 1);
+        if (through.has_value() && through->strength > 0)
+            color += parseObject(*through, depth + 1);
+        return color;
+    }
+
+    std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray)
+    {
+        std::optional<HitInfo> closerHit = std::nullopt;
+    
+        for (auto &object : _objects) {
+            Ray r = ray;
+            auto hit = object->hits(r);
+            if (hit.has_value() && (!closerHit.has_value()
+                || hit->hitDist < closerHit->hitDist)
+                && ray.origin != hit->hitPos)
+                closerHit = hit.value();
+        }
+        return closerHit;
+    }
+
+    Maths::Vector3D RayTracer::parseObject(const Ray &ray, std::size_t depth)
+    {
+        Maths::Vector3D color(0, 0, 0);
+    
+        if (depth >= MAX_DEPTH || ray.strength <= DOUBLE_OFFSET
+            || ray.colorPercentage.length() <= DOUBLE_OFFSET)
+            color = ray.colorPercentage;
+        else {
+            auto closerHit = getHitObject(ray);
+            if (!closerHit.has_value() && depth != 0)
+                color = ray.colorPercentage;
+            if (closerHit.has_value())
+                color = hitColor(ray, *closerHit, depth);
+        }
+        return color;
+    }
+
+
     void RayTracer::setPixel(
         std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept
     {
         double u = (1.0 / resolution.x) * x;
         double v = (1.0 / resolution.y) * y;
-        Ray closerRay{};
-        HitInfo closerHit{.hitDist = -1.0};
-        for (auto &object: _objects) {
-            Ray r = _camera.ray(u, v);
-            auto hit = object->hits(r);
-            if (hit.has_value() && (closerHit.hitDist == -1.0
-                || hit.value().hitDist < closerHit.hitDist)) {
-                closerRay = r;
-                closerHit = hit.value();
-            }
-        }
-        closerHit.material.scatter(closerRay, closerHit);
-        Maths::Vector3D tmp = closerRay.colorPercentage
-            * std::numeric_limits<unsigned char>::max();
-        Maths::RGB color = {(unsigned char)tmp.x,
-            (unsigned char)tmp.y,
-            (unsigned char)tmp.z};
+        Ray ray = _camera.ray(u, v);
+        double max = std::numeric_limits<unsigned char>::max();
+        auto c = parseObject(ray, 0) * max;
+        Maths::RGB color((unsigned char)std::min(c.x, max),
+            (unsigned char)std::min(c.y, max),
+            (unsigned char)std::min(c.z, max));
         _ppm.setPix(x, y, color);
     }
 

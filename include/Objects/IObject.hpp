@@ -16,7 +16,7 @@ namespace RayTracer {
     public:
         virtual ~IObject() = default;
 
-        virtual std::optional<HitInfo> hits(Ray &) = 0;
+        virtual std::optional<HitInfo> hits(const Ray &) = 0;
     };
 }
 
