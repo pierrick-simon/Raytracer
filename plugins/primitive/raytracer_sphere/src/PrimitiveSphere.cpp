@@ -17,7 +17,7 @@ namespace RayTracer {
     {
     }
 
-    HitInfo PrimitiveSphere::computeHitInfos(Ray &ray, double x) noexcept
+    HitInfo PrimitiveSphere::computeHitInfos(const Ray &ray, double x) noexcept
     {
         HitInfo hit;
         hit.hitPos.x = ray.origin.x + (ray.direction.x * x);
@@ -44,7 +44,7 @@ namespace RayTracer {
         return x;
     }
 
-    std::optional<HitInfo> PrimitiveSphere::hits(Ray &ray)
+    std::optional<HitInfo> PrimitiveSphere::hits(const Ray &ray)
     {
         Maths::Vector3D origin = ray.origin - _origin;
 

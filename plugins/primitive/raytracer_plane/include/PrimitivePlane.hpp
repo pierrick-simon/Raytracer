@@ -26,7 +26,7 @@ namespace RayTracer {
 
         PrimitivePlane(Axis axis, double pos, Material material);
 
-        std::optional<HitInfo> hits(Ray &ray) override;
+        std::optional<HitInfo> hits(const Ray &ray) override;
 
         static const std::unordered_map<std::string, Axis> getAxisName()
             {return _axisName;}
