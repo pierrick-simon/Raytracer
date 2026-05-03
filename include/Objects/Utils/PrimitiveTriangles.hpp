@@ -18,6 +18,12 @@ namespace RayTracer {
         PrimitiveTriangle(const Maths::Point3D &a, const Maths::Point3D &b,
             const Maths::Point3D &c, const Material &mat);
 
+        std::optional<HitInfo> fillHitInfo(Ray const &ray, Maths::Vector3D const &AB,
+            Maths::Vector3D const &AC, double t);
+
+        std::optional<HitInfo> rayTriangleMollerTrumboreAlgo(Ray const &ray,
+            Maths::Vector3D AB, Maths::Vector3D AC, Maths::Vector3D h);
+
         std::optional<HitInfo> hits(Ray const &ray);
 
     private:
