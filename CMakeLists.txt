@@ -25,6 +25,7 @@ set(SRCS
     src/Objects/materials/Material.cpp
     src/Objects/materials/PresetMaterialBuilders.cpp
     src/Objects/Rectangle.cpp
+    src/maths/Quaternion.cpp
 )
 
 set(HEADERS
