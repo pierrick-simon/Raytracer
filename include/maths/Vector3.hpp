@@ -87,6 +87,8 @@ namespace Maths {
 
         [[nodiscard]] double dot(const Vector3 &rhs) const;
 
+        [[nodiscard]] Vector3 crossProduct(Vector3 const &rhs) const;
+
         static double distance(const Vector3 &lhs, const Vector3 &rhs);
 
         [[nodiscard]] double getAngle(const Vector3 &other);
@@ -251,6 +253,16 @@ namespace Maths {
     {
         return this->x * rhs.x + this->y * rhs.y + this->
                z * rhs.z;
+    }
+
+    template<typename Type>
+    Vector3<Type> Vector3<Type>::crossProduct(const Vector3 &rhs) const
+    {
+        return Vector3(
+            y * rhs.z - z * rhs.y,
+            z * rhs.x - x * rhs.z,
+            x * rhs.y - y * rhs.x
+        );
     }
 
     template<typename Type>

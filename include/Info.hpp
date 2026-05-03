@@ -19,6 +19,6 @@ namespace RayTracer {
         double hitDist;
         Material material = Material::Builder().build();
     };
-};
+}
 
 #endif
