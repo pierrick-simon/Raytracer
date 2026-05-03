@@ -10,7 +10,7 @@
 #include "TriangleShape.hpp"
 
 namespace RayTracer {
-    std::optional<HitInfo> TriangleShape::hits(Ray &ray) const
+    std::optional<HitInfo> TriangleShape::hits(Ray &ray)
     {
         auto bestT = DBL_MAX;
         HitInfo bestHit{};

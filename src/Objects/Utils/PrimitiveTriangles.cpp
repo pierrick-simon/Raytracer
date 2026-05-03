@@ -14,7 +14,7 @@ namespace RayTracer {
     {
     }
 
-    std::optional<HitInfo> PrimitiveTriangle::hits(Ray &ray) const
+    std::optional<HitInfo> PrimitiveTriangle::hits(Ray &ray)
     {
 
         Maths::Vector3D AB(_a, _b);
@@ -47,7 +47,7 @@ namespace RayTracer {
         hit.hitPos.z = ray.origin.z + ray.direction.z * t;
         hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
         hit.impactNormal = AB.crossProduct(AC).normalized();
-        ray.color = _color;
-        return hit;
+        ray.colorPercentage = Maths::Vector3D(_color.x, _color.y, _color.z);
+        return std::make_optional<HitInfo>(hit);
     }
 }

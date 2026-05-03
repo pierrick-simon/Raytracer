@@ -11,6 +11,7 @@ set(PYRAMID
 set(SHARED_SRCS
     Parser/ParserUtils.cpp
     Objects/Utils/TriangleShape.cpp
+    Objects/materials/Material.cpp
     Objects/Utils/PrimitiveTriangles.cpp
 )
 

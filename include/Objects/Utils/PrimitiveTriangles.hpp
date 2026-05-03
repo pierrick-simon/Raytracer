@@ -18,7 +18,7 @@ namespace RayTracer {
         PrimitiveTriangle(const Maths::Point3D &a, const Maths::Point3D &b,
             const Maths::Point3D &c, const Maths::RGB &color);
 
-        std::optional<HitInfo> hits(Ray &ray) const;
+        std::optional<HitInfo> hits(Ray &ray);
 
     private:
 

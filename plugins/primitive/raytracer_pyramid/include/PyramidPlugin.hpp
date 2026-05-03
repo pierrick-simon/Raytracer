@@ -15,14 +15,14 @@ namespace RayTracer {
     public:
         const std::string_view &getObjectsTypeName() override;
 
-        static std::unique_ptr<IObject> parseTriangle(
-            libconfig::Setting const &element);
+        std::unique_ptr<IObject> parsePyramid(
+            libconfig::Setting const &element, BuilderMap &builders);
 
-        std::vector<std::unique_ptr<IObject>> parseObjects(
-            libconfig::Setting const &element) override;
+        std::unique_ptr<IObject> parseObject(
+            libconfig::Setting const &, BuilderMap &) override;
 
     private:
-        static constexpr std::string_view TRIANGLE_TYPE_NAME = "pyramid";
+        static constexpr std::string_view TRIANGLE_TYPE_NAME = "pyramids";
     };
 } // RayTracer
 
