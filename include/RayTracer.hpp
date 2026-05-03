@@ -26,6 +26,8 @@ namespace RayTracer {
     constexpr std::string_view HELP_FLAG = "--help";
     constexpr std::string_view DISPLAY_FLAG = "--display";
     constexpr std::string_view ARG_EXT = ".cfg";
+    constexpr double DOUBLE_OFFSET = 1e-4;
+    constexpr std::size_t MAX_DEPTH = 100;
 
     class RayTracer {
     public:
@@ -55,6 +57,10 @@ namespace RayTracer {
         void initVars(std::reference_wrapper<std::queue<std::string>> args);
 
         void loadPrimitivePlugins();
+        Maths::Vector3D hitColor(const Ray &ray,
+            const HitInfo &info, std::size_t depth);
+        std::optional<HitInfo> getHitObject(Ray const &ray);
+        Maths::Vector3D parseObject(const Ray &ray, std::size_t depht);
 
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
