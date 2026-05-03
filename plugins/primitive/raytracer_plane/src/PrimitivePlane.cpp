@@ -8,36 +8,48 @@
 #include "PrimitivePlane.hpp"
 
 namespace RayTracer {
-    PrimitivePlane::PrimitivePlane(Axis const axis, double const pos,
-        Maths::RGB const color) :
+    PrimitivePlane::PrimitivePlane(PrimitivePlane::Axis axis,
+        double pos, Material material) :
         _axis(axis),
         _pos(pos),
-        _color(color)
+        _material(material)
     {
+        if (_axis == PrimitivePlane::Axis::X)
+            _normal = Maths::Vector3D(1, 0, 0);
+        if (_axis == PrimitivePlane::Axis::Y)
+            _normal = Maths::Vector3D(0, 1, 0);
+        if (_axis == PrimitivePlane::Axis::Z)
+            _normal = Maths::Vector3D(0, 0, 1);
+    }
+
+    Maths::Vector3D PrimitivePlane::getNormal(double direction)
+    {
+        Maths::Vector3D normal = _normal;
+
+        if (direction > 0)
+            normal *= -1;
+        return normal;
     }
 
     std::optional<HitInfo> PrimitivePlane::hits(Ray &ray)
     {
         std::optional<HitInfo> info = std::nullopt;
-        Maths::Vector3D normal;
 
-        if (_axis == Axis::X)
-            normal = Maths::Vector3D(1, 0, 0);
-        if (_axis == Axis::Y)
-            normal = Maths::Vector3D(0, 1, 0);
-        if (_axis == Axis::Z)
-            normal = Maths::Vector3D(0, 0, 1);
-        double origin = ray.origin.x * normal.x + ray.origin.y
-            * normal.y + ray.origin.z * normal.z;
-        double direction = ray.direction.x * normal.x + ray.direction.y
-            * normal.y + ray.direction.z * normal.z;
+        double origin = ray.origin.x * _normal.x + ray.origin.y
+            * _normal.y + ray.origin.z * _normal.z;
+        double direction = ray.direction.x * _normal.x + ray.direction.y
+            * _normal.y + ray.direction.z * _normal.z;
         if (direction != 0) {
             double t = (_pos - origin) / direction;
             if (t >= 0) {
-                Maths::Point3D point(ray.origin + t);
-                point = Maths::Point3D(point.x * ray.direction.x, point.y
-                    * ray.direction.y, point.z * ray.direction.z);
-                info = {point, normal, Maths::Vector3D(point, ray.origin).length()};
+               Maths::Point3D point(
+                    ray.origin.x + t * ray.direction.x,
+                    ray.origin.y + t * ray.direction.y,
+                    ray.origin.z + t * ray.direction.z
+                );
+                
+                info = {point, getNormal(direction),
+                    Maths::Vector3D(point, ray.origin).length(), _material};
             }
         }
         return info;
@@ -53,15 +65,10 @@ namespace RayTracer {
         return _pos;
     }
 
-    Maths::RGB PrimitivePlane::getColor() const
-    {
-        return _color;
-    }
-
     const std::unordered_map<std::string, PrimitivePlane::Axis>
         PrimitivePlane::_axisName = {
-        {"X", Axis::X},
-        {"Y", Axis::Y},
-        {"Z", Axis::Z},
+        {"X", PrimitivePlane::Axis::X},
+        {"Y", PrimitivePlane::Axis::Y},
+        {"Z", PrimitivePlane::Axis::Z},
     };
 }

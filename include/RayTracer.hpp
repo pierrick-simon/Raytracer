@@ -12,19 +12,20 @@
     #include <string>
     #include <optional>
     #include <exception>
+    #include <unordered_map>
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
     #include "ConfigFileParser.hpp"
+    #include "Material.hpp"
 
 namespace RayTracer {
-
     constexpr int EPISUCCESS = 0;
     constexpr int EPIERROR = 84;
     constexpr std::string_view HELP = "docs/help.txt";
     constexpr std::string_view HELP_FLAG = "--help";
     constexpr std::string_view DISPLAY_FLAG = "--display";
-    constexpr std::string_view ARG_EXT = ".ppm";
+    constexpr std::string_view ARG_EXT = ".cfg";
 
     class RayTracer {
     public:
@@ -32,6 +33,8 @@ namespace RayTracer {
 
         void run() noexcept;
         void throwRays() noexcept;
+        void setPixel(
+            std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept; 
 
         static void showHelp();
 
@@ -62,6 +65,8 @@ namespace RayTracer {
         std::vector<std::unique_ptr<IObjectPlugin>> _primitivesPlugins;
         std::vector<std::unique_ptr<IObject>> _objects;
 
+        static BuilderMap
+            _presetMaterialBuilders;
         static constexpr std::string_view PLUGINS_FOLDER = "plugins";
     };
 };

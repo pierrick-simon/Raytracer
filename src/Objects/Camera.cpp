@@ -60,7 +60,7 @@ namespace RayTracer {
 
     void Camera::updateCamera() noexcept
     {
-        double dist = abs(_resolution.y / (tan(TORAD(_fov / 2.0)) * 2.0));
+        double dist = fabs(_resolution.y / (tan(TORAD(_fov / 2.0)) * 2.0));
         Maths::Point3D rectOrigin(dist, (_resolution.x * -1.0) / 2.0, _resolution.y / 2.0);
         Maths::Point3D pointU(dist, _resolution.x / 2.0, _resolution.y / 2.0);
         Maths::Point3D pointV(dist, (_resolution.x * -1.0) / 2.0, (_resolution.y * -1.0) / 2.0);
@@ -78,7 +78,7 @@ namespace RayTracer {
     Ray Camera::ray(const double &u, const double &v) const noexcept
     {
         Maths::Point3D p = _screen.pointAt(u, v);
-        return {_position, Maths::Vector3D(_position, p), Maths::RGB(255, 255, 255)};
+        return {_position, Maths::Vector3D(_position, p), Maths::Vector3D(1, 1, 1)};
     }
 
 }

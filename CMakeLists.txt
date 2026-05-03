@@ -22,8 +22,10 @@ set(SRCS
     src/Objects/Lights/LightConfig.cpp
     src/Objects/Lights/LightDirectional.cpp
     src/Objects/Lights/PointLight.cpp
+    src/Objects/materials/Material.cpp
+    src/Objects/materials/PresetMaterialBuilders.cpp
     src/Objects/Rectangle.cpp
-        src/Objects/Utils/TriangleShape.cpp
+    src/Objects/Utils/TriangleShape.cpp
     src/Objects/Utils/PrimitiveTriangles.cpp
 )
 
@@ -34,6 +36,7 @@ set(HEADERS
     include/Objects
     include/Parser
     include/Objects/Lights
+    include/Objects/materials
     include/Objects/Utils
 )
 
@@ -75,12 +78,15 @@ add_subdirectory(plugins/primitive/raytracer_plane)
 add_subdirectory(plugins/primitive/raytracer_pyramid)
 
 add_custom_target(display
-        DEPENDS raytracer_sfml)
+    DEPENDS raytracer_sfml)
+
+add_subdirectory(plugins/primitive/raytracer_sphere)
+add_subdirectory(plugins/primitive/raytracer_plane)
 
 add_custom_target(primitives
-        DEPENDS raytracer_sphere
-        DEPENDS raytracer_plane
-        DEPENDS raytracer_pyramid)
+    DEPENDS raytracer_sphere
+        raytracer_plane
+        raytracer_pyramid)
 
 add_custom_target(plugins
     DEPENDS primitives display)

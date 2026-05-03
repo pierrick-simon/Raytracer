@@ -8,13 +8,16 @@
 #ifndef PRIMITIVESPHERE_HPP
     #define PRIMITIVESPHERE_HPP
 
+    #include <memory>
     #include "IObject.hpp"
+    #include "Material.hpp"
     #include "Vector3.hpp"
 
 namespace RayTracer {
     class PrimitiveSphere : public IObject {
     public:
-        PrimitiveSphere(const Maths::Point3D &origin, double radius, Maths::RGB color);
+        PrimitiveSphere(const Maths::Point3D &origin,
+            double radius, Material Material);
 
         std::optional<HitInfo> hits(Ray &ray) override;
 
@@ -22,8 +25,6 @@ namespace RayTracer {
         [[nodiscard]] Maths::Point3D &getOrigin();
 
         [[nodiscard]] double getRadius() const;
-
-        [[nodiscard]] Maths::RGB getColor() const;
 
     private:
 
@@ -33,7 +34,7 @@ namespace RayTracer {
 
         Maths::Point3D _origin;
         double _radius;
-        Maths::RGB _color;
+        Material _material;
     };
 };
 
