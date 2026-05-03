@@ -7,11 +7,11 @@
 
 #include "IObjectPlugin.hpp"
 #include "RayTracer.hpp"
-#include "TrianglePlugin.hpp"
+#include "PyramidPlugin.hpp"
 
 extern "C" RayTracer::IObjectPlugin *rayTracerLibEntryPoint()
 {
-    return new RayTracer::TrianglePlugin();
+    return new RayTracer::PyramidPlugin();
 }
 
 extern "C" RayTracer::LibType rayTracerType()

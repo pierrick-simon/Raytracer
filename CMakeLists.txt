@@ -23,6 +23,8 @@ set(SRCS
     src/Objects/Lights/LightDirectional.cpp
     src/Objects/Lights/PointLight.cpp
     src/Objects/Rectangle.cpp
+        src/Objects/Utils/TriangleShape.cpp
+    src/Objects/Utils/PrimitiveTriangles.cpp
 )
 
 set(HEADERS
@@ -32,6 +34,7 @@ set(HEADERS
     include/Objects
     include/Parser
     include/Objects/Lights
+    include/Objects/Utils
 )
 
 include_directories(${HEADERS})
@@ -69,7 +72,7 @@ list(TRANSFORM SRCS PREPEND ${CMAKE_SOURCE_DIR}/)
 add_subdirectory(plugins/display/raytracer_sfml)
 add_subdirectory(plugins/primitive/raytracer_sphere)
 add_subdirectory(plugins/primitive/raytracer_plane)
-add_subdirectory(plugins/primitive/raytracer_triangle)
+add_subdirectory(plugins/primitive/raytracer_pyramid)
 
 add_custom_target(display
         DEPENDS raytracer_sfml)
@@ -77,7 +80,7 @@ add_custom_target(display
 add_custom_target(primitives
         DEPENDS raytracer_sphere
         DEPENDS raytracer_plane
-        DEPENDS raytracer_triangle)
+        DEPENDS raytracer_pyramid)
 
 add_custom_target(plugins
     DEPENDS primitives display)

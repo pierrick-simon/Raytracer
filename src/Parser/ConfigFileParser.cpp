@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <iostream>
 #include <ranges>
 
 #include "DirectionalLight.hpp"

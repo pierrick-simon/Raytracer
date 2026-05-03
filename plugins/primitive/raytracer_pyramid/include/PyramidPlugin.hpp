@@ -5,13 +5,13 @@
 ** ${descriptor}
 */
 
-#ifndef TRIANGLEPLUGIN_HPP
-    #define TRIANGLEPLUGIN_HPP
+#ifndef PYRAMIDPLUGIN_HPP
+    #define PYRAMIDPLUGIN_HPP
 
     #include "IObjectPlugin.hpp"
 
 namespace RayTracer {
-    class TrianglePlugin : public IObjectPlugin {
+    class PyramidPlugin : public IObjectPlugin {
     public:
         const std::string_view &getObjectsTypeName() override;
 
@@ -22,7 +22,7 @@ namespace RayTracer {
             libconfig::Setting const &element) override;
 
     private:
-        static constexpr std::string_view TRIANGLE_TYPE_NAME = "triangles";
+        static constexpr std::string_view TRIANGLE_TYPE_NAME = "pyramid";
     };
 } // RayTracer
 
