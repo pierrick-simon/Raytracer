@@ -23,7 +23,7 @@ namespace RayTracer {
         TriangleShape(const T &triangles)
             : _triangles(triangles.begin(), triangles.end()) {}
 
-        std::optional<HitInfo> hits(Ray &ray);
+        std::optional<HitInfo> hits(Ray const &ray);
 
     private:
         std::vector<PrimitiveTriangle> _triangles;

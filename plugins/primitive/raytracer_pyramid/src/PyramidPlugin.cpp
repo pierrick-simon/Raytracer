@@ -27,12 +27,12 @@ namespace RayTracer {
         std::cout << "Loading pyramids..." << std::endl;
 
         Maths::Point3D origin = ParserUtils::parseVector3D(element["origin"]);
-        Maths::RGB color = ParserUtils::getBuilder(element, builders).getColor();
+        Material mat = ParserUtils::getBuilder(element, builders).build();
         element.lookupValue("h", h);
         element.lookupValue("w", w);
         element.lookupValue("l", l);
 
-        return std::make_unique<Pyramid>(origin, h, w, l, color);
+        return std::make_unique<Pyramid>(origin, h, w, l, mat);
     }
     std::unique_ptr<IObject> PyramidPlugin::parseObject(libconfig::Setting const &element, BuilderMap &builders)
     {

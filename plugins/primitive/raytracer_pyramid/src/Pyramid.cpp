@@ -10,11 +10,11 @@
 namespace RayTracer {
     Pyramid::Pyramid(const Maths::Point3D &origin,
         double height, double width, double length,
-        Maths::RGB const color) : _origin(origin),
+        Material material) : _origin(origin),
         _height(height),
         _width(width),
         _length(length),
-        _color(color)
+        _material(material)
     {
         Maths::Point3D apex(origin.x, origin.y + height, origin.z);
         Maths::Point3D A(origin.x - width / 2, origin.y, origin.z - length / 2);
@@ -23,16 +23,16 @@ namespace RayTracer {
         Maths::Point3D D(origin.x - width / 2, origin.y, origin.z + length / 2);
 
         _pyramid = TriangleShape({
-            PrimitiveTriangle(A, B, apex, color),
-            PrimitiveTriangle(B, C, apex, color),
-            PrimitiveTriangle(C, D, apex, color),
-            PrimitiveTriangle(D, A, apex, color),
-            PrimitiveTriangle(A, C, B, color),
-            PrimitiveTriangle(A, D, C, color),
+            PrimitiveTriangle(A, B, apex, material),
+            PrimitiveTriangle(B, C, apex, material),
+            PrimitiveTriangle(C, D, apex, material),
+            PrimitiveTriangle(D, A, apex, material),
+            PrimitiveTriangle(A, C, B, material),
+            PrimitiveTriangle(A, D, C, material),
         });
     }
 
-    std::optional<HitInfo> Pyramid::hits(Ray &ray)
+    std::optional<HitInfo> Pyramid::hits(Ray const &ray)
     {
         return _pyramid.hits(ray);
     }
@@ -47,9 +47,9 @@ namespace RayTracer {
         return _origin;
     }
 
-    Maths::RGB Pyramid::getColor() const
+    Material Pyramid::getMaterial() const
     {
-        return _color;
+        return _material;
     }
 
     double Pyramid::getHeight() const

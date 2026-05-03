@@ -16,13 +16,13 @@ namespace RayTracer {
     class Pyramid : public IObject {
     public:
         Pyramid(const Maths::Point3D &origin, double height,
-            double width, double length, Maths::RGB color);
+            double width, double length, Material material);
 
-        std::optional<HitInfo> hits(Ray &ray) override;
+        std::optional<HitInfo> hits(Ray const &ray) override;
 
         [[nodiscard]] const Maths::Point3D &getOrigin() const;
         [[nodiscard]] Maths::Point3D &getOrigin();
-        [[nodiscard]] Maths::RGB getColor() const;
+        [[nodiscard]] Material getMaterial() const;
         [[nodiscard]] double getHeight() const;
         [[nodiscard]] double getWidth() const;
         [[nodiscard]] double getLength() const;
@@ -32,7 +32,7 @@ namespace RayTracer {
         double _height;
         double _width;
         double _length;
-        Maths::RGB _color;
+        Material _material;
         TriangleShape _pyramid;
     };
 };

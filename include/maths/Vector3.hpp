@@ -87,7 +87,7 @@ namespace Maths {
 
         [[nodiscard]] double dot(const Vector3 &rhs) const;
 
-        [[nodiscard]] Vector3 crossProduct(Vector3 const &rhs);
+        [[nodiscard]] Vector3 crossProduct(Vector3 const &rhs) const;
 
         static double distance(const Vector3 &lhs, const Vector3 &rhs);
 
@@ -256,7 +256,7 @@ namespace Maths {
     }
 
     template<typename Type>
-    Vector3<Type> Vector3<Type>::crossProduct(const Vector3 &rhs)
+    Vector3<Type> Vector3<Type>::crossProduct(const Vector3 &rhs) const
     {
         return Vector3(
             y * rhs.z - z * rhs.y,
