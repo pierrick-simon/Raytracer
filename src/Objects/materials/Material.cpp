@@ -66,8 +66,8 @@ namespace RayTracer {
     {
         Ray reflected = ray;
 
-        reflected.strenght *= _metallic + (1.0 - _metallic) * _specular;
-        if (reflected.strenght >= DOUBLE_OFFSET) {
+        reflected.strength *= _metallic + (1.0 - _metallic) * _specular;
+        if (reflected.strength >= DOUBLE_OFFSET) {
             Maths::Vector3D perfectReflect = ray.direction
                 - hit.impactNormal * 2.0 * ray.direction.dot(hit.impactNormal);
             reflected.direction = perfectReflect * (1.0 - _roughness);
@@ -99,7 +99,7 @@ namespace RayTracer {
                                 + normal * (refraction * cosI - cosT);
             transmitted->direction = transmitted->direction.normalized();
             transmitted->colorPercentage *= _colorPercentage * (1.0 - _opacity);
-            transmitted->strenght *= (1.0 - _opacity);
+            transmitted->strength *= (1.0 - _opacity);
             transmitted->origin = hit.hitPos + hit.impactNormal * DOUBLE_OFFSET;
         }
         return transmitted;
@@ -108,9 +108,9 @@ namespace RayTracer {
     std::optional<Ray> Material::through(const Ray &ray, const HitInfo &hit) const
     {
         std::optional<Ray> transmitted = ray;
-        transmitted->strenght *= (1.0 - _opacity);
+        transmitted->strength *= (1.0 - _opacity);
         if (!(_opacity >= 1.0 || _refraction == 0
-            || transmitted->strenght < DOUBLE_OFFSET))
+            || transmitted->strength < DOUBLE_OFFSET))
             transmitted = std::nullopt;
         else 
             transmitted = getTransmitted(ray, hit);
@@ -121,8 +121,8 @@ namespace RayTracer {
     {
         Ray diffused = ray;
 
-        diffused.strenght *= (1.0 - _metallic) * (1.0 - _specular) * _roughness;
-        if (diffused.strenght >= DOUBLE_OFFSET) {
+        diffused.strength *= (1.0 - _metallic) * (1.0 - _specular) * _roughness;
+        if (diffused.strength >= DOUBLE_OFFSET) {
             diffused.direction = hit.impactNormal.normalized();
             diffused.colorPercentage *= _colorPercentage;
             diffused.origin = hit.hitPos + hit.impactNormal * DOUBLE_OFFSET;

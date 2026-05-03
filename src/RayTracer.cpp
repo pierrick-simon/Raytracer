@@ -56,11 +56,11 @@ namespace RayTracer {
         Ray diffuse = info.material.diffuse(ray, info);
         auto through = info.material.through(ray, info);
 
-        if (reflected.strenght > 0)
+        if (reflected.strength > 0)
             color += parseObject(reflected,  depth + 1);
-        if (diffuse.strenght > 0)
+        if (diffuse.strength > 0)
             color += parseObject(diffuse,  depth + 1);
-        if (through.has_value() && through->strenght > 0)
+        if (through.has_value() && through->strength > 0)
             color += parseObject(*through, depth + 1);
         return color;
     }
@@ -84,7 +84,7 @@ namespace RayTracer {
     {
         Maths::Vector3D color(0, 0, 0);
     
-        if (depth >= MAX_DEPTH || ray.strenght <= DOUBLE_OFFSET
+        if (depth >= MAX_DEPTH || ray.strength <= DOUBLE_OFFSET
             || ray.colorPercentage.length() <= DOUBLE_OFFSET)
             color = ray.colorPercentage;
         else {
