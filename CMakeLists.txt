@@ -18,13 +18,13 @@ set(SRCS
     src/Parser/ConfigFileParser.cpp
     src/Parser/ParserUtils.cpp
     src/Objects/Camera.cpp
-    src/Objects/Lights/Lights.cpp
     src/Objects/Lights/LightConfig.cpp
-    src/Objects/Lights/LightDirectional.cpp
-    src/Objects/Lights/PointLight.cpp
+    src/Objects/Lights/ALightSource.cpp
     src/Objects/materials/Material.cpp
     src/Objects/materials/PresetMaterialBuilders.cpp
     src/Objects/Rectangle.cpp
+    src/Objects/Utils/TriangleShape.cpp
+    src/Objects/Utils/PrimitiveTriangles.cpp
     src/maths/Quaternion.cpp
 )
 
@@ -36,6 +36,7 @@ set(HEADERS
     include/Parser
     include/Objects/Lights
     include/Objects/materials
+    include/Objects/Utils
 )
 
 include_directories(${HEADERS})
@@ -71,16 +72,24 @@ add_custom_target(tests_run
 list(TRANSFORM SRCS PREPEND ${CMAKE_SOURCE_DIR}/)
 
 add_subdirectory(plugins/display/raytracer_sfml)
+add_subdirectory(plugins/primitive/raytracer_sphere)
+add_subdirectory(plugins/primitive/raytracer_plane)
+add_subdirectory(plugins/primitive/raytracer_pyramid)
 
 add_custom_target(display
     DEPENDS raytracer_sfml)
 
-add_subdirectory(plugins/primitive/raytracer_sphere)
-add_subdirectory(plugins/primitive/raytracer_plane)
-
 add_custom_target(primitives
     DEPENDS raytracer_sphere
-        raytracer_plane)
+        raytracer_plane
+        raytracer_pyramid)
+
+add_subdirectory(plugins/light/raytracer_point_light)
+add_subdirectory(plugins/light/raytracer_spot_light)
+
+add_custom_target(lights
+        DEPENDS raytracer_point_light
+            raytracer_spot_light)
 
 add_custom_target(plugins
-    DEPENDS primitives display)
+    DEPENDS primitives display lights)

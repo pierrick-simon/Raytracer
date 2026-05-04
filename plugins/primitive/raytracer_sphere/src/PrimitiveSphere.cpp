@@ -17,13 +17,18 @@ namespace RayTracer {
     {
     }
 
-    HitInfo PrimitiveSphere::computeHitInfos(Ray &ray, double x) noexcept
+    HitInfo PrimitiveSphere::computeHitInfos(const Ray &ray, double x) noexcept
     {
         HitInfo hit;
         hit.hitPos.x = ray.origin.x + (ray.direction.x * x);
         hit.hitPos.y = ray.origin.y + (ray.direction.y * x);
         hit.hitPos.z = ray.origin.z + (ray.direction.z * x);
         hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
+        hit.impactNormal.x = (hit.hitPos.x - _origin.x) / _radius;
+        hit.impactNormal.y = (hit.hitPos.y - _origin.y) / _radius;
+        hit.impactNormal.z = (hit.hitPos.z - _origin.z) / _radius;
+        if (ray.direction.dot(hit.impactNormal) > 0)
+            hit.impactNormal *= -1;
         hit.material = _material;
         return hit;
     }
@@ -39,18 +44,16 @@ namespace RayTracer {
         return x;
     }
 
-    std::optional<HitInfo> PrimitiveSphere::hits(Ray &ray)
+    std::optional<HitInfo> PrimitiveSphere::hits(const Ray &ray)
     {
-        ray.origin.x -= _origin.x;
-        ray.origin.y -= _origin.y;
-        ray.origin.z -= _origin.z;
+        Maths::Vector3D origin = ray.origin - _origin;
 
         double a = (ray.direction.x * ray.direction.x) + (
                        ray.direction.y * ray.direction.y) + (
                        ray.direction.z * ray.direction.z);
-        double b = ray.direction.dot(Maths::Vector3D(ray.origin)) * 2;
-        double c = (ray.origin.x * ray.origin.x) + (ray.origin.y * ray.origin.y)
-                   + (ray.origin.z * ray.origin.z) - (_radius * _radius);
+        double b = ray.direction.dot(Maths::Vector3D(origin)) * 2;
+        double c = (origin.x * origin.x) + (origin.y * origin.y)
+                   + (origin.z * origin.z) - (_radius * _radius);
         double delta = (b * b) - (4 * a * c);
         if (delta < 0)
             return {};

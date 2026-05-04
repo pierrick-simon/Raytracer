@@ -19,7 +19,7 @@ namespace RayTracer {
         PrimitiveSphere(const Maths::Point3D &origin,
             double radius, Material Material);
 
-        std::optional<HitInfo> hits(Ray &ray) override;
+        std::optional<HitInfo> hits(const Ray &ray) override;
 
         [[nodiscard]] const Maths::Point3D &getOrigin() const;
         [[nodiscard]] Maths::Point3D &getOrigin();
@@ -28,7 +28,7 @@ namespace RayTracer {
 
     private:
 
-        HitInfo computeHitInfos(Ray &, double) noexcept;
+        HitInfo computeHitInfos(const Ray &, double) noexcept;
         double solveQuadratic(double a, double b,
             double c, double delta) noexcept;
 

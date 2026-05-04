@@ -9,29 +9,28 @@
 #include <fstream>
 #include <algorithm>
 #include <filesystem>
+#include <iostream>
 #include <ranges>
 
 #include "ConfigFileParser.hpp"
-#include "DirectionalLight.hpp"
 #include "ParserUtils.hpp"
-#include "PointLight.hpp"
 
 namespace RayTracer {
-    ConfigFileParser::ConfigFileParser(std::string s,
-        std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
-        BuilderMap &materials
-    ) :
-        _primitivePlugins(primitivePlugins)
+    ConfigFileParser::ConfigFileParser(std::string filepath, std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
+        std::vector<std::unique_ptr<ILightSourcePlugin>> &lightPlugins,
+        BuilderMap &materials) :
+        _primitivePlugins(primitivePlugins),
+        _lightPlugins(lightPlugins)
     {
-        std::fstream file(s);
+        std::fstream file(filepath);
 
-        if (!s.ends_with(FILE_EXT)
-            || s.size() <= FILE_EXT.size() + 1)
+        if (!filepath.ends_with(FILE_EXT)
+            || filepath.size() <= FILE_EXT.size() + 1)
             throw ParserError("Wrong Extenstion.");
         if (!file.is_open())
             throw ParserError("No Such File.");
-        _filepath = {std::move(s)};
-        for (auto builder: materials)
+        _filepath = {std::move(filepath)};
+        for (const auto& builder: materials)
             _presetMaterialBuilders.insert(builder);
         libconfig::Config cfg;
         cfg.readFile(_filepath.c_str());
@@ -40,7 +39,7 @@ namespace RayTracer {
             parseMaterials(root["materials"]);
     }
 
-    ConfigFileParser::ParserError::ParserError(std::string s):
+    ConfigFileParser::ParserError::ParserError(std::string s) :
         _err(std::move(s))
     {
     }
@@ -74,36 +73,6 @@ namespace RayTracer {
         return Camera{resolution, position, rotation, fov};
     }
 
-    std::unique_ptr<ILightSource> ConfigFileParser::parseDirectionalLight(
-        libconfig::Setting const &element)
-    {
-        int x = 0;
-        int y = 0;
-        int z = 0;
-
-        for (int i = 0; i < element.getLength(); ++i) {
-            element[i].lookupValue("x", x);
-            element[i].lookupValue("y", y);
-            element[i].lookupValue("z", z);
-        }
-        return std::make_unique<DirectionalLight>(x, y, z);
-    }
-
-    std::unique_ptr<ILightSource> ConfigFileParser::parsePointLight(
-        libconfig::Setting const &element)
-    {
-        int x = 0;
-        int y = 0;
-        int z = 0;
-
-        for (int i = 0; i < element.getLength(); ++i) {
-            element[i].lookupValue("x", x);
-            element[i].lookupValue("y", y);
-            element[i].lookupValue("z", z);
-        }
-        return std::make_unique<PointLight>(x, y, z);
-    }
-
     LightConfig ConfigFileParser::parseLights() const
     {
         libconfig::Config cfg;
@@ -114,15 +83,29 @@ namespace RayTracer {
         double ambient = ParserUtils::parseDouble(root, "ambient");
         double diffuse = ParserUtils::parseDouble(root, "diffuse");
         std::vector<std::unique_ptr<ILightSource>> lights;
-        lights.push_back(parsePointLight(root["point"]));
-        lights.push_back(parseDirectionalLight(root["directional"]));
+        root.lookupValue("ambient", ambient);
+        root.lookupValue("diffuse", diffuse);
+
+        for (const auto &light: root) {
+            auto it = std::ranges::find_if(this->_lightPlugins,
+                [&](auto &plugin) {
+                    return plugin->getLightsTypeName() == light.getName();
+                });
+
+            if (it != this->_lightPlugins.end()) {
+                auto pluginObjects = parseSimilarLight(
+                    light, *it);
+                std::ranges::move(pluginObjects, std::back_inserter(lights));
+            }
+        }
+
         return LightConfig{ambient, diffuse, std::move(lights)};
     }
 
     void ConfigFileParser::parseMaterials(libconfig::Setting const &element)
     {
         for (int i = 0; i < element.getLength(); ++i) {
-            Material::Builder builder;
+            Material::Builder builder{};
             if (element[i].exists("type")
                 && _presetMaterialBuilders.find(element[i]["type"])
                     != _presetMaterialBuilders.end())
@@ -143,9 +126,10 @@ namespace RayTracer {
 
         const libconfig::Setting &root = cfg.getRoot()["primitives"];
         for (const auto &primitive: root) {
-            auto it = std::ranges::find_if(this->_primitivePlugins, [&](auto &plugin) {
-                return plugin->getObjectsTypeName() == primitive.getName();
-            });
+            auto it = std::ranges::find_if(this->_primitivePlugins,
+                [&](auto &plugin) {
+                    return plugin->getObjectsTypeName() == primitive.getName();
+                });
 
             if (it != this->_primitivePlugins.end()) {
                 auto pluginObjects = parseSimilarPrimitives(
@@ -156,9 +140,19 @@ namespace RayTracer {
         return objects;
     }
 
+    std::vector<std::unique_ptr<ILightSource>>
+    ConfigFileParser::parseSimilarLight(libconfig::Setting const &lightsSetting,
+        std::unique_ptr<ILightSourcePlugin> const &plugin)
+    {
+        std::vector<std::unique_ptr<ILightSource>> lights;
+        for (const auto &light: lightsSetting)
+            lights.emplace_back(plugin->parseLight(light));
+        return std::move(lights);
+    }
+
     std::vector<std::unique_ptr<IObject>> ConfigFileParser::
         parseSimilarPrimitives(libconfig::Setting const &element,
-            std::unique_ptr<RayTracer::IObjectPlugin> const &plugins) const
+            std::unique_ptr<IObjectPlugin> const &plugins) const
     {
         int count = element.getLength();
         std::vector<std::unique_ptr<IObject>> object;
