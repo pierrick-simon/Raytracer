@@ -45,6 +45,7 @@ namespace Maths {
          */
         Quaternion &operator*=(const Quaternion &rhs);
 
+
         /**
          * When normalized, a quaternion keeps the same rotation, but its
          * magnitude is 1.0.
@@ -111,6 +112,8 @@ namespace Maths {
     private:
 
         Quaternion(double w, double x, double y, double z);
+
+        [[nodiscard]] double magnitude() const;
 
         double _w;
         double _x;

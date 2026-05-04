@@ -43,6 +43,35 @@ namespace Maths {
         return *this;
     }
 
+    Quaternion Quaternion::normalized() const
+    {
+        double magnitude = this->magnitude();
+
+        if (magnitude < 1e-4)
+            return identity();
+
+        return {
+            this->_w / magnitude,
+            this->_x / magnitude,
+            this->_y / magnitude,
+            this->_z / magnitude,
+        };
+    }
+
+    Quaternion &Quaternion::normalize()
+    {
+        double magnitude = this->magnitude();
+
+        if (magnitude < 1e-4)
+            return *this;
+
+        this->_w /= magnitude;
+        this->_x /= magnitude;
+        this->_y /= magnitude;
+        this->_z /= magnitude;
+        return *this;
+    }
+
     Quaternion Quaternion::inversed() const
     {
         return {this->_w, -this->_x, -this->_y, -this->_z};
@@ -91,5 +120,13 @@ namespace Maths {
         _y(y),
         _z(z)
     {
+    }
+
+    double Quaternion::magnitude() const
+    {
+        return std::sqrt(
+            this->_w * this->_w + this->_x * this->_x +
+            this->_y * this->_y + this->_z * this->_z
+        );
     }
 } // Maths
