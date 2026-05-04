@@ -4,7 +4,7 @@ project(RayTracer)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SPHERE
+set(PLANE
     raytracer_plane
 )
 
@@ -21,6 +21,6 @@ set(SRCS_PLANE
     src/PlanePlugin.cpp
 )
 
-add_library(${SPHERE} SHARED ${SRCS_PLANE} ${SHARED_SRCS})
-set_target_properties(${SPHERE} PROPERTIES PREFIX "")
-target_include_directories(${SPHERE} PRIVATE include)
+add_library(${PLANE} SHARED ${SRCS_PLANE} ${SHARED_SRCS})
+set_target_properties(${PLANE} PROPERTIES PREFIX "")
+target_include_directories(${PLANE} PRIVATE include)

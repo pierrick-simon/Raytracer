@@ -78,7 +78,7 @@ namespace RayTracer {
     Ray Camera::ray(const double &u, const double &v) const noexcept
     {
         Maths::Point3D p = _screen.pointAt(u, v);
-        return {_position, Maths::Vector3D(_position, p), Maths::Vector3D(1, 1, 1)};
+        return {_position, Maths::Vector3D(_position, p), Maths::Vector3D(1, 1, 1), 1};
     }
 
 }

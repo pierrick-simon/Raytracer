@@ -9,6 +9,7 @@
 #include <fstream>
 #include <algorithm>
 #include <filesystem>
+#include <iostream>
 #include <ranges>
 
 #include "ConfigFileParser.hpp"

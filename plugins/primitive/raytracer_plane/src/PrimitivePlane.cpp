@@ -31,7 +31,7 @@ namespace RayTracer {
         return normal;
     }
 
-    std::optional<HitInfo> PrimitivePlane::hits(Ray &ray)
+    std::optional<HitInfo> PrimitivePlane::hits(const Ray &ray)
     {
         std::optional<HitInfo> info = std::nullopt;
 
@@ -47,7 +47,6 @@ namespace RayTracer {
                     ray.origin.y + t * ray.direction.y,
                     ray.origin.z + t * ray.direction.z
                 );
-                
                 info = {point, getNormal(direction),
                     Maths::Vector3D(point, ray.origin).length(), _material};
             }

@@ -77,6 +77,8 @@ namespace RayTracer {
             builder.roughness(ParserUtils::parseDouble(element, "roughness"));
         if (element.exists("opacity"))
             builder.opacity(ParserUtils::parseDouble(element, "opacity"));
+        if (element.exists("refraction"))
+            builder.refraction(ParserUtils::parseDouble(element, "refraction"));
         return builder;
     }
 
