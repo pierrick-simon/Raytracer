@@ -8,7 +8,7 @@ then
 fi
 if [ $# == 0 ] || [ $1 == "all" ]
 then
-    make -C $BUILD_DIR
+    make -C $BUILD_DIR -j
 elif [ $# != 1 ]
 then
     echo "Usage: $0 [rule]"
@@ -19,5 +19,5 @@ elif [ $1 == "installscript" ]
 then
     sudo cp cbuild /usr/bin/
 else
-    make $1 -C $BUILD_DIR
+    make $1 -C $BUILD_DIR -j
 fi

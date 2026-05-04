@@ -130,7 +130,7 @@ namespace RayTracer {
         diffused.strength *= (1.0 - _metallic) * (1.0 - _specular) * _roughness;
         if (diffused.strength >= DOUBLE_OFFSET) {
             diffused.direction = hit.impactNormal.normalized();
-            diffused.colorPercentage += _colorPercentage;
+            diffused.colorPercentage = _colorPercentage;
             diffused.origin = hit.hitPos + hit.impactNormal * DOUBLE_OFFSET;
         }
         return diffused;

@@ -63,6 +63,8 @@ namespace RayTracer {
         Maths::Vector3D hitColor(const Ray &ray,
             HitInfo &info, std::size_t depth);
         std::optional<HitInfo> getHitObject(Ray const &ray);
+        Maths::Vector3D getSpecular(const Ray &ray,
+            const Ray &lihtRay, HitInfo &info, Maths::Vector3D lightColor);
         Maths::Vector3D parseObject(const Ray &ray, std::size_t depht);
         Maths::Vector3D parseLight(Maths::Vector3D color,
             const Ray &ray, HitInfo &info);
