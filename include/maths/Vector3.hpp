@@ -8,6 +8,7 @@
 #ifndef VECTOR3_HPP
     #define VECTOR3_HPP
 
+    #include <algorithm>
     #include <cmath>
     #include <ostream>
 
@@ -90,6 +91,9 @@ namespace Maths {
         [[nodiscard]] Vector3 crossProduct(Vector3 const &rhs) const;
 
         static double distance(const Vector3 &lhs, const Vector3 &rhs);
+
+        static Vector3 lerp(const Vector3 &min, const Vector3 &max, double t);
+        static Vector3 clampedLerp(const Vector3 &min, const Vector3 &max, double t);
 
         [[nodiscard]] double getAngle(const Vector3 &other);
 
@@ -274,6 +278,24 @@ namespace Maths {
     }
 
     template<typename Type>
+    Vector3<Type> Vector3<Type>::lerp(const Vector3 &min, const Vector3 &max,
+        double t)
+    {
+        return Vector3(
+                std::lerp(min.x, max.x, t),
+                std::lerp(min.y, max.y, t),
+                std::lerp(min.z, max.z, t)
+            );
+    }
+
+    template<typename Type>
+    Vector3<Type> Vector3<Type>::clampedLerp(const Vector3 &min,
+        const Vector3 &max, double t)
+    {
+        return lerp(min, max, std::clamp(t, 0.0, 1.0));
+    }
+
+    template<typename Type>
     double Vector3<Type>::getAngle(const Vector3 &other)
     {
         double angle = this->dot(other) / (this->length() * other.length());
@@ -291,6 +313,6 @@ template<typename T>
 std::ostream &operator<<(std::ostream &os, const Maths::Vector3<T> &v) {
     os << "(" << v.x << ";" << v.y << ";" << v.z << ")";
     return os;
-} 
+}
 
 #endif

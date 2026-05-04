@@ -12,6 +12,7 @@ namespace RayTracer {
     enum class LibType {
         GRAPHICS,
         PRIMITIVE,
+        LIGHT_SOURCE
     };
 }
 
