@@ -9,6 +9,13 @@
     #define QUATERNION_HPP
 
 namespace Maths {
+    /**
+     * A Rotation Quaternion is a mechanism for representing rotations in three
+     * dimensions.
+     *
+     * It uses 4 real values where 3 represents a direction and the last value
+     * represents the rotation around that direction.
+     */
     class Quaternion {
     public:
         Quaternion() = delete;
@@ -63,19 +70,35 @@ namespace Maths {
          * don't want to modify it.
          * @return The normalized version of the current Quaternion.
          * @see Quaternion::normalized()
-         * @i
          */
         Quaternion &normalize();
 
         /**
+         * This method doesn't modify the current Quaternion. Use inverse() if
+         * you want to modify it.
+         * @return The inverse of the current Quaternion.
+         * @see Quaternion::inverse()
+         */
+        [[nodiscard]] Quaternion inversed() const;
+
+        /**
+         * Inverses the current Quaternion.
+         * This method modifies the current Quaternion. Use inversed() if
+         * you don't want to modify it.
+         * @return The inverse of the current Quaternion.
+         * @see Quaternion::inversed()
+         */
+        Quaternion &inverse();
+
+        /**
          * Converts an input Euler angle rotation specified as three doubles to
          * a Quaternion.
-         * @param x Rotation in degrees around the X axis
-         * @param y Rotation in degrees around the Y axis
-         * @param z Rotation in degrees around the Z axis
+         * @param u Roll (Z axis) angle
+         * @param v Pitch (Y axis) angle
+         * @param w Yaw (X axis) angle
          * @return A Quaternion converted from an Euler angle rotation.
          */
-        static Quaternion fromEuler(double x, double y, double z);
+        static Quaternion fromEuler(double u, double v, double w);
 
 
         /**
@@ -86,6 +109,9 @@ namespace Maths {
          */
         static Quaternion identity();
     private:
+
+        Quaternion(double w, double x, double y, double z);
+
         double _w;
         double _x;
         double _y;
