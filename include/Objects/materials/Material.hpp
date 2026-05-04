@@ -53,6 +53,8 @@ namespace RayTracer {
             std::optional<Ray> through(const Ray &ray, const HitInfo &hit) const;
             Ray diffuse(const Ray &ray, const HitInfo &hit) const;
 
+            Ray getReflectRay(const Ray &ray, const HitInfo &hit) const;
+
             Maths::Vector3D getColorPercentage() const
                 {return _colorPercentage;}
             double getSpecular() const {return _specular;}

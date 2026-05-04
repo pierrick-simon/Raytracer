@@ -85,19 +85,10 @@ namespace RayTracer {
     Maths::Vector3D RayTracer::hitColor(const Ray &ray,
         HitInfo &info, std::size_t depth)
     {
-        Maths::Vector3D color(0,0,0);
-        if (ray.direction.dot(info.impactNormal) > 0)
-                info.impactNormal *= -1;
-        Ray reflected = info.material.reflect(ray, info);
-        Ray diffuse = info.material.diffuse(ray, info);
-        auto through = info.material.through(ray, info);
-        // if (reflected.strength > 0)
-        //     color += parseObject(reflected, depth + 1);
-        // if (diffuse.strength > 0)
-        //     color += parseLight(diffuse.colorPercentage, ray, info);
-        // if (through.has_value() && through->strength > 0)
-        //     color += parseObject(*through, depth + 1);
-        return parseLight(ray, info);
+        Maths::Vector3D localColor = parseLight(ray, info);
+        Maths::Vector3D reflectColor = parseObject(info.material.getReflectRay(ray, info), depth + 1);
+
+        return localColor;
     }
 
     std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray)
@@ -123,8 +114,8 @@ namespace RayTracer {
             color = color;
         else {
             auto closerHit = getHitObject(ray);
-            if (!closerHit.has_value() && depth != 0)
-                color = ray.colorPercentage;
+            // if (!closerHit.has_value() && depth != 0)
+            //     color = ray.colorPercentage;
             if (closerHit.has_value())
                 color = hitColor(ray, *closerHit, depth);
         }

@@ -135,5 +135,12 @@ namespace RayTracer {
         }
         return diffused;
     }
+
+    Ray Material::getReflectRay(const Ray &ray, const HitInfo &hit) const
+    {
+        auto reflect = ray.direction
+                - hit.impactNormal * 2.0 * ray.direction.dot(hit.impactNormal);
+        return {reflect, hit.hitPos + hit.impactNormal * DOUBLE_OFFSET};
+    }
     
 }
