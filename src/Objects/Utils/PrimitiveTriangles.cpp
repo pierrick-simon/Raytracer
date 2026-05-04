@@ -7,6 +7,8 @@
 
 #include "PrimitiveTriangles.hpp"
 
+#include <RayTracer.hpp>
+
 namespace RayTracer {
     PrimitiveTriangle::PrimitiveTriangle(const Maths::Point3D &a,
         const Maths::Point3D &b, const Maths::Point3D &c,
@@ -29,7 +31,7 @@ namespace RayTracer {
     {
         double det = AB.dot(h);
 
-        if (std::abs(det) < EPSILON)
+        if (std::abs(det) < DOUBLE_OFFSET)
             return std::nullopt;
 
         double invDet = 1.0 / det;
@@ -45,7 +47,7 @@ namespace RayTracer {
             return std::nullopt;
 
         double t = AC.dot(q) * invDet;
-        if (t < EPSILON)
+        if (t < DOUBLE_OFFSET)
             return std::nullopt;
         return fillHitInfo(ray, AB, AC, t);
     }

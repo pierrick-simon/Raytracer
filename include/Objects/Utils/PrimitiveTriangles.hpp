@@ -27,9 +27,6 @@ namespace RayTracer {
         std::optional<HitInfo> hits(Ray const &ray);
 
     private:
-
-        static constexpr double EPSILON = 0.0000001;
-
         Maths::Point3D _a;
         Maths::Point3D _b;
         Maths::Point3D _c;
