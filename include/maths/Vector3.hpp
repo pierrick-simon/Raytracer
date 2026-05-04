@@ -95,7 +95,7 @@ namespace Maths {
         static Vector3 lerp(const Vector3 &min, const Vector3 &max, double t);
         static Vector3 clampedLerp(const Vector3 &min, const Vector3 &max, double t);
 
-        [[nodiscard]] double getAngle(const Vector3 &other);
+        [[nodiscard]] double getAngle(const Vector3 &other) const;
 
         Type x;
         Type y;
@@ -296,7 +296,7 @@ namespace Maths {
     }
 
     template<typename Type>
-    double Vector3<Type>::getAngle(const Vector3 &other)
+    double Vector3<Type>::getAngle(const Vector3 &other) const
     {
         double angle = this->dot(other) / (this->length() * other.length());
 

@@ -53,10 +53,10 @@ namespace RayTracer {
             std::optional<Ray> through(const Ray &ray, const HitInfo &hit) const;
             Ray diffuse(const Ray &ray, const HitInfo &hit) const;
 
+            Maths::Vector3D _colorPercentage;
         private:
             std::optional<Ray> getTransmitted(const Ray &ray, const HitInfo &hit) const;
 
-            Maths::Vector3D _colorPercentage;
             double _metallic;
             double _specular;
             double _roughness;

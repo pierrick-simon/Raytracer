@@ -49,6 +49,29 @@ namespace RayTracer {
         }
     }
 
+    Maths::Vector3D RayTracer::parseLight(Maths::Vector3D color,
+        const Ray &ray, HitInfo &info)
+    {
+        color *= _lights.getAmbient();
+        for (auto &light : _lights.getLights()) {
+            Ray tmp = ray;
+            tmp.direction = light->getPosition() - info.hitPos;
+            tmp.direction = tmp.direction.normalized();
+            tmp.origin = info.hitPos + info.impactNormal * DOUBLE_OFFSET;
+            auto normal = info.impactNormal;
+            if (tmp.direction.dot(normal) < 0)
+                continue;
+            if (!getHitObject(tmp)) {
+                auto scalair = tmp.direction.dot(normal);
+                color += color * scalair * Maths::Vector3D(
+                    light->getLightAmount(tmp).x / 255.0,
+                    light->getLightAmount(tmp).y / 255.0,
+                    light->getLightAmount(tmp).z / 255.0);
+            };
+        }
+        return color;
+    }
+
     Maths::Vector3D RayTracer::hitColor(const Ray &ray,
         HitInfo &info, std::size_t depth)
     {
@@ -59,14 +82,13 @@ namespace RayTracer {
         Ray reflected = info.material.reflect(ray, info);
         Ray diffuse = info.material.diffuse(ray, info);
         auto through = info.material.through(ray, info);
-
         if (reflected.strength > 0)
-            color += parseObject(reflected,  depth + 1);
+            color += parseObject(reflected, depth + 1);
         if (diffuse.strength > 0)
-            color += parseObject(diffuse,  depth + 1);
+            color += info.material._colorPercentage;
         if (through.has_value() && through->strength > 0)
             color += parseObject(*through, depth + 1);
-        return color;
+        return parseLight(color, ray, info);
     }
 
     std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray)
@@ -89,7 +111,7 @@ namespace RayTracer {
     
         if (depth >= MAX_DEPTH || ray.strength <= DOUBLE_OFFSET
             || ray.colorPercentage.length() <= DOUBLE_OFFSET)
-            color = ray.colorPercentage;
+            color = color;
         else {
             auto closerHit = getHitObject(ray);
             if (!closerHit.has_value() && depth != 0)

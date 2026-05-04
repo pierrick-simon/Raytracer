@@ -64,6 +64,8 @@ namespace RayTracer {
             HitInfo &info, std::size_t depth);
         std::optional<HitInfo> getHitObject(Ray const &ray);
         Maths::Vector3D parseObject(const Ray &ray, std::size_t depht);
+        Maths::Vector3D parseLight(Maths::Vector3D color,
+            const Ray &ray, HitInfo &info);
 
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
