@@ -48,6 +48,8 @@ namespace Maths {
 
         Vector3 operator+(const Vector3 &other) const;
 
+        Vector3 operator+(const Type &other) const;
+
         Vector3 operator-(const Vector3 &other) const;
 
         Vector3 operator*(const Vector3 &other) const;
@@ -108,6 +110,14 @@ namespace Maths {
         return Vector3<Type>(this->x + other.x,
             this->y + other.y,
             this->z + other.z);
+    }
+
+    template<typename Type>
+    Vector3<Type> Vector3<Type>::operator+(const Type &other) const
+    {
+        return Vector3<Type>(this->x + other,
+            this->y + other,
+            this->z + other);
     }
 
     template<typename Type>

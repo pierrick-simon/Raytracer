@@ -76,8 +76,8 @@ namespace RayTracer {
         if (reflected.strength >= DOUBLE_OFFSET) {
             Maths::Vector3D perfectReflect = ray.direction
                 - hit.impactNormal * 2.0 * ray.direction.dot(hit.impactNormal);
-            reflected.direction = perfectReflect * (1.0 - _roughness);
-            reflected.direction = reflected.direction.normalized();
+            reflected.direction = (perfectReflect * (1.0 - _roughness)
+            + hit.impactNormal * _roughness).normalized();
             reflected.colorPercentage *= _colorPercentage * _metallic
                 + Maths::Vector3D(1, 1, 1) * (1.0 - _metallic) * _specular;
             reflected.origin = hit.hitPos + hit.impactNormal * DOUBLE_OFFSET;

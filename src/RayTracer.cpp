@@ -52,36 +52,35 @@ namespace RayTracer {
     Maths::Vector3D RayTracer::getSpecular(const Ray &ray,
         const Ray &lihtRay, HitInfo &info, Maths::Vector3D lightColor)
     {        
-        auto r = ray.direction - info.impactNormal * info.impactNormal.dot(ray.direction) * 2;
-        return lightColor * std::pow(lihtRay.direction.dot(r.normalized()), 50);
+        auto r = ray.direction - info.impactNormal
+            * info.impactNormal.dot(ray.direction) * 2;
+        return lightColor * std::pow(lihtRay.direction.dot(r.normalized()),
+            info.material.getShininess());
     }
 
-    Maths::Vector3D RayTracer::parseLight(Maths::Vector3D color,
-        const Ray &ray, HitInfo &info)
-    {
-        color *= _lights.getAmbient();
-        for (auto &light : _lights.getLights()) {
-            Ray lightRay;
-            lightRay.direction = light->getPosition() - info.hitPos;
-            lightRay.direction = lightRay.direction.normalized();
-            lightRay.origin = info.hitPos + info.impactNormal * DOUBLE_OFFSET;
-            auto normal = info.impactNormal;
-            if (lightRay.direction.dot(normal) <= DOUBLE_OFFSET)
-                continue;
-            if (!getHitObject(lightRay)) {
-                auto scalair = lightRay.direction.dot(normal);
-                color += color * scalair * Maths::Vector3D(
-                    light->getLightAmount(lightRay).x / 255.0,
-                    light->getLightAmount(lightRay).y / 255.0,
-                    light->getLightAmount(lightRay).z / 255.0);
-                color += getSpecular(ray, lightRay, info, Maths::Vector3D(
-                    light->getLightAmount(lightRay).x / 255.0,
-                    light->getLightAmount(lightRay).y / 255.0,
-                    light->getLightAmount(lightRay).z / 255.0));
-            };
+    Maths::Vector3D RayTracer::parseLight(const Ray &ray, HitInfo &info)
+{
+    Maths::Vector3D color = 
+        info.material.getColorPercentage() * _lights.getAmbient();
+
+    for (auto &light : _lights.getLights()) {
+        Ray lightRay;
+        lightRay.direction = Maths::Vector3D(
+            light->getPosition() - info.hitPos).normalized();
+        lightRay.origin = info.hitPos + info.impactNormal * DOUBLE_OFFSET;
+        auto diffuse = std::max(DOUBLE_OFFSET, lightRay.direction.dot(info.impactNormal));
+        if (!getHitObject(lightRay)) {
+            Maths::Vector3D lightColor(
+                light->getLightAmount(lightRay).x / 255.0,
+                light->getLightAmount(lightRay).y / 255.0,
+                light->getLightAmount(lightRay).z / 255.0);            
+            color += lightColor * (getSpecular(ray, lightRay, info, lightColor)
+                * info.material.getSpecular()
+                + info.material.getDiffuse() * diffuse);
         }
-        return color;
     }
+    return color;
+}
 
     Maths::Vector3D RayTracer::hitColor(const Ray &ray,
         HitInfo &info, std::size_t depth)
@@ -92,13 +91,13 @@ namespace RayTracer {
         Ray reflected = info.material.reflect(ray, info);
         Ray diffuse = info.material.diffuse(ray, info);
         auto through = info.material.through(ray, info);
-        if (reflected.strength > 0)
-            color += parseObject(reflected, depth + 1);
-        if (diffuse.strength > 0)
-            color += diffuse.colorPercentage;
-        if (through.has_value() && through->strength > 0)
-            color += parseObject(*through, depth + 1);
-        return parseLight(color, ray, info);
+        // if (reflected.strength > 0)
+        //     color += parseObject(reflected, depth + 1);
+        // if (diffuse.strength > 0)
+        //     color += parseLight(diffuse.colorPercentage, ray, info);
+        // if (through.has_value() && through->strength > 0)
+        //     color += parseObject(*through, depth + 1);
+        return parseLight(ray, info);
     }
 
     std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray)
