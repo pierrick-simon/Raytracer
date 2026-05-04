@@ -61,7 +61,7 @@ namespace RayTracer {
         void loadLightPlugins();
       
         Maths::Vector3D hitColor(const Ray &ray,
-            const HitInfo &info, std::size_t depth);
+            HitInfo &info, std::size_t depth);
         std::optional<HitInfo> getHitObject(Ray const &ray);
         Maths::Vector3D parseObject(const Ray &ray, std::size_t depht);
 

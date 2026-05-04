@@ -50,9 +50,12 @@ namespace RayTracer {
     }
 
     Maths::Vector3D RayTracer::hitColor(const Ray &ray,
-        const HitInfo &info, std::size_t depth)
+        HitInfo &info, std::size_t depth)
     {
         Maths::Vector3D color(0,0,0);
+        if (ray.direction.dot(info.impactNormal) > 0)
+                info.impactNormal *= -1;
+
         Ray reflected = info.material.reflect(ray, info);
         Ray diffuse = info.material.diffuse(ray, info);
         auto through = info.material.through(ray, info);
@@ -71,8 +74,7 @@ namespace RayTracer {
         std::optional<HitInfo> closerHit = std::nullopt;
     
         for (auto &object : _objects) {
-            Ray r = ray;
-            auto hit = object->hits(r);
+            auto hit = object->hits(ray);
             if (hit.has_value() && (!closerHit.has_value()
                 || hit->hitDist < closerHit->hitDist)
                 && ray.origin != hit->hitPos)

@@ -27,8 +27,6 @@ namespace RayTracer {
         hit.impactNormal.x = (hit.hitPos.x - _origin.x) / _radius;
         hit.impactNormal.y = (hit.hitPos.y - _origin.y) / _radius;
         hit.impactNormal.z = (hit.hitPos.z - _origin.z) / _radius;
-        if (ray.direction.dot(hit.impactNormal) > 0)
-            hit.impactNormal *= -1;
         hit.material = _material;
         return hit;
     }
