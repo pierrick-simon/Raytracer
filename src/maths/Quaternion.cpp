@@ -37,6 +37,15 @@ namespace Maths {
         };
     }
 
+    Vector3D Quaternion::operator*(const Vector3D &point) const
+    {
+        Quaternion pointQuat{0, point.x, point.y, point.z};
+
+        Quaternion result = *this * pointQuat * this->inversed();
+
+        return {result._x, result._y, result._z};
+    }
+
     Quaternion &Quaternion::operator*=(const Quaternion &rhs)
     {
         *this = *this * rhs;
@@ -87,11 +96,11 @@ namespace Maths {
         return *this;
     }
 
-    Quaternion Quaternion::fromEuler(double u, double v, double w)
+    Quaternion Quaternion::fromEuler(double roll, double pitch, double yaw)
     {
-        double halfU = u / 2.0;
-        double halfV = v / 2.0;
-        double halfW = w / 2.0;
+        double halfU = roll / 2.0;
+        double halfV = pitch / 2.0;
+        double halfW = yaw / 2.0;
 
         double cosU = std::cos(halfU);
         double cosV = std::cos(halfV);
@@ -101,17 +110,43 @@ namespace Maths {
         double sinV = std::sin(halfV);
         double sinW = std::sin(halfW);
 
-        return {
+        return Quaternion{
             cosU * cosV * cosW + sinU * sinV * sinW,
             sinU * cosV * cosW - cosU * sinV * sinW,
             cosU * sinV * cosW + sinU * cosV * sinW,
             cosU * cosV * sinW - sinU * sinV * cosW
-        };
+        }.normalized();
+    }
+
+    Quaternion Quaternion::fromEulerDegrees(double roll, double pitch,
+        double yaw)
+    {
+        return fromEuler(TORAD(roll), TORAD(pitch), TORAD(yaw));
     }
 
     Quaternion Quaternion::identity()
     {
         return {1, 0, 0, 0};
+    }
+
+    double Quaternion::getW() const
+    {
+        return this->_w;
+    }
+
+    double Quaternion::getX() const
+    {
+        return this->_x;
+    }
+
+    double Quaternion::getY() const
+    {
+        return this->_y;
+    }
+
+    double Quaternion::getZ() const
+    {
+        return this->_z;
     }
 
     Quaternion::Quaternion(double w, double x, double y, double z) :
@@ -128,5 +163,15 @@ namespace Maths {
             this->_w * this->_w + this->_x * this->_x +
             this->_y * this->_y + this->_z * this->_z
         );
+    }
+
+    std::ostream &operator<<(std::ostream &stream,
+        const Quaternion &quaternion)
+    {
+        stream << "Quaternion{" << quaternion.getW() << ", ";
+        stream << quaternion.getX() << ", ";
+        stream << quaternion.getY() << ", ";
+        stream << quaternion.getZ() << "}";
+        return stream;
     }
 } // Maths

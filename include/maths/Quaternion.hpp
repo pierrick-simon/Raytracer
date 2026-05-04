@@ -7,6 +7,7 @@
 
 #ifndef QUATERNION_HPP
     #define QUATERNION_HPP
+#include "Vector3.hpp"
 
 namespace Maths {
     /**
@@ -19,6 +20,8 @@ namespace Maths {
     class Quaternion {
     public:
         Quaternion() = delete;
+
+        Quaternion(double w, double x, double y, double z);
 
         bool operator==(const Quaternion &rhs) const;
 
@@ -35,6 +38,14 @@ namespace Maths {
          * by \p rhs
          */
         Quaternion operator*(const Quaternion &rhs) const;
+
+
+        /**
+         * Rotate the Vector3 point using the current Quaternion.
+         * @param point The point to rotate
+         * @return The point rotated by the current Quaternion.
+         */
+        Vector3D operator*(const Vector3D &point) const;
 
         /**
          * Rotates the current Quaternion by \p rhs.
@@ -94,12 +105,22 @@ namespace Maths {
         /**
          * Converts an input Euler angle rotation specified as three doubles to
          * a Quaternion.
-         * @param u Roll (Z axis) angle
-         * @param v Pitch (Y axis) angle
-         * @param w Yaw (X axis) angle
+         * @param roll The Roll in radians
+         * @param pitch The Pitch in radians
+         * @param yaw The Yaw in radians
          * @return A Quaternion converted from an Euler angle rotation.
          */
-        static Quaternion fromEuler(double u, double v, double w);
+        static Quaternion fromEuler(double roll, double pitch, double yaw);
+
+        /**
+         * Converts an input Euler angle rotation specified as three doubles to
+         * a Quaternion.
+         * @param roll The Roll in degrees
+         * @param pitch The Pitch in degrees
+         * @param yaw The Yaw in degrees
+         * @return A Quaternion converted from an Euler angle rotation.
+         */
+        static Quaternion fromEulerDegrees(double roll, double pitch, double yaw);
 
 
         /**
@@ -109,10 +130,16 @@ namespace Maths {
          * @return The identity Quaternion.
          */
         static Quaternion identity();
+
+        [[nodiscard]] double getW() const;
+
+        [[nodiscard]] double getX() const;
+
+        [[nodiscard]] double getY() const;
+
+        [[nodiscard]] double getZ() const;
+
     private:
-
-        Quaternion(double w, double x, double y, double z);
-
         [[nodiscard]] double magnitude() const;
 
         double _w;
@@ -120,6 +147,8 @@ namespace Maths {
         double _y;
         double _z;
     };
+
+    std::ostream &operator<<(std::ostream &stream, const Quaternion &quaternion);
 } // Maths
 
 #endif
