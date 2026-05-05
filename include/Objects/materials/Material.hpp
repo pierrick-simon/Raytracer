@@ -54,19 +54,18 @@ namespace RayTracer {
             Ray diffuse(const Ray &ray, const HitInfo &hit) const;
 
             Ray getReflectRay(const Ray &ray, const HitInfo &hit) const;
+            std::optional<Ray> getRefractRay(const Ray &ray, const HitInfo &hit) const;
 
             Maths::Vector3D getColorPercentage() const
                 {return _colorPercentage;}
             double getSpecular() const {return _specular;}
             double getRoughness() const {return _roughness;}
+            double getOpacity() const {return _opacity;}
 
             Maths::Vector3D getDiffuse() const
                 {return _colorPercentage * (1 - _metallic);}
             double getShininess() const {
-                if (_roughness)
-                    return (2 / std::pow(_roughness, 2)) - 2;
-                else
-                    return 0;
+                    return (1 - _roughness) * 100;
             }
     
             private:

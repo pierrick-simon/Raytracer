@@ -16,7 +16,7 @@ namespace RayTracer {
             Material::Builder()
                 .metallic(0)
                 .roughness(1)
-                .specular(0)
+                .specular(0.04)
                 .opacity(1)
                 .refraction(1)
         },
@@ -25,7 +25,7 @@ namespace RayTracer {
             Material::Builder()
                 .metallic(1)
                 .roughness(0)
-                .specular(0)
+                .specular(1)
                 .opacity(1)
                 .refraction(1)
         },
@@ -33,7 +33,7 @@ namespace RayTracer {
             "Brushed metal",
             Material::Builder()
                 .metallic(1)
-                .roughness(0.6)
+                .roughness(0.3)
                 .specular(1)
                 .opacity(1)
                 .refraction(1)
@@ -42,8 +42,8 @@ namespace RayTracer {
             "Plastic",
             Material::Builder()
                 .metallic(0)
-                .roughness(0.1)
-                .specular(0.8)
+                .roughness(0.2)
+                .specular(0.05)
                 .opacity(1)
                 .refraction(1.5)
         },
@@ -52,7 +52,7 @@ namespace RayTracer {
             Material::Builder()
                 .metallic(0)
                 .roughness(0)
-                .specular(1)
+                .specular(0.04)
                 .opacity(0)
                 .refraction(1.52)
         },
@@ -61,8 +61,8 @@ namespace RayTracer {
             Material::Builder()
                 .metallic(0)
                 .roughness(0)
-                .specular(0.8)
-                .opacity(0.05)
+                .specular(0.03)
+                .opacity(0.02)
                 .refraction(1.33)
         },
         {
@@ -70,7 +70,7 @@ namespace RayTracer {
             Material::Builder()
                 .metallic(0)
                 .roughness(0)
-                .specular(1)
+                .specular(0.04)
                 .opacity(0)
                 .refraction(2.42)
         },
@@ -78,8 +78,8 @@ namespace RayTracer {
             "Ice",
             Material::Builder()
                 .metallic(0)
-                .roughness(0)
-                .specular(0.7)
+                .roughness(0.1)
+                .specular(0.04)
                 .opacity(0.1)
                 .refraction(1.31)
         },
@@ -88,10 +88,9 @@ namespace RayTracer {
             Material::Builder()
                 .metallic(0)
                 .roughness(0.9)
-                .specular(0.1)
+                .specular(0.04)
                 .opacity(1)
                 .refraction(1)
-        },
+        }
     };
-
 };

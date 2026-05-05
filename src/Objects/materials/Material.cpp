@@ -140,7 +140,25 @@ namespace RayTracer {
     {
         auto reflect = ray.direction
                 - hit.impactNormal * 2.0 * ray.direction.dot(hit.impactNormal);
-        return {reflect, hit.hitPos + hit.impactNormal * DOUBLE_OFFSET};
+        return {hit.hitPos + hit.impactNormal * DOUBLE_OFFSET,
+            reflect.normalized()};
     }
     
+    std::optional<Ray> Material::getRefractRay(
+        const Ray &ray, const HitInfo &hit) const
+    {
+        std::optional<Ray> refract = std::nullopt;
+        double cosI = ray.direction.dot(hit.impactNormal);
+        double eta = 0;
+        if (_refraction)
+            eta = 1.0 / _refraction;
+        auto k = 1 - std::pow(eta, 2) * (1 - std::pow(cosI, 2));
+        if (k >= DOUBLE_OFFSET) {
+            auto T = ray.direction * eta
+                - hit.impactNormal * (eta * cosI + std::sqrt(k));
+            refract = {hit.hitPos + hit.impactNormal * DOUBLE_OFFSET,
+                T.normalized()};
+        }
+        return refract;
+    }
 }

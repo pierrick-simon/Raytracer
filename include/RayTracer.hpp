@@ -28,7 +28,7 @@ namespace RayTracer {
     constexpr std::string_view DISPLAY_FLAG = "--display";
     constexpr std::string_view ARG_EXT = ".cfg";
     constexpr double DOUBLE_OFFSET = 1e-4;
-    constexpr std::size_t MAX_DEPTH = 100;
+    constexpr std::size_t MAX_DEPTH = 10;
 
     class RayTracer {
     public:
@@ -63,8 +63,8 @@ namespace RayTracer {
         Maths::Vector3D hitColor(const Ray &ray,
             HitInfo &info, std::size_t depth);
         std::optional<HitInfo> getHitObject(Ray const &ray);
-        Maths::Vector3D getSpecular(const Ray &ray,
-            const Ray &lihtRay, HitInfo &info, Maths::Vector3D lightColor);
+        double getSpecular(const Ray &ray,
+            const Ray &lihtRay, HitInfo &info);
         Maths::Vector3D parseObject(const Ray &ray, std::size_t depht);
         Maths::Vector3D parseLight(const Ray &ray, HitInfo &info);
 
