@@ -5,6 +5,8 @@
 ** DisplaySFML
 */
 
+#include <algorithm> 
+
 #include "PointLight.hpp"
 
 namespace RayTracer {
@@ -21,6 +23,6 @@ namespace RayTracer {
         double distance = this->_pos.distance(ray.origin);
         double lightPercentage = distance / this->_falloutDistance;
 
-        return this->_color * lightPercentage;
+        return this->_color * (1 - std::clamp(lightPercentage, 0.0, 1.0));
     }
 }

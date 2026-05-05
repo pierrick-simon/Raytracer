@@ -22,7 +22,8 @@ namespace RayTracer {
         this->loadPrimitivePlugins();
         this->loadLightPlugins();
         auto const parser = ConfigFileParser(args.front(),
-            this->_primitivesPlugins, this->_lightsPlugins, this->_presetMaterialBuilders);
+            this->_primitivesPlugins, this->_lightsPlugins,
+            this->_presetMaterialBuilders);
         _camera = parser.parseCamera();
         _lights = parser.parseLights();
         _objects = parser.parsePrimitives();
@@ -49,21 +50,72 @@ namespace RayTracer {
         }
     }
 
-    Maths::Vector3D RayTracer::hitColor(const Ray &ray,
-        const HitInfo &info, std::size_t depth)
-    {
-        Maths::Vector3D color(0,0,0);
-        Ray reflected = info.material.reflect(ray, info);
-        Ray diffuse = info.material.diffuse(ray, info);
-        auto through = info.material.through(ray, info);
+    double RayTracer::getSpecular(const Ray &ray,
+        const Ray &lihtRay, HitInfo &info)
+    {        
+        auto r = ray.direction - info.impactNormal
+            * info.impactNormal.dot(ray.direction) * 2;
+        auto dot = lihtRay.direction.dot(r.normalized());
+        if (dot <= DOUBLE_OFFSET)
+            return 0;
+        return std::pow(dot,
+            info.material.getShininess());
+    }
 
-        if (reflected.strength > 0)
-            color += parseObject(reflected,  depth + 1);
-        if (diffuse.strength > 0)
-            color += parseObject(diffuse,  depth + 1);
-        if (through.has_value() && through->strength > 0)
-            color += parseObject(*through, depth + 1);
+    Maths::Vector3D RayTracer::parseLight(const Ray &ray, HitInfo &info)
+    {
+        Maths::Vector3D color = 
+            info.material.getColorPercentage() * _lights.getAmbient();
+
+        for (auto &light : _lights.getLights()) {
+            Ray lightRay;
+            lightRay.direction = Maths::Vector3D(
+                light->getPosition() - info.hitPos).normalized();
+            lightRay.origin = info.hitPos + info.impactNormal * DOUBLE_OFFSET;
+            auto diffuse = lightRay.direction.dot(info.impactNormal);
+            if (diffuse <= DOUBLE_OFFSET)
+                continue;
+            if (!getHitObject(lightRay)) {
+                Maths::Vector3D lightColor(
+                    light->getLightAmount(lightRay).x / 255.0,
+                    light->getLightAmount(lightRay).y / 255.0,
+                    light->getLightAmount(lightRay).z / 255.0);            
+                color += lightColor * (info.material.getDiffuse() * diffuse
+                    * _lights.getDiffuse()
+                    + getSpecular(ray, lightRay, info)
+                    * info.material.getSpecular()
+                );
+            }
+        }
         return color;
+    }
+
+    Maths::Vector3D RayTracer::hitColor(const Ray &ray,
+    HitInfo &info, std::size_t depth)
+    {
+        auto hit = info;
+        if (ray.direction.dot(hit.impactNormal) > 0)
+            hit.impactNormal *= -1;
+        Maths::Vector3D localColor = parseLight(ray, hit);
+        Maths::Vector3D reflectColor(0, 0, 0);
+        if (info.material.getSpecular() > DOUBLE_OFFSET) 
+            reflectColor =
+                parseObject(info.material.getReflectRay(ray, hit), depth + 1);
+        Maths::Vector3D refractColor(0, 0, 0);
+        if (1 - info.material.getOpacity() > DOUBLE_OFFSET) {
+            auto refract = info.material.getRefractRay(ray, info);
+            if (refract)
+                refractColor = parseObject(*refract, depth + 1);
+        }
+        double F = info.material.getFresnel(ray, hit);
+        Maths::Vector3D color =
+            localColor
+            + reflectColor * F
+            + refractColor * (1 - F);
+
+        color = color * info.material.getOpacity()
+            + refractColor * (1 - info.material.getOpacity());
+        return color * info.material.getColorPercentage();
     }
 
     std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray)
@@ -71,11 +123,10 @@ namespace RayTracer {
         std::optional<HitInfo> closerHit = std::nullopt;
     
         for (auto &object : _objects) {
-            Ray r = ray;
-            auto hit = object->hits(r);
+            auto hit = object->hits(ray);
             if (hit.has_value() && (!closerHit.has_value()
                 || hit->hitDist < closerHit->hitDist)
-                && ray.origin != hit->hitPos)
+                && ray.origin != hit->hitPos && hit->hitDist > DOUBLE_OFFSET)
                 closerHit = hit.value();
         }
         return closerHit;
@@ -83,16 +134,11 @@ namespace RayTracer {
 
     Maths::Vector3D RayTracer::parseObject(const Ray &ray, std::size_t depth)
     {
-        Maths::Vector3D color(0, 0, 0);
+        Maths::Vector3D color(0.0, 0.0, 0.0);
     
-        if (depth >= MAX_DEPTH || ray.strength <= DOUBLE_OFFSET
-            || ray.colorPercentage.length() <= DOUBLE_OFFSET)
-            color = ray.colorPercentage;
-        else {
+        if (depth < MAX_DEPTH) {
             auto closerHit = getHitObject(ray);
-            if (!closerHit.has_value() && depth != 0)
-                color = ray.colorPercentage;
-            if (closerHit.has_value())
+            if (closerHit)
                 color = hitColor(ray, *closerHit, depth);
         }
         return color;

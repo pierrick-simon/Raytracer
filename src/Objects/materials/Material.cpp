@@ -5,7 +5,9 @@
 ** Material
 */
 
+#include <cstdlib>
 #include <algorithm>
+#include <iostream>
 #include "RayTracer.hpp"
 #include "Material.hpp"
 #include "Info.hpp"
@@ -67,72 +69,54 @@ namespace RayTracer {
         _opacity = std::clamp(_opacity, 0.0, 1.0);
     }
 
-    Ray Material::reflect(const Ray &ray, const HitInfo &hit) const
+    Ray Material::getReflectRay(const Ray &ray, const HitInfo &hit) const
     {
-        Ray reflected = ray;
-
-        reflected.strength *= _metallic + (1.0 - _metallic) * _specular;
-        if (reflected.strength >= DOUBLE_OFFSET) {
-            Maths::Vector3D perfectReflect = ray.direction
+        auto reflect = ray.direction
                 - hit.impactNormal * 2.0 * ray.direction.dot(hit.impactNormal);
-            reflected.direction = perfectReflect * (1.0 - _roughness);
-            reflected.direction = reflected.direction.normalized();
-            reflected.colorPercentage *= _colorPercentage * _metallic
-                + Maths::Vector3D(1, 1, 1) * (1.0 - _metallic) * _specular;
-            reflected.origin = hit.hitPos + hit.impactNormal * DOUBLE_OFFSET;
-        }
-        return reflected;
+        return {hit.hitPos + hit.impactNormal * DOUBLE_OFFSET,
+            reflect.normalized()};
     }
 
-    std::optional<Ray> Material::getTransmitted(
+    std::optional<Ray> Material::getRefractRay(
         const Ray &ray, const HitInfo &hit) const
     {
-        std::optional<Ray> transmitted = ray;
-        double refraction = 1.0 / _refraction;
-        Maths::Vector3D normal = hit.impactNormal;
-        if (ray.direction.dot(hit.impactNormal) < 0) {
-            refraction = _refraction;
-            normal = hit.impactNormal * -1;
+        std::optional<Ray> refract = std::nullopt;
+        Maths::Vector3D N = hit.impactNormal;
+        double cosI = ray.direction.dot(N);
+        double n1 = 1.0;
+        double n2 = _refraction;
+
+        if (cosI > DOUBLE_OFFSET) {
+            std::swap(n1, n2);
+            N *= -1;
         }
-        double cosI  = ray.direction.dot(normal) * -1;
-        double sin2T = refraction * refraction * (1.0 - cosI * cosI);
-        if (sin2T > 1.0)
-            transmitted = std::nullopt;
-        else {
-            double cosT = std::sqrt(1.0 - sin2T);
-            transmitted->direction = ray.direction * refraction
-                                + normal * (refraction * cosI - cosT);
-            transmitted->direction = transmitted->direction.normalized();
-            transmitted->colorPercentage *= _colorPercentage * (1.0 - _opacity);
-            transmitted->strength *= (1.0 - _opacity);
-            transmitted->origin = hit.hitPos + hit.impactNormal * DOUBLE_OFFSET;
+        cosI = std::abs(cosI);
+        double eta = n2 ? n1 / n2 : 0;
+        double k = 1.0 - eta * eta * (1.0 - cosI * cosI);
+        if (k >= DOUBLE_OFFSET) {
+            Maths::Vector3D T = ray.direction * eta - N * (eta * cosI + std::sqrt(k));
+            refract = {hit.hitPos - N * DOUBLE_OFFSET, T.normalized()};
+        } else {
+            HitInfo info = hit;
+            info.impactNormal = N;
+            refract = getReflectRay(ray, info);
         }
-        return transmitted;
+        return refract;
     }
 
-    std::optional<Ray> Material::through(const Ray &ray, const HitInfo &hit) const
+    double Material::getFresnel(const Ray &ray, const HitInfo &hit) const
     {
-        std::optional<Ray> transmitted = ray;
-        transmitted->strength *= (1.0 - _opacity);
-        if (!(_opacity >= 1.0 || _refraction == 0
-            || transmitted->strength < DOUBLE_OFFSET))
-            transmitted = std::nullopt;
-        else 
-            transmitted = getTransmitted(ray, hit);
-        return transmitted;
-    }
+        Maths::Vector3D N = hit.impactNormal;
+        Maths::Vector3D V = ray.direction.normalized() * -1;
 
-    Ray Material::diffuse(const Ray &ray, const HitInfo &hit) const
-    {
-        Ray diffused = ray;
+        double cosT = std::max(0.0, N.dot(V));
 
-        diffused.strength *= (1.0 - _metallic) * (1.0 - _specular) * _roughness;
-        if (diffused.strength >= DOUBLE_OFFSET) {
-            diffused.direction = hit.impactNormal.normalized();
-            diffused.colorPercentage *= _colorPercentage;
-            diffused.origin = hit.hitPos + hit.impactNormal * DOUBLE_OFFSET;
-        }
-        return diffused;
+        double n1 = 1.0;
+        double n2 = _refraction;
+
+        double F0 = std::pow((n1 - n2) / (n1 + n2), 2);
+        F0 = F0 * (1 - _metallic) + _metallic;
+
+        return F0 + (1 - F0) * std::pow(1 - cosT, 5);
     }
-    
 }
