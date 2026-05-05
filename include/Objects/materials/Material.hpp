@@ -49,9 +49,6 @@ namespace RayTracer {
 
             explicit Material(Builder const &builder);
 
-            Ray reflect(const Ray &ray, const HitInfo &hit) const;
-            std::optional<Ray> through(const Ray &ray, const HitInfo &hit) const;
-            Ray diffuse(const Ray &ray, const HitInfo &hit) const;
 
             Ray getReflectRay(const Ray &ray, const HitInfo &hit) const;
             std::optional<Ray> getRefractRay(const Ray &ray, const HitInfo &hit) const;
@@ -65,13 +62,10 @@ namespace RayTracer {
 
             Maths::Vector3D getDiffuse() const
                 {return _colorPercentage * (1 - _metallic);}
-            double getShininess() const {
-                    return (1 - _roughness) * 100;
-            }
+            double getShininess() const
+                {return (1 - _roughness) * 100;}
     
-            private:
-            std::optional<Ray> getTransmitted(const Ray &ray, const HitInfo &hit) const;
-            
+        private:            
             Maths::Vector3D _colorPercentage;
             double _metallic;
             double _specular;
