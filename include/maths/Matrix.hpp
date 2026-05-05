@@ -5,49 +5,59 @@
 ** DESCRIPTION
 */
 
-#pragma once
-#include <array>
+#ifndef MATRIX_HPP
+    #define MATRIX_HPP
+    #include <array>
+    #include <cstddef>
+    #include <ostream>
+    #include <utility>
 
 namespace Maths {
     template<typename A, typename B>
     concept Multipliable = requires(A a, B b)
     {
-        a * b;
-        a + b;
+        {a * b};
+    };
+
+    template<typename T>
+    concept AddAssignable = requires(T a, T b) {
+        { a += b } -> std::same_as<T&>;
     };
 
     template<std::size_t NbRow, std::size_t NbColumn, typename Type>
     class Matrix {
     public:
-        Matrix(Type defaultValue)
+
+        explicit Matrix() : _matrix{} {};
+
+        explicit Matrix(Type defaultValue)
         {
             for (std::size_t x = 0; x < NbRow; ++x)
                 for (std::size_t y = 0; y < NbColumn; ++y)
                     this->_matrix[x][y] = defaultValue;
         }
 
-        double operator()(std::size_t row, std::size_t col) const
+        Type operator()(std::size_t row, std::size_t col) const
         {
             return this->_matrix[row][col];
         }
 
-        double &operator()(std::size_t row, std::size_t col)
+        Type &operator()(std::size_t row, std::size_t col)
         {
             return this->_matrix[row][col];
         }
 
-        template<std::size_t OtherNbColumn, class OtherType> requires
-            Multipliable<OtherType, Type>
-        using ResultType = Matrix<NbRow, OtherNbColumn, decltype(
-            std::declval<Type> * std::declval<OtherType>())>;
+        template<class OtherType>
+        using ProductType = decltype(std::declval<Type>() * std::declval<OtherType>());
 
         template<std::size_t OtherNbColumn, class OtherType> requires
-            Multipliable<OtherType, Type>
+            Multipliable<Type, OtherType> && AddAssignable<ProductType<OtherType>>
         void calculateLine(
             const Matrix<NbColumn, OtherNbColumn, OtherType> &other,
-            ResultType<OtherNbColumn, OtherType> result, std::size_t i)
+            Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> &result, std::size_t i) const
         {
             for (std::size_t j = 0; j < OtherNbColumn; ++j) {
+                result(i, j) = ProductType<OtherType>{};
                 for (std::size_t k = 0; k < NbColumn; ++k) {
                     result(i, j) += (*this)(i, k) *
                         other(k, j);
@@ -56,11 +66,11 @@ namespace Maths {
         }
 
         template<std::size_t OtherNbColumn, class OtherType> requires
-            Multipliable<OtherType, Type>
-        ResultType<OtherNbColumn, OtherType> operator*(
-            const Matrix<NbColumn, OtherNbColumn, OtherType> &other)
+            Multipliable<Type, OtherType> && AddAssignable<ProductType<OtherType>>
+        Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> operator*(
+            const Matrix<NbColumn, OtherNbColumn, OtherType> &other) const
         {
-            ResultType<OtherNbColumn, OtherType> result;
+            Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> result(ProductType<OtherType>{});
             for (std::size_t i = 0; i < NbRow; ++i) {
                 calculateLine<OtherNbColumn, OtherType>(other, result, i);
             }
@@ -84,11 +94,29 @@ namespace Maths {
         std::array<std::array<Type, NbColumn>, NbRow> _matrix;
     };
 
-    template<std::size_t NbRow, std::size_t NbColumn, typename OtherType>
+    template<std::size_t NbRow, std::size_t NbColumn, typename Type>
     std::ostream &operator<<(std::ostream &input,
-        const Matrix<NbRow, NbColumn, OtherType> &matrix)
+        const Matrix<NbRow, NbColumn, Type> &matrix)
     {
-        input << matrix.getMatrix();
+        input << "[";
+        for (std::size_t i = 0; i < NbRow; ++i) {
+
+            input << "[";
+            for (std::size_t j = 0; j < NbColumn; ++j) {
+                input << matrix.getMatrix()[i][j];
+                if (j + 1 != NbColumn)
+                    input << ", ";
+            }
+            input << "]";
+            if (i + 1 != NbRow)
+                input << ", ";
+        }
+        input << "]";
         return input;
     }
+
+    template <size_t NbRow, size_t NbColumn>
+    using MatrixD = Matrix<NbRow, NbColumn, double>;
 }
+
+#endif

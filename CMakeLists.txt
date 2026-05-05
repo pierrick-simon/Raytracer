@@ -56,16 +56,15 @@ set(SRCS_TESTS
     tests/tests_init.cpp
     tests/tests_PPM.cpp
     tests/maths/tests_quaternions.cpp
+    tests/maths/tests_matrix.cpp
 )
 
 add_executable(tests_run_bin EXCLUDE_FROM_ALL ${SRCS_TESTS} ${SRCS})
 target_compile_options(tests_run_bin PRIVATE --coverage)
 target_link_libraries(tests_run_bin criterion --coverage sfml-graphics sfml-window sfml-system config++)
 
-file(GLOB_RECURSE coverage_files *.gcda)
-
 add_custom_target(tests_run
-    COMMAND ${CMAKE_COMMAND} -E rm -f ${coverage_files}
+    COMMAND find ${CMAKE_BINARY_DIR} -name "*.gcda" -delete
     COMMAND ${CMAKE_COMMAND} -E rm -f screenshots/test_save.ppm screenshots/test.ppm
     COMMAND ./tests_run_bin
     DEPENDS tests_run_bin
