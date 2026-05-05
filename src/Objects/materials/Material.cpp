@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <algorithm>
+#include <iostream>
 #include "RayTracer.hpp"
 #include "Material.hpp"
 #include "Info.hpp"
@@ -143,22 +144,47 @@ namespace RayTracer {
         return {hit.hitPos + hit.impactNormal * DOUBLE_OFFSET,
             reflect.normalized()};
     }
-    
+
     std::optional<Ray> Material::getRefractRay(
         const Ray &ray, const HitInfo &hit) const
     {
         std::optional<Ray> refract = std::nullopt;
-        double cosI = ray.direction.dot(hit.impactNormal);
-        double eta = 0;
-        if (_refraction)
-            eta = 1.0 / _refraction;
-        auto k = 1 - std::pow(eta, 2) * (1 - std::pow(cosI, 2));
+        Maths::Vector3D N = hit.impactNormal;
+        double cosI = ray.direction.dot(N);
+        double n1 = 1.0;
+        double n2 = _refraction;
+
+        if (cosI > DOUBLE_OFFSET) {
+            std::swap(n1, n2);
+            N *= -1;
+        }
+        cosI = std::abs(cosI);
+        double eta = n2 ? n1 / n2 : 0;
+        double k = 1.0 - eta * eta * (1.0 - cosI * cosI);
         if (k >= DOUBLE_OFFSET) {
-            auto T = ray.direction * eta
-                - hit.impactNormal * (eta * cosI + std::sqrt(k));
-            refract = {hit.hitPos + hit.impactNormal * DOUBLE_OFFSET,
-                T.normalized()};
+            Maths::Vector3D T = ray.direction * eta - N * (eta * cosI + std::sqrt(k));
+            refract = {hit.hitPos - N * DOUBLE_OFFSET, T.normalized()};
+        } else {
+            HitInfo info = hit;
+            info.impactNormal = N;
+            refract = getReflectRay(ray, info);
         }
         return refract;
+    }
+
+    double Material::getFresnel(const Ray &ray, const HitInfo &hit) const
+    {
+        Maths::Vector3D N = hit.impactNormal;
+        Maths::Vector3D V = ray.direction.normalized() * -1;
+
+        double cosT = std::max(0.0, N.dot(V));
+
+        double n1 = 1.0;
+        double n2 = _refraction;
+
+        double F0 = std::pow((n1 - n2) / (n1 + n2), 2);
+        F0 = F0 * (1 - _metallic) + _metallic;
+
+        return F0 + (1 - F0) * std::pow(1 - cosT, 5);
     }
 }

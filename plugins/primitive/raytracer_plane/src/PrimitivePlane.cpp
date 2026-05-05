@@ -41,7 +41,7 @@ namespace RayTracer {
             * _normal.y + ray.direction.z * _normal.z;
         if (direction != 0) {
             double t = (_pos - origin) / direction;
-            if (t >= 0) {
+            if (t > 0) {
                Maths::Point3D point(
                     ray.origin.x + t * ray.direction.x,
                     ray.origin.y + t * ray.direction.y,

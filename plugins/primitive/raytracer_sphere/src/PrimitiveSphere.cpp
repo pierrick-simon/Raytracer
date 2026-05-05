@@ -37,8 +37,11 @@ namespace RayTracer {
         double x = 0;
         if (delta == 0)
             x = (b * -1.0) / (2.0 * a);
-        else
+        else {
             x = ((b * -1.0) - sqrt(delta)) / (2.0 * a);
+            if (x < 0)
+               x = ((b * -1.0) + sqrt(delta)) / (2.0 * a);
+        }
         return x;
     }
 

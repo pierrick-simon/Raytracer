@@ -16,11 +16,11 @@ namespace RayTracer {
         _length(length),
         _material(material)
     {
-        Maths::Point3D apex(origin.x, origin.y + height, origin.z);
-        Maths::Point3D A(origin.x - width / 2, origin.y, origin.z - length / 2);
-        Maths::Point3D B(origin.x + width / 2, origin.y, origin.z - length / 2);
-        Maths::Point3D C(origin.x + width / 2, origin.y, origin.z + length / 2);
-        Maths::Point3D D(origin.x - width / 2, origin.y, origin.z + length / 2);
+        Maths::Point3D apex(origin.x, origin.y, origin.z + height);
+        Maths::Point3D A(origin.x - width / 2, origin.y - length / 2, origin.z);
+        Maths::Point3D B(origin.x + width / 2, origin.y - length / 2, origin.z);
+        Maths::Point3D C(origin.x + width / 2, origin.y + length / 2, origin.z);
+        Maths::Point3D D(origin.x - width / 2, origin.y + length / 2, origin.z);
 
         _pyramid = TriangleShape({
             PrimitiveTriangle(A, B, apex, material),
