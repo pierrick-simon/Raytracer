@@ -81,6 +81,7 @@ namespace RayTracer {
                     light->getLightAmount(lightRay).y / 255.0,
                     light->getLightAmount(lightRay).z / 255.0);            
                 color += lightColor * (info.material.getDiffuse() * diffuse
+                    * _lights.getDiffuse()
                     + getSpecular(ray, lightRay, info)
                     * info.material.getSpecular()
                 );
