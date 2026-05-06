@@ -57,6 +57,7 @@ set(SRCS_TESTS
     tests/tests_PPM.cpp
     tests/maths/tests_quaternions.cpp
     tests/maths/tests_matrix.cpp
+    tests/maths/tests_vector.cpp
 )
 
 add_executable(tests_run_bin EXCLUDE_FROM_ALL ${SRCS_TESTS} ${SRCS})

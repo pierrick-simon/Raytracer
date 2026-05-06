@@ -27,6 +27,7 @@ namespace Maths {
     template<std::size_t NbRow, std::size_t NbColumn, typename Type>
     class Matrix {
     public:
+        using MatrixType = std::array<std::array<Type, NbColumn>, NbRow>;
 
         explicit Matrix() : _matrix{} {};
 
@@ -35,6 +36,11 @@ namespace Maths {
             for (std::size_t x = 0; x < NbRow; ++x)
                 for (std::size_t y = 0; y < NbColumn; ++y)
                     this->_matrix[x][y] = defaultValue;
+        }
+
+        explicit Matrix(MatrixType matrix) :
+            _matrix(matrix)
+        {
         }
 
         Type operator()(std::size_t row, std::size_t col) const
@@ -49,6 +55,9 @@ namespace Maths {
 
         template<class OtherType>
         using ProductType = decltype(std::declval<Type>() * std::declval<OtherType>());
+
+        template<class OtherType>
+        using AdditionType = decltype(std::declval<Type>() * std::declval<OtherType>());
 
         template<std::size_t OtherNbColumn, class OtherType> requires
             Multipliable<Type, OtherType> && AddAssignable<ProductType<OtherType>>
@@ -77,6 +86,17 @@ namespace Maths {
             return result;
         }
 
+        template<typename OtherType>
+        Matrix<NbRow, NbColumn, AdditionType<OtherType>> operator+(const Matrix<NbRow, NbColumn, OtherType> &other) const
+        {
+            Matrix<NbRow, NbColumn, AdditionType<OtherType>> result;
+
+            for (size_t i = 0; i < NbRow; ++i)
+                for (size_t j = 0; j < NbColumn; ++j)
+                    result()(i, j) = this->_matrix[i][j] + other._matrix[i][j];
+            return result;
+        }
+
         template<std::size_t OtherNbColumn, typename OtherType>
         Matrix &operator*=(
             const Matrix<NbColumn, OtherNbColumn, OtherType> &other)
@@ -91,7 +111,7 @@ namespace Maths {
         }
 
     private:
-        std::array<std::array<Type, NbColumn>, NbRow> _matrix;
+        MatrixType _matrix;
     };
 
     template<std::size_t NbRow, std::size_t NbColumn, typename Type>
