@@ -28,11 +28,13 @@ namespace RayTracer {
             void setFov(double fov) noexcept;
 
             [[nodiscard]] double getFov() const noexcept;
+            [[nodiscard]] std::size_t getNbPixel() const noexcept;
             [[nodiscard]] Maths::Vector3U getResolution() const noexcept;
             [[nodiscard]] Maths::Point3D getPosition() const noexcept;
             [[nodiscard]] Maths::Vector3D getRotation() const noexcept;
         private:
             Maths::Vector3U _resolution;
+            std::size_t _nbPix;
             Maths::Point3D _position;
             Maths::Vector3D _rotation;
             double _fov;

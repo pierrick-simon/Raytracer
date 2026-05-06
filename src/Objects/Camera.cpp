@@ -12,11 +12,11 @@ namespace RayTracer {
     Camera::Camera(Maths::Vector3U const &resolution, Maths::Point3D const &position,
         Maths::Vector3D const &rotation, double const fov):
     _resolution(resolution), _position(position), _rotation(rotation), _fov(fov),
-    _screen(Maths::Point3D(), Maths::Vector3D(), Maths::Vector3D())
+    _screen(Maths::Point3D(), Maths::Vector3D(), Maths::Vector3D()),
+    _nbPix(resolution.x * resolution.y)
     {
         updateCamera();
     }
-
 
     void Camera::setResolution(Maths::Vector3U const &reso) noexcept
     {
@@ -36,6 +36,11 @@ namespace RayTracer {
     void Camera::setFov(double fov) noexcept
     {
         _fov = fov;
+    }
+
+    std::size_t Camera::getNbPixel() const noexcept
+    {
+        return _nbPix;
     }
 
     double Camera::getFov() const noexcept

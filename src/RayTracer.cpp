@@ -48,6 +48,7 @@ namespace RayTracer {
                 setPixel(i, j, res);
             }
         }
+        fprintf(stdout, "\nDone !!\n");
     }
 
     double RayTracer::getSpecular(const Ray &ray,
@@ -156,6 +157,7 @@ namespace RayTracer {
         Maths::RGB color((unsigned char)std::min(c.x, max),
             (unsigned char)std::min(c.y, max),
             (unsigned char)std::min(c.z, max));
+        loadingBar(x * _camera.getResolution().y + y);
         _ppm.setPix(x, y, color);
     }
 
@@ -237,5 +239,24 @@ namespace RayTracer {
                 this->_lightsPluginsLoaders.emplace_back(std::move(loader));
             }
         }
+    }
+
+    void RayTracer::loadingBar(std::size_t pix)
+    {
+        double percentage = static_cast<double>(pix)
+            / static_cast<double>(_camera.getNbPixel());
+        
+        if (percentage - 0.015 > _loadingPercentage)
+            _loadingPercentage += 0.015;
+        else
+            return;
+        if (_loadingPercentage < 1.0 / 3.0)
+            fprintf(stdout, "\e[0;31m");
+        else if (_loadingPercentage < 2.0 / 3.0)
+            fprintf(stdout, "\e[0;33m");
+        else
+            fprintf(stdout, "\e[0;32m");
+        fprintf(stdout, "#\e[0;37m");
+        fflush(stdout);
     }
 }

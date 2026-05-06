@@ -68,6 +68,8 @@ namespace RayTracer {
         Maths::Vector3D parseObject(const Ray &ray, std::size_t depht);
         Maths::Vector3D parseLight(const Ray &ray, HitInfo &info);
 
+        void loadingBar(std::size_t pix);
+
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
         std::string _name;
@@ -78,6 +80,7 @@ namespace RayTracer {
         std::vector<DLLoader<ILightSourcePlugin>> _lightsPluginsLoaders;
         std::vector<std::unique_ptr<ILightSourcePlugin>> _lightsPlugins;
         LightConfig _lights;
+        double _loadingPercentage = 0.0;
 
         static BuilderMap
             _presetMaterialBuilders;
