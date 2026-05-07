@@ -25,6 +25,12 @@ namespace Maths {
         { a += b } -> std::same_as<T &>;
     };
 
+    template<typename A, typename B>
+    concept Addable = requires(A a, B b)
+    {
+        { a + b };
+    };
+
     template<std::size_t NbRow, std::size_t NbColumn, typename Type>
     class Matrix {
     public:
@@ -63,7 +69,7 @@ namespace Maths {
 
         template<class OtherType>
         using AdditionType = decltype(
-            std::declval<Type>() * std::declval<OtherType>());
+            std::declval<Type>() + std::declval<OtherType>());
 
         template<std::size_t OtherNbColumn, class OtherType> requires
             Multipliable<Type, OtherType> && AddAssignable<ProductType<
@@ -96,15 +102,17 @@ namespace Maths {
             return result;
         }
 
-        template<typename OtherType>
+        template<typename OtherType> requires Addable<Type, OtherType>
         Matrix<NbRow, NbColumn, AdditionType<OtherType>> operator+(
             const Matrix<NbRow, NbColumn, OtherType> &other) const
         {
             Matrix<NbRow, NbColumn, AdditionType<OtherType>> result;
 
-            for (size_t i = 0; i < NbRow; ++i)
-                for (size_t j = 0; j < NbColumn; ++j)
-                    result()(i, j) = this->_matrix[i][j] + other._matrix[i][j];
+            for (std::size_t i = 0; i < NbRow; ++i) {
+                for (std::size_t j = 0; j < NbColumn; ++j) {
+                    result(i, j) = (*this)(i, j) + other(i, j);
+                }
+            }
             return result;
         }
 
