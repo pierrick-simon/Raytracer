@@ -58,7 +58,8 @@ namespace Maths {
         using SubtractionType = decltype(
             std::declval<Type>() - std::declval<OtherType>());
 
-        template<typename OtherType> requires Addable<Type, OtherType>
+        template<typename OtherType>
+        requires Addable<Type, OtherType>
         Matrix<NbRow, NbColumn, AdditionType<OtherType>> operator+(
             const Matrix<NbRow, NbColumn, OtherType> &other) const
         {
@@ -96,6 +97,14 @@ namespace Maths {
             return result;
         }
 
+        template<std::size_t OtherNbColumn, typename OtherType>
+        Matrix &operator*=(
+            const Matrix<NbColumn, OtherNbColumn, OtherType> &other)
+        {
+            *this = *this * other;
+            return *this;
+        }
+
         template<typename ScalarType> requires Multipliable<Type, ScalarType>
         Matrix<NbRow, NbColumn, ProductType<ScalarType>> operator*(
             const ScalarType &scalar) const
@@ -108,11 +117,13 @@ namespace Maths {
             return result;
         }
 
-        template<std::size_t OtherNbColumn, typename OtherType>
-        Matrix &operator*=(
-            const Matrix<NbColumn, OtherNbColumn, OtherType> &other)
+        template<typename ScalarType> requires Multipliable<Type, ScalarType>
+        Matrix<NbRow, NbColumn, ProductType<ScalarType>> operator*=(
+            const ScalarType &scalar) const
         {
-            *this = *this * other;
+            for (std::size_t i = 0; i < NbRow; ++i)
+                for (std::size_t j = 0; j < NbColumn; ++j)
+                    (*this)(i, j) *= scalar;
             return *this;
         }
 
@@ -124,9 +135,9 @@ namespace Maths {
     private:
         MatrixType _matrix;
 
-        template<std::size_t OtherNbColumn, class OtherType> requires
-            Multipliable<Type, OtherType> && AddAssignable<ProductType<
-                OtherType>>
+        template<std::size_t OtherNbColumn, class OtherType>
+            requires Multipliable<Type, OtherType>
+            && AddAssignable<ProductType<OtherType>>
         void calculateLine(
             const Matrix<NbColumn, OtherNbColumn, OtherType> &other,
             Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> &result,
