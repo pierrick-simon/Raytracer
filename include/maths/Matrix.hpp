@@ -130,6 +130,18 @@ namespace Maths {
             return result;
         }
 
+        template<typename ScalarType> requires Multipliable<Type, ScalarType>
+        Matrix<NbRow, NbColumn, ProductType<ScalarType>> operator*(
+            const ScalarType &scalar) const
+        {
+            Matrix<NbRow, NbColumn, ProductType<ScalarType>> result;
+
+            for (std::size_t i = 0; i < NbRow; ++i)
+                for (std::size_t j = 0; j < NbColumn; ++j)
+                    result(i, j) = (*this)(i, j) * scalar;
+            return result;
+        }
+
         template<std::size_t OtherNbColumn, typename OtherType>
         Matrix &operator*=(
             const Matrix<NbColumn, OtherNbColumn, OtherType> &other)
