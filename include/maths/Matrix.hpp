@@ -16,12 +16,13 @@ namespace Maths {
     template<typename A, typename B>
     concept Multipliable = requires(A a, B b)
     {
-        {a * b};
+        { a * b };
     };
 
     template<typename T>
-    concept AddAssignable = requires(T a, T b) {
-        { a += b } -> std::same_as<T&>;
+    concept AddAssignable = requires(T a, T b)
+    {
+        { a += b } -> std::same_as<T &>;
     };
 
     template<std::size_t NbRow, std::size_t NbColumn, typename Type>
@@ -29,7 +30,10 @@ namespace Maths {
     public:
         using MatrixType = std::array<std::array<Type, NbColumn>, NbRow>;
 
-        explicit Matrix() : _matrix{} {};
+        explicit Matrix() :
+            _matrix{}
+        {
+        };
 
         explicit Matrix(Type defaultValue)
         {
@@ -54,16 +58,20 @@ namespace Maths {
         }
 
         template<class OtherType>
-        using ProductType = decltype(std::declval<Type>() * std::declval<OtherType>());
+        using ProductType = decltype(
+            std::declval<Type>() * std::declval<OtherType>());
 
         template<class OtherType>
-        using AdditionType = decltype(std::declval<Type>() * std::declval<OtherType>());
+        using AdditionType = decltype(
+            std::declval<Type>() * std::declval<OtherType>());
 
         template<std::size_t OtherNbColumn, class OtherType> requires
-            Multipliable<Type, OtherType> && AddAssignable<ProductType<OtherType>>
+            Multipliable<Type, OtherType> && AddAssignable<ProductType<
+                OtherType>>
         void calculateLine(
             const Matrix<NbColumn, OtherNbColumn, OtherType> &other,
-            Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> &result, std::size_t i) const
+            Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> &result,
+            std::size_t i) const
         {
             for (std::size_t j = 0; j < OtherNbColumn; ++j) {
                 result(i, j) = ProductType<OtherType>{};
@@ -75,11 +83,13 @@ namespace Maths {
         }
 
         template<std::size_t OtherNbColumn, class OtherType> requires
-            Multipliable<Type, OtherType> && AddAssignable<ProductType<OtherType>>
+            Multipliable<Type, OtherType> && AddAssignable<ProductType<
+                OtherType>>
         Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> operator*(
             const Matrix<NbColumn, OtherNbColumn, OtherType> &other) const
         {
-            Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> result(ProductType<OtherType>{});
+            Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> result(
+                ProductType<OtherType>{});
             for (std::size_t i = 0; i < NbRow; ++i) {
                 calculateLine<OtherNbColumn, OtherType>(other, result, i);
             }
@@ -87,7 +97,8 @@ namespace Maths {
         }
 
         template<typename OtherType>
-        Matrix<NbRow, NbColumn, AdditionType<OtherType>> operator+(const Matrix<NbRow, NbColumn, OtherType> &other) const
+        Matrix<NbRow, NbColumn, AdditionType<OtherType>> operator+(
+            const Matrix<NbRow, NbColumn, OtherType> &other) const
         {
             Matrix<NbRow, NbColumn, AdditionType<OtherType>> result;
 
@@ -120,7 +131,6 @@ namespace Maths {
     {
         input << "[";
         for (std::size_t i = 0; i < NbRow; ++i) {
-
             input << "[";
             for (std::size_t j = 0; j < NbColumn; ++j) {
                 input << matrix.getMatrix()[i][j];
@@ -135,7 +145,7 @@ namespace Maths {
         return input;
     }
 
-    template <size_t NbRow, size_t NbColumn>
+    template<size_t NbRow, size_t NbColumn>
     using MatrixD = Matrix<NbRow, NbColumn, double>;
 }
 
