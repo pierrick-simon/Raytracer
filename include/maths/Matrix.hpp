@@ -71,6 +71,10 @@ namespace Maths {
         using AdditionType = decltype(
             std::declval<Type>() + std::declval<OtherType>());
 
+        template<class OtherType>
+        using SubtractionType = decltype(
+            std::declval<Type>() - std::declval<OtherType>());
+
         template<std::size_t OtherNbColumn, class OtherType> requires
             Multipliable<Type, OtherType> && AddAssignable<ProductType<
                 OtherType>>
@@ -108,11 +112,21 @@ namespace Maths {
         {
             Matrix<NbRow, NbColumn, AdditionType<OtherType>> result;
 
-            for (std::size_t i = 0; i < NbRow; ++i) {
-                for (std::size_t j = 0; j < NbColumn; ++j) {
+            for (std::size_t i = 0; i < NbRow; ++i)
+                for (std::size_t j = 0; j < NbColumn; ++j)
                     result(i, j) = (*this)(i, j) + other(i, j);
-                }
-            }
+            return result;
+        }
+
+        template<typename OtherType> requires Addable<Type, OtherType>
+        Matrix<NbRow, NbColumn, SubtractionType<OtherType>> operator-(
+            const Matrix<NbRow, NbColumn, OtherType> &other) const
+        {
+            Matrix<NbRow, NbColumn, SubtractionType<OtherType>> result;
+
+            for (std::size_t i = 0; i < NbRow; ++i)
+                for (std::size_t j = 0; j < NbColumn; ++j)
+                    result(i, j) = (*this)(i, j) - other(i, j);
             return result;
         }
 
