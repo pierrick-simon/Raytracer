@@ -146,7 +146,6 @@ namespace RayTracer {
 
         double dx = ray.direction.x;
         double dy = ray.direction.y;
-        double dz = ray.direction.z;
 
         double a = dx * dx + dy * dy;
         double b = 2.0 * (ox * dx + oy * dy);
