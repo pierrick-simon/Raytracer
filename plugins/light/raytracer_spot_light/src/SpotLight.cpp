@@ -111,6 +111,7 @@ namespace RayTracer {
         anglePercentage = std::clamp(anglePercentage, 0.0, 1.0);
         double distance = this->_pos.distance(ray.origin);
         double distancePercentage = distance / this->_falloutDistance;
+        distancePercentage = (1 - std::clamp(distancePercentage, 0.0, 1.0));
 
         return this->_color *
                std::midpoint(distancePercentage, anglePercentage);

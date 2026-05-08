@@ -16,8 +16,6 @@ namespace RayTracer {
         public:
             Maths::Point3D origin;
             Maths::Vector3D direction;
-            Maths::Vector3D colorPercentage;
-            double strength;
     };
 }
 
