@@ -5,6 +5,7 @@
 ** ${descriptor}
 */
 
+#include "RayTracer.hpp"
 #include "PrimitiveTriangles.hpp"
 
 namespace RayTracer {
@@ -21,6 +22,8 @@ namespace RayTracer {
         hit.hitPos = ray.origin + ray.direction * t;
         hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
         hit.impactNormal = AB.crossProduct(AC).normalized();
+        if (hit.impactNormal.dot(ray.direction) > 0)
+            hit.impactNormal = hit.impactNormal * -1.0;
         hit.material = _material;
         return std::make_optional<HitInfo>(hit);
     }
