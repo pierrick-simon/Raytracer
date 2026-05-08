@@ -5,6 +5,7 @@
 ** DESCRIPTION
 */
 
+#include <float.h>
 #include <criterion/criterion.h>
 
 #include "Vector3.hpp"
@@ -49,7 +50,7 @@ Test(Vector3, length)
 {
     Maths::Vector3D v(3.0, 4.0, 0.0);
 
-    double len = v.length();
+    double len = v.norm();
 
     cr_assert_float_eq(len, 5.0, 1e-6);
 }
@@ -115,5 +116,5 @@ Test(Vector3, equality)
     Maths::Vector3D b(1.0, 2.0, 3.0);
 
     cr_assert(a == b);
-    cr_assert(!(a != b));
+    cr_assert_not(a != b);
 }

@@ -37,6 +37,12 @@ namespace Maths {
         { a *= b } -> std::same_as<T &>;
     };
 
+    template<typename T, typename S>
+    concept DivideAssignable = requires(T a, S b)
+    {
+        { a /= b } -> std::same_as<T &>;
+    };
+
     template<typename T, typename U>
     concept AssignableFrom = requires(T a, U b)
     {
@@ -54,6 +60,19 @@ namespace Maths {
 
         explicit Matrix(MatrixType matrix);
 
+        template<typename... Args>
+            requires (sizeof...(Args) == NbRow * NbColumn)
+        explicit Matrix(Args &&... args)
+        {
+            std::array<Type, NbRow * NbColumn> values{
+                static_cast<Type>(args)...
+            };
+
+            for (std::size_t row = 0; row < NbRow; ++row)
+                for (std::size_t col = 0; col < NbColumn; ++col)
+                    this->_matrix[row][col] = values[row * NbColumn + col];
+        }
+
         Type operator()(std::size_t row, std::size_t col) const;
 
         Type &operator()(std::size_t row, std::size_t col);
@@ -70,8 +89,12 @@ namespace Maths {
         using SubtractionType = decltype(
             std::declval<Type>() - std::declval<OtherType>());
 
+        template<class OtherType>
+        using DivisionType = decltype(
+            std::declval<Type>() / std::declval<OtherType>());
+
         template<typename OtherType>
-        requires Addable<Type, OtherType>
+            requires Addable<Type, OtherType>
         Matrix<NbRow, NbColumn, AdditionType<OtherType>> operator+(
             const Matrix<NbRow, NbColumn, OtherType> &other) const
         {
@@ -83,7 +106,8 @@ namespace Maths {
             return result;
         }
 
-        template<typename OtherType> requires Addable<Type, OtherType>
+        template<typename OtherType>
+            requires Addable<Type, OtherType>
         Matrix<NbRow, NbColumn, SubtractionType<OtherType>> operator-(
             const Matrix<NbRow, NbColumn, OtherType> &other) const
         {
@@ -95,7 +119,8 @@ namespace Maths {
             return result;
         }
 
-        template<std::size_t OtherNbColumn, class OtherType> requires
+        template<std::size_t OtherNbColumn, class OtherType>
+            requires
             Multipliable<Type, OtherType> && AddAssignable<ProductType<
                 OtherType>>
         Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> operator*(
@@ -117,7 +142,8 @@ namespace Maths {
             return *this;
         }
 
-        template<typename ScalarType> requires Multipliable<Type, ScalarType>
+        template<typename ScalarType>
+            requires Multipliable<Type, ScalarType>
         Matrix<NbRow, NbColumn, ProductType<ScalarType>> operator*(
             const ScalarType &scalar) const
         {
@@ -129,10 +155,10 @@ namespace Maths {
             return result;
         }
 
-        template<typename ScalarType> requires Multipliable<Type, ScalarType>
-        Matrix<NbRow, NbColumn, Type> &operator*=(
-            const ScalarType &scalar)
-        requires MultiplyAssignable<Type, ScalarType>
+        template<typename ScalarType>
+            requires Multipliable<Type, ScalarType>
+        Matrix &operator*=(const ScalarType &scalar)
+            requires MultiplyAssignable<Type, ScalarType>
         {
             for (std::size_t i = 0; i < NbRow; ++i)
                 for (std::size_t j = 0; j < NbColumn; ++j)
@@ -141,7 +167,48 @@ namespace Maths {
         }
 
         template<typename ScalarType>
-        requires Addable<Type, ScalarType> && AssignableFrom<Type, AdditionType<ScalarType>>
+            requires Multipliable<Type, ScalarType>
+        Matrix<NbRow, NbColumn, DivisionType<ScalarType>> operator/(
+            const ScalarType &scalar) const
+        {
+            Matrix<NbRow, NbColumn, DivisionType<ScalarType>> result;
+
+            for (std::size_t i = 0; i < NbRow; ++i)
+                for (std::size_t j = 0; j < NbColumn; ++j)
+                    result(i, j) = (*this)(i, j) / scalar;
+            return result;
+        }
+
+        template<typename ScalarType>
+            requires Multipliable<Type, ScalarType>
+        Matrix &operator/=(const ScalarType &scalar)
+            requires DivideAssignable<Type, ScalarType>
+        {
+            for (std::size_t i = 0; i < NbRow; ++i)
+                for (std::size_t j = 0; j < NbColumn; ++j)
+                    (*this)(i, j) /= scalar;
+            return *this;
+        }
+
+        [[nodiscard]] bool operator==(const Matrix &other) const
+        {
+            bool equal = false;
+
+            if (*this == other)
+                equal = true;
+            else
+                equal = this->getMatrix() == other.getMatrix();
+            return equal;
+        }
+
+        [[nodiscard]] bool operator!=(const Matrix &other) const
+        {
+            return !(*this == other);
+        }
+
+        template<typename ScalarType>
+            requires Addable<Type, ScalarType>
+                     && AssignableFrom<Type, AdditionType<ScalarType>>
         Matrix<NbRow, NbColumn, AdditionType<ScalarType>> operator+(
             const ScalarType &scalar) const
         {
@@ -153,7 +220,8 @@ namespace Maths {
         }
 
         template<typename ScalarType>
-        requires Addable<Type, ScalarType> && AssignableFrom<Type, SubtractionType<ScalarType>>
+            requires Addable<Type, ScalarType>
+                     && AssignableFrom<Type, SubtractionType<ScalarType>>
         Matrix<NbRow, NbColumn, SubtractionType<ScalarType>> operator-(
             const ScalarType &scalar) const
         {
@@ -165,9 +233,9 @@ namespace Maths {
         }
 
         template<typename ScalarType>
-        requires Addable<Type, ScalarType> && AssignableFrom<Type, AdditionType<ScalarType>>
-        Matrix<NbRow, NbColumn, Type> &operator+=(
-            const ScalarType &scalar)
+            requires Addable<Type, ScalarType>
+                     && AssignableFrom<Type, AdditionType<ScalarType>>
+        Matrix &operator+=(const ScalarType &scalar)
         {
             for (std::size_t i = 0; i < NbRow; ++i)
                 for (std::size_t j = 0; j < NbColumn; ++j)
@@ -176,9 +244,9 @@ namespace Maths {
         }
 
         template<typename ScalarType>
-        requires Addable<Type, ScalarType> && AssignableFrom<Type, SubtractionType<ScalarType>>
-        Matrix<NbRow, NbColumn, Type> &operator-=(
-            const ScalarType &scalar)
+            requires Addable<Type, ScalarType>
+                     && AssignableFrom<Type, SubtractionType<ScalarType>>
+        Matrix &operator-=(const ScalarType &scalar)
         {
             for (std::size_t i = 0; i < NbRow; ++i)
                 for (std::size_t j = 0; j < NbColumn; ++j)
@@ -187,9 +255,9 @@ namespace Maths {
         }
 
         template<typename OtherType>
-        requires Addable<Type, OtherType> && AssignableFrom<Type, AdditionType<OtherType>>
-        Matrix<NbRow, NbColumn, Type> &operator+=(
-            const Matrix<NbRow, NbColumn, OtherType> &other)
+            requires Addable<Type, OtherType>
+                     && AssignableFrom<Type, AdditionType<OtherType>>
+        Matrix &operator+=(const Matrix<NbRow, NbColumn, OtherType> &other)
         {
             for (std::size_t i = 0; i < NbRow; ++i)
                 for (std::size_t j = 0; j < NbColumn; ++j)
@@ -198,9 +266,9 @@ namespace Maths {
         }
 
         template<typename OtherType>
-        requires Addable<Type, OtherType> && AssignableFrom<Type, SubtractionType<OtherType>>
-        Matrix<NbRow, NbColumn, Type> &operator-=(
-            const Matrix<NbRow, NbColumn, OtherType> &other)
+            requires Addable<Type, OtherType>
+                     && AssignableFrom<Type, SubtractionType<OtherType>>
+        Matrix &operator-=(const Matrix<NbRow, NbColumn, OtherType> &other)
         {
             for (std::size_t i = 0; i < NbRow; ++i)
                 for (std::size_t j = 0; j < NbColumn; ++j)
@@ -218,7 +286,7 @@ namespace Maths {
 
         template<std::size_t OtherNbColumn, class OtherType>
             requires Multipliable<Type, OtherType>
-            && AddAssignable<ProductType<OtherType>>
+                     && AddAssignable<ProductType<OtherType>>
         void calculateLine(
             const Matrix<NbColumn, OtherNbColumn, OtherType> &other,
             Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> &result,

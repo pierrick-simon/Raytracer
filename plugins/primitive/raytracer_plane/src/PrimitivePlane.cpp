@@ -48,7 +48,7 @@ namespace RayTracer {
                     ray.origin.z + t * ray.direction.z
                 );
                 info = {point, _normal,
-                    Maths::Vector3D(point, ray.origin).length(), _material};
+                    Maths::Vector3D(point, ray.origin).norm(), _material};
             }
         }
         return info;

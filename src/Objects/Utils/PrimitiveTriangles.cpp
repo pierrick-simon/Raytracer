@@ -19,7 +19,7 @@ namespace RayTracer {
     {
         HitInfo hit{};
         hit.hitPos = ray.origin + ray.direction * t;
-        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
+        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).norm();
         hit.impactNormal = AB.crossProduct(AC).normalized();
         hit.material = _material;
         return std::make_optional<HitInfo>(hit);

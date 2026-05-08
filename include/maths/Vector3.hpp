@@ -19,105 +19,150 @@ namespace Maths {
     template<typename Type>
     class Point3;
 
-    template<typename Type>
-    class Vector3 : public Matrix<1, 3, Type> {
+    template<std::size_t Dim, typename Type>
+    class Vector : public Matrix<Dim, 1, Type> {
     public:
-        Vector3(Type x, Type y, Type z);
+        template<typename... Args>
+            requires (sizeof...(Args) == Dim)
+        explicit constexpr Vector(Args &&... args) :
+            Matrix<Dim, 1, Type>{static_cast<Type>(args)...}
+        {
+        }
 
-        Vector3(const Matrix<1, 3, Type> &matrix);
+        Vector(const Matrix<Dim, 1, Type> &matrix);
 
-        Vector3 &operator=(const Matrix<1, 3, Type> &matrix);
+        Vector &operator=(const Matrix<Dim, 1, Type> &matrix);
 
-        const Type &getX() const;
+        const Type &operator[](size_t index) const
+        {
+            return (*this)(index, 0);
+        }
 
-        Type &getX();
+        Type &operator[](size_t index)
+        {
+            return (*this)(index, 0);
+        }
 
-        const Type &getY() const;
-
-        Type &getY();
-
-        const Type &getZ() const;
-
-        Type &getZ();
-
-        [[nodiscard]] double length() const
+        [[nodiscard]] double norm() const
         {
             double sum = 0;
 
-            for (size_t i = 0; i < 3; ++i)
-                sum += (*this)(0, i);
+            for (size_t i = 0; i < Dim; ++i)
+                sum += (*this)[i];
 
             return std::sqrt(sum);
         }
 
-        [[nodiscard]] Vector3 normalized() const
+        [[nodiscard]] Vector normalized() const
         {
-            Vector3 normalized = *this;
-            double length = this->length();
+            Vector normalized = *this;
+            double length = this->norm();
 
             normalized /= length;
             return normalized;
         }
 
-        [[nodiscard]] double distance(const Vector3 &rhs) const
+        [[nodiscard]] double distance(const Vector &rhs) const
         {
-            return distance(*this, rhs);
+            Vector delta = *this - delta;
+            return delta.norm();
         }
 
-        [[nodiscard]] double dot(const Vector3 &rhs) const
+        [[nodiscard]] double dot(const Vector &rhs) const
         {
-            return this->x * rhs.x + this->y * rhs.y + this->
-                   z * rhs.z;
+            double result = 0;
+
+            for (size_t i = 0; i < Dim; ++i)
+                result += (*this)[i] * rhs[i];
+            return result;
         }
 
-        [[nodiscard]] double getAngle(const Vector3 &other) const
+        [[nodiscard]] double getAngle(const Vector &other) const
         {
-            double angle = this->dot(other) / (this->length() * other.length());
+            double angle = this->dot(other) / (this->norm() * other.norm());
 
             return acos(angle);
         }
 
-        [[nodiscard]] Vector3 crossProduct(const Vector3 &rhs) const
+        static Vector lerp(const Vector &min, const Vector &max, double t)
         {
-            return Vector3(
-                this->getY() * rhs.getZ() - this->getZ() * rhs.getY(),
-                this->getZ() * rhs.getX() - this->getX() * rhs.getZ(),
-                this->getX() * rhs.getY() - this->getY() * rhs.getX()
-            );
+            return min * (1.0 - t) + max * t;
         }
 
-        Vector3 lerp(const Vector3 &min,
-            const Vector3 &max,
-            double t)
-        {
-            return Vector3(
-                std::lerp(min.x, max.x, t),
-                std::lerp(min.y, max.y, t),
-                std::lerp(min.z, max.z, t)
-            );
-        }
-
-        Vector3 clampedLerp(const Vector3 &min,
-            const Vector3 &max, double t)
+        Vector clampedLerp(const Vector &min,
+            const Vector &max, double t)
         {
             return lerp(min, max, std::clamp(t, 0.0, 1.0));
         }
+
+        Vector crossProduct(const Vector &rhs) const
+            requires (Dim == 3)
+        {
+            return Vector(
+                (*this)[1] * rhs[2] - (*this)[2] * rhs[1],
+                (*this)[2] * rhs[0] - (*this)[0] * rhs[2],
+                (*this)[0] * rhs[1] - (*this)[1] * rhs[0]
+            );
+        }
+
+        const Type &getX() const
+            requires (Dim <= 4)
+        {
+            return (*this)[0];
+        }
+
+        Type &getX()
+            requires (Dim <= 4)
+        {
+            return (*this)[0];
+        }
+
+        const Type &getY() const
+            requires (Dim >= 2 && Dim <= 4)
+        {
+            return (*this)[1];
+        }
+
+        Type &getY()
+            requires (Dim >= 2 && Dim <= 4)
+        {
+            return (*this)[1];
+        }
+
+        const Type &getZ() const
+            requires (Dim == 3 || Dim == 4)
+        {
+            return (*this)[2];
+        }
+
+        Type &getZ()
+            requires (Dim == 3 || Dim == 4)
+        {
+            return (*this)[2];
+        }
+
+        const Type &getW() const
+            requires (Dim == 4)
+        {
+            return (*this)[3];
+        }
+
+        Type &getW()
+            requires (Dim == 4)
+        {
+            return (*this)[3];
+        }
     };
 
-    template<typename Type>
-    Vector3<Type>::Vector3(Type x, Type y, Type z) :
-        Matrix<1, 3, Type>({x, y, z})
+    template<std::size_t Dim, typename Type>
+    Vector<Dim, Type>::Vector(const Matrix<Dim, 1, Type> &matrix) :
+        Matrix<Dim, 1, Type>(matrix.getMatrix())
     {
     }
 
-    template<typename Type>
-    Vector3<Type>::Vector3(const Matrix<1, 3, Type> &matrix) :
-        Matrix<1, 3, Type>(matrix.getMatrix())
-    {
-    }
-
-    template<typename Type>
-    Vector3<Type> &Vector3<Type>::operator=(const Matrix<1, 3, Type> &matrix)
+    template<std::size_t Dim, typename Type>
+    Vector<Dim, Type> &Vector<Dim, Type>::operator=(
+        const Matrix<Dim, 1, Type> &matrix)
     {
         if (*this == matrix)
             return *this;
@@ -126,40 +171,7 @@ namespace Maths {
     }
 
     template<typename Type>
-    const Type &Vector3<Type>::getX() const
-    {
-        return (*this)(0, 0);
-    }
-
-    template<typename Type>
-    Type &Vector3<Type>::getX()
-    {
-        return (*this)(0, 0);
-    }
-
-    template<typename Type>
-    const Type &Vector3<Type>::getY() const
-    {
-        return (*this)(0, 1);
-    }
-
-    template<typename Type>
-    Type &Vector3<Type>::getY()
-    {
-        return (*this)(0, 1);
-    }
-
-    template<typename Type>
-    const Type &Vector3<Type>::getZ() const
-    {
-        return (*this)(0, 2);
-    }
-
-    template<typename Type>
-    Type &Vector3<Type>::getZ()
-    {
-        return (*this)(0, 2);
-    }
+    using Vector3 = Vector<3, Type>;
 
     using Vector3D = Vector3<double>;
     using RGB = Vector3<unsigned char>;

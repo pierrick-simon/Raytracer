@@ -23,7 +23,7 @@ namespace RayTracer {
         hit.hitPos.x = ray.origin.x + (ray.direction.x * x);
         hit.hitPos.y = ray.origin.y + (ray.direction.y * x);
         hit.hitPos.z = ray.origin.z + (ray.direction.z * x);
-        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
+        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).norm();
         hit.impactNormal.x = (hit.hitPos.x - _origin.x) / _radius;
         hit.impactNormal.y = (hit.hitPos.y - _origin.y) / _radius;
         hit.impactNormal.z = (hit.hitPos.z - _origin.z) / _radius;
