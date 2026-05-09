@@ -76,7 +76,7 @@ namespace RayTracer {
             if (diffuse <= DOUBLE_OFFSET)
                 continue;
             if (!getHitObject(lightRay)) {
-                Maths::Color lightColor(light->getLightAmount(lightRay) / 255.0);
+                Maths::Color lightColor = light->getLightAmount(lightRay);
                 color += lightColor * (info.material.getDiffuse() * diffuse
                     * _lights.getDiffuse()
                     + getSpecular(ray, lightRay, info)
@@ -147,8 +147,7 @@ namespace RayTracer {
         double u = (1.0 / resolution.getX()) * x;
         double v = (1.0 / resolution.getY()) * y;
         Ray ray = _camera.ray(u, v);
-        double max = std::numeric_limits<unsigned char>::max();
-        Maths::Color c(parseObject(ray, 0) * max);
+        Maths::Color c(parseObject(ray, 0));
         loadingBar(x * _camera.getResolution().getY() + y);
         _ppm.setPix(x, y, c);
     }
