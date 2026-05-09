@@ -28,11 +28,11 @@ namespace Maths {
         return {
             this->_w * rhs._w - this->_x * rhs._x -
             this->_y * rhs._y - this->_z * rhs._z,
-            this->_w * rhs._x + this->_x * rhs._w -
-            this->_y * rhs._z + this->_z * rhs._y,
-            this->_w * rhs._y + this->_x * rhs._z +
-            this->_y * rhs._w - this->_z * rhs._x,
-            this->_w * rhs._z - this->_x * rhs._y +
+            this->_w * rhs._x + this->_x * rhs._w +
+            this->_y * rhs._z - this->_z * rhs._y,
+            this->_w * rhs._y - this->_x * rhs._z +
+            this->_y * rhs._w + this->_z * rhs._x,
+            this->_w * rhs._z + this->_x * rhs._y -
             this->_y * rhs._x + this->_z * rhs._w
         };
     }
@@ -56,7 +56,7 @@ namespace Maths {
     {
         double magnitude = this->magnitude();
 
-        if (magnitude < 1e-4)
+        if (magnitude < 1e-10)
             return identity();
 
         return {
@@ -71,8 +71,10 @@ namespace Maths {
     {
         double magnitude = this->magnitude();
 
-        if (magnitude < 1e-4)
+        if (magnitude < 1e-10) {
+            *this = identity();
             return *this;
+        }
 
         this->_w /= magnitude;
         this->_x /= magnitude;
@@ -83,16 +85,23 @@ namespace Maths {
 
     Quaternion Quaternion::inversed() const
     {
-        return {this->_w, -this->_x, -this->_y, -this->_z};
+        double magnitudeSquared = this->_w * this->_w + this->_x * this->_x +
+                       this->_y * this->_y + this->_z * this->_z;
+
+        if (magnitudeSquared < 1e-10)
+            return identity();
+
+        return {
+            this->_w / magnitudeSquared,
+            -this->_x / magnitudeSquared,
+            -this->_y / magnitudeSquared,
+            -this->_z / magnitudeSquared
+        };
     }
 
     Quaternion &Quaternion::inverse()
     {
-        this->_w = -this->_w;
-        this->_x = -this->_x;
-        this->_y = -this->_y;
-        this->_z = -this->_z;
-
+        *this = this->inversed();
         return *this;
     }
 

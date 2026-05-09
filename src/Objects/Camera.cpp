@@ -76,14 +76,14 @@ namespace RayTracer {
         pointU += _position;
         pointV += _position;
         _screen.setOrigin(rectOrigin);
-        _screen.setTopSide(rectOrigin - pointU);
-        _screen.setLeftSide(rectOrigin - pointV);
+        _screen.setTopSide(pointU - rectOrigin);
+        _screen.setLeftSide(pointV - rectOrigin);
     }
 
     Ray Camera::ray(const double &u, const double &v) const noexcept
     {
         Maths::Point3D p = _screen.pointAt(u, v);
-        return {_position, _position - p};
+        return {_position, p - _position};
     }
 
 }
