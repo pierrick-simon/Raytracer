@@ -18,11 +18,11 @@ namespace RayTracer {
         Maths::Vector3D const &AB, Maths::Vector3D const &AC, double t)
     {
         HitInfo hit = HitInfo();
-        hit.hitPos = ray.origin + ray.direction * t;
+        hit.hitPos = Maths::Vector3D(ray.origin + ray.direction * t);
         hit.hitDist = hit.hitPos.distance(ray.origin);
         hit.impactNormal = AB.crossProduct(AC).normalized();
         hit.material = _material;
-        return std::make_optional<HitInfo>(hit);
+        return hit;
     }
 
     std::optional<HitInfo> PrimitiveTriangle::rayTriangleMollerTrumboreAlgo(Ray const &ray, Maths::Vector3D AB, Maths::Vector3D AC, Maths::Vector3D h)

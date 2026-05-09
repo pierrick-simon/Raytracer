@@ -25,7 +25,7 @@ namespace RayTracer {
         return _direction;
     }
 
-    Maths::RGB SpotLight::Builder::getColor() const
+    Maths::Color SpotLight::Builder::getColor() const
     {
         return _color;
     }
@@ -61,7 +61,7 @@ namespace RayTracer {
         return copy;
     }
 
-    SpotLight::Builder SpotLight::Builder::withColor(Maths::RGB color) const
+    SpotLight::Builder SpotLight::Builder::withColor(Maths::Color color) const
     {
         Builder copy = *this;
         copy._color = color;
@@ -102,7 +102,7 @@ namespace RayTracer {
     {
     }
 
-    Maths::RGB SpotLight::getLightAmount(const Ray &ray) const
+    Maths::Color SpotLight::getLightAmount(const Ray &ray) const
     {
         auto delta = Maths::Vector3D(this->_pos - ray.origin);
         double angleDelta = delta.getAngle(ray.direction);
@@ -113,7 +113,7 @@ namespace RayTracer {
         double distancePercentage = distance / this->_falloutDistance;
         distancePercentage = (1 - std::clamp(distancePercentage, 0.0, 1.0));
 
-        return this->_color *
-               std::midpoint(distancePercentage, anglePercentage);
+        return Maths::Color(this->_color *
+                        std::midpoint(distancePercentage, anglePercentage));
     }
 }

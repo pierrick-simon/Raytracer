@@ -35,7 +35,10 @@ namespace Maths {
         {
         }
 
-        Vector(const Matrix<Dim, 1, Type> &matrix);
+        Vector(const Matrix<Dim, 1, Type> &matrix) :
+            Matrix<Dim, 1, Type>(matrix.getMatrix())
+        {
+        }
 
         const Type &operator[](size_t index) const
         {
@@ -52,7 +55,6 @@ namespace Maths {
         Vector operator*(const OtherType &other) const
         {
             Vector result;
-
             for (size_t i = 0; i < Dim; ++i)
                 result[i] = (*this)[i] * other;
             return result;
@@ -61,12 +63,10 @@ namespace Maths {
         Vector operator*(const Vector &other) const
         {
             Vector result;
-
             for (size_t i = 0; i < Dim; ++i)
                 result[i] = (*this)[i] * other[i];
             return result;
         }
-
 
         [[nodiscard]] double norm() const
         {
@@ -82,6 +82,9 @@ namespace Maths {
         {
             Vector normalized = *this;
             double length = this->norm();
+
+            if (length == 0.0)
+                return Vector{};
 
             normalized /= length;
             return normalized;
@@ -104,9 +107,13 @@ namespace Maths {
 
         [[nodiscard]] double getAngle(const Vector &other) const
         {
-            double angle = this->dot(other) / (this->norm() * other.norm());
+            double denom = this->norm() * other.norm();
+            if (denom == 0.0)
+                return 0.0;
 
-            return acos(angle);
+            double cosv = this->dot(other) / denom;
+            cosv = std::clamp(cosv, -1.0, 1.0);
+            return std::acos(cosv);
         }
 
         static Vector lerp(const Vector &min, const Vector &max, double t)
@@ -114,7 +121,7 @@ namespace Maths {
             return min * (1.0 - t) + max * t;
         }
 
-        Vector clampedLerp(const Vector &min,
+        static Vector clampedLerp(const Vector &min,
             const Vector &max, double t)
         {
             return lerp(min, max, std::clamp(t, 0.0, 1.0));
@@ -131,13 +138,13 @@ namespace Maths {
         }
 
         const Type &getX() const
-            requires (Dim <= 4)
+            requires (Dim >= 1 && Dim <= 4)
         {
             return (*this)[0];
         }
 
         Type &getX()
-            requires (Dim <= 4)
+            requires (Dim >= 1 && Dim <= 4)
         {
             return (*this)[0];
         }
@@ -179,17 +186,11 @@ namespace Maths {
         }
     };
 
-    template<std::size_t Dim, typename Type>
-    Vector<Dim, Type>::Vector(const Matrix<Dim, 1, Type> &matrix) :
-        Matrix<Dim, 1, Type>(matrix.getMatrix())
-    {
-    }
 
     template<typename Type>
     using Vector3 = Vector<3, Type>;
 
     using Vector3D = Vector3<double>;
-    using RGB = Vector3<unsigned char>;
     using Vector3U = Vector3<unsigned int>;
     using Vector3I = Vector3<int>;
 

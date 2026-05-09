@@ -14,7 +14,7 @@
 
 namespace RayTracer {
 
-    Material::Builder &Material::Builder::color(Maths::RGB color)
+    Material::Builder &Material::Builder::color(Maths::Color color)
     {
         _color = color;
         return *this;
@@ -55,18 +55,14 @@ namespace RayTracer {
         _specular(b.getSpecular()),
         _roughness(b.getRoughness()),
         _opacity(b.getOpacity()),
-        _refraction(b.getRefraction())
+        _refraction(b.getRefraction()),
+        _color(b.getColor())
     {
-        _colorPercentage.getX() =
-            (double)b.getColor().getX() / std::numeric_limits<unsigned char>::max();
-        _colorPercentage.getY() =
-            (double)b.getColor().getY() / std::numeric_limits<unsigned char>::max();
-        _colorPercentage.getZ() =
-            (double)b.getColor().getZ() / std::numeric_limits<unsigned char>::max();
         _metallic = std::clamp(_metallic, 0.0, 1.0);
         _specular = std::clamp(_specular, 0.0, 1.0);
         _roughness = std::clamp(_roughness, 0.0, 1.0);
         _opacity = std::clamp(_opacity, 0.0, 1.0);
+        _color.clamp();
     }
 
     Ray Material::getReflectRay(const Ray &ray, const HitInfo &hit) const

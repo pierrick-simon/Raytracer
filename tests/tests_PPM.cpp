@@ -36,7 +36,7 @@ Test(PPM, setPix_out_of_range)
     RayTracer::PortablePixMap tmp(w, h);
 
     try {
-        tmp.setPix(w, h, Maths::RGB());
+        tmp.setPix(w, h, Maths::Color());
         cr_assert(false);
     } catch (RayTracer::PortablePixMap::OutOfRangeException &e) {
         cr_assert_str_eq(e.what(), "Portable PixMap out of range.");
@@ -50,12 +50,12 @@ Test(PPM, setPix_getPix_success)
     std::size_t n = 0;
     std::size_t pix = 128;
     RayTracer::PortablePixMap tmp(w, h);
-    Maths::RGB color(pix, pix, pix);
+    Maths::Color color(pix, pix, pix);
 
     
     try {
         tmp.setPix(n, n, color);
-        Maths::RGB test = tmp.getPix(n, n);
+        Maths::Color test = tmp.getPix(n, n);
         cr_assert_eq(test.getX(), color.getX());
         cr_assert_eq(test.getY(), color.getY());
         cr_assert_eq(test.getZ(), color.getZ());

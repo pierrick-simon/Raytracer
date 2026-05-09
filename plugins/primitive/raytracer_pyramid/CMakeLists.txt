@@ -13,6 +13,7 @@ set(SHARED_SRCS
     Objects/Utils/TriangleShape.cpp
     Objects/materials/Material.cpp
     Objects/Utils/PrimitiveTriangles.cpp
+        maths/Color.cpp
 )
 
 list(TRANSFORM SHARED_SRCS PREPEND ${CMAKE_SOURCE_DIR}/src/)

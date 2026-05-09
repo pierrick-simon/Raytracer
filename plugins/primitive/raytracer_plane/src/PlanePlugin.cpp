@@ -25,7 +25,7 @@ namespace RayTracer {
             throw libconfig::SettingTypeException(element);
         double pos = ParserUtils::parseDouble(element, "position");
         return std::make_unique<PrimitivePlane>(PrimitivePlane::getAxisName()
-            .find(axisName)->second, pos,
+            .at(axisName), pos,
             ParserUtils::getBuilder(element, map).build());
     }
 } // RayTracer

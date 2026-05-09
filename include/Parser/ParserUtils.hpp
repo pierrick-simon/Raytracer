@@ -9,6 +9,7 @@
     #define PARSERUTILS_HPP
     #include <libconfig.h++>
 
+    #include "Color.hpp"
     #include "Vector.hpp"
     #include "Point.hpp"
     #include "IObjectPlugin.hpp"
@@ -18,8 +19,6 @@
 namespace RayTracer {
     class ParserUtils {
     public:
-        static Maths::Vector3I parseVector3I(libconfig::Setting const &element);
-
         static double parseDouble(
             libconfig::Setting const &element, std::string value);
 
@@ -30,7 +29,7 @@ namespace RayTracer {
 
         static Maths::Point3D parsePoint3D(libconfig::Setting const &element);
 
-        static Maths::RGB parseColor(libconfig::Setting const &element);
+        static Maths::Color parseColor(libconfig::Setting const &element);
 
         static Material::Builder getBuilder(
             libconfig::Setting const &element,

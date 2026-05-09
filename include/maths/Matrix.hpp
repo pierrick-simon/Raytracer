@@ -9,6 +9,7 @@
     #define MATRIX_HPP
     #include <array>
     #include <cstddef>
+    #include <concepts>
     #include <ostream>
     #include <utility>
 
@@ -54,11 +55,33 @@ namespace Maths {
     public:
         using MatrixType = std::array<std::array<Type, NbColumn>, NbRow>;
 
-        explicit Matrix();
+        explicit Matrix() :
+            _matrix{}
+        {
+        }
 
-        explicit Matrix(Type defaultValue);
+        explicit Matrix(Type defaultValue)
+            requires (NbRow * NbColumn != 1)
+        {
+            for (std::size_t x = 0; x < NbRow; ++x)
+                for (std::size_t y = 0; y < NbColumn; ++y)
+                    this->_matrix[x][y] = defaultValue;
+        }
 
-        explicit Matrix(MatrixType matrix);
+        explicit Matrix(MatrixType matrix) :
+            _matrix(matrix)
+        {
+        }
+
+        const Type &operator()(std::size_t row, std::size_t col) const
+        {
+            return this->_matrix[row][col];
+        }
+
+        Type &operator()(std::size_t row, std::size_t col)
+        {
+            return this->_matrix[row][col];
+        }
 
         template<typename... Args>
             requires (sizeof...(Args) == NbRow * NbColumn)
@@ -72,10 +95,6 @@ namespace Maths {
                 for (std::size_t col = 0; col < NbColumn; ++col)
                     this->_matrix[row][col] = values[row * NbColumn + col];
         }
-
-        const Type &operator()(std::size_t row, std::size_t col) const;
-
-        Type &operator()(std::size_t row, std::size_t col);
 
         template<class OtherType>
         using ProductType = decltype(
@@ -122,7 +141,7 @@ namespace Maths {
         template<std::size_t OtherNbColumn, class OtherType>
             requires
             Multipliable<Type, OtherType> && AddAssignable<ProductType<
-                OtherType>>
+                OtherType>> && std::default_initializable<ProductType<OtherType>>
         Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> operator*(
             const Matrix<NbColumn, OtherNbColumn, OtherType> &other) const
         {
@@ -279,6 +298,7 @@ namespace Maths {
         template<std::size_t OtherNbColumn, class OtherType>
             requires Multipliable<Type, OtherType>
                      && AddAssignable<ProductType<OtherType>>
+                     && std::default_initializable<ProductType<OtherType>>
         void calculateLine(
             const Matrix<NbColumn, OtherNbColumn, OtherType> &other,
             Matrix<NbRow, OtherNbColumn, ProductType<OtherType>> &result,
@@ -293,40 +313,6 @@ namespace Maths {
             }
         }
     };
-
-    template<std::size_t NbRow, std::size_t NbColumn, typename Type>
-    Matrix<NbRow, NbColumn, Type>::Matrix() :
-        _matrix{}
-    {
-    }
-
-    template<std::size_t NbRow, std::size_t NbColumn, typename Type>
-    Matrix<NbRow, NbColumn, Type>::Matrix(Type defaultValue)
-    {
-        for (std::size_t x = 0; x < NbRow; ++x)
-            for (std::size_t y = 0; y < NbColumn; ++y)
-                this->_matrix[x][y] = defaultValue;
-    }
-
-    template<std::size_t NbRow, std::size_t NbColumn, typename Type>
-    Matrix<NbRow, NbColumn, Type>::Matrix(MatrixType matrix) :
-        _matrix(matrix)
-    {
-    }
-
-    template<std::size_t NbRow, std::size_t NbColumn, typename Type>
-    const Type &Matrix<NbRow, NbColumn, Type>::operator()(std::size_t row,
-        std::size_t col) const
-    {
-        return this->_matrix[row][col];
-    }
-
-    template<std::size_t NbRow, std::size_t NbColumn, typename Type>
-    Type &Matrix<NbRow, NbColumn, Type>::operator()(std::size_t row,
-        std::size_t col)
-    {
-        return this->_matrix[row][col];
-    }
 
     template<std::size_t NbRow, std::size_t NbColumn, typename Type>
     std::ostream &operator<<(std::ostream &input,

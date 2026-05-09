@@ -7,6 +7,7 @@
 
 #ifndef ILIGHTSOURCE_HPP
     #define ILIGHTSOURCE_HPP
+    #include "Color.hpp"
     #include "Ray.hpp"
     #include "Vector.hpp"
 
@@ -16,7 +17,7 @@ namespace RayTracer {
         virtual ~ILightSource() = default;
         [[nodiscard]] virtual Maths::Point3D getPosition() const = 0;
 
-        [[nodiscard]] virtual Maths::RGB getLightAmount(const Ray &) const = 0;
+        [[nodiscard]] virtual Maths::Color getLightAmount(const Ray &) const = 0;
     };
 }
 

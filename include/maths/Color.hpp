@@ -7,19 +7,29 @@
 
 #ifndef COLOR_HPP
     #define COLOR_HPP
+    #include <limits>
+
     #include "Vector.hpp"
 
 namespace Maths {
     class Color : public Vector<4, double> {
     public:
-        Color() = default;
+        Color();
 
         Color(double r, double g, double b, double a = 1.0);
 
         explicit Color(const Vector3D &color, double a = 1.0);
 
-        static Color from8Bit(unsigned char r, unsigned char g, unsigned char b,
-            unsigned char a =  std::numeric_limits<unsigned char>::max());
+        explicit Color(const Vector &vector);
+
+        Color(const Color &other);
+
+        Color &operator=(const Color &other);
+        Color &operator=(const Vector3D &vector);
+
+        static Color from8Bit(unsigned char r, unsigned char g,
+            unsigned char b,
+            unsigned char a = std::numeric_limits<unsigned char>::max());
 
         [[nodiscard]] Vector<4, unsigned char> to8Bit() const;
 
@@ -38,6 +48,28 @@ namespace Maths {
         [[nodiscard]] double &getA();
 
         [[nodiscard]] const double &getA() const;
+
+        Color &operator*=(const Vector3D &other);
+
+        Color &operator*=(const double &other);
+
+        Color &operator+=(const Vector3D &other);
+
+        Color &operator+=(const double &other);
+
+        Color &operator+=(const Vector &other);
+
+        Color &clamp();
+
+        static const Color WHITE;
+
+        static const Color BLACK;
+
+        static const Color RED;
+
+        static const Color GREEN;
+
+        static const Color BLUE;
     };
 } // Maths
 

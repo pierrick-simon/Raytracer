@@ -15,6 +15,8 @@
     #include <exception>
     #include <filesystem>
     #include <fstream>
+
+    #include "Color.hpp"
     #include "Vector.hpp"
 
 namespace RayTracer {
@@ -31,8 +33,9 @@ namespace RayTracer {
                 : _width(width), _height(height), _map(width * height) {};
             PortablePixMap(std::string filepath);
 
-            void setPix(std::size_t width, std::size_t height, Maths::RGB pix);
-            Maths::RGB getPix(std::size_t width, std::size_t height);
+            void setPix(std::size_t width, std::size_t height, Maths::Color pix);
+
+            Maths::Color getPix(std::size_t width, std::size_t height);
             size_t getHeight() {return _height;}
             size_t getWidth() {return _width;}
 
@@ -72,7 +75,7 @@ namespace RayTracer {
 
             std::size_t _width;
             std::size_t _height;
-            std::vector<Maths::RGB> _map = {};
+            std::vector<Maths::Color> _map = {};
     };
 };
 

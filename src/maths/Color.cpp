@@ -11,16 +11,23 @@
 #include <cmath>
 
 namespace Maths {
+    Color::Color() :
+        Color(WHITE)
+    {
+    }
+
     Color::Color(double r, double g, double b, double a) :
         Vector(r, g, b, a)
     {
     }
-
     Color::Color(const Vector3D &color, double a) :
         Vector(color.getX(), color.getY(), color.getZ(), a)
     {
     }
-
+    Color::Color(const Vector &vector) :
+        Vector(vector)
+    {
+    }
     Color Color::from8Bit(unsigned char r, unsigned char g, unsigned char b,
         unsigned char a)
     {
@@ -31,6 +38,15 @@ namespace Maths {
             a / 255.0
         };
     }
+    const Color Color::WHITE{1.0, 1.0, 1.0, 1.0};
+
+    const Color Color::BLACK{0.0, 0.0, 0.0, 1.0};
+
+    const Color Color::RED{1.0, 0.0, 0.0, 1.0};
+
+    const Color Color::GREEN{0.0, 1.0, 0.0, 1.0};
+
+    const Color Color::BLUE{0.0, 0.0, 1.0, 1.0};
 
     static unsigned char doubleToByte(double val)
     {
@@ -83,5 +99,82 @@ namespace Maths {
     const double &Color::getA() const
     {
         return getW();
+    }
+
+    Color & Color::operator*=(const Vector3D &other)
+    {
+        this->getR() *= other.getX();
+        this->getG() *= other.getY();
+        this->getB() *= other.getZ();
+        this->clamp();
+        return *this;
+    }
+
+    Color & Color::operator*=(const double &other)
+    {
+        this->getR() *= other;
+        this->getG() *= other;
+        this->getB() *= other;
+        this->clamp();
+        return *this;
+    }
+
+    Color & Color::operator+=(const Vector3D &other)
+    {
+        this->getR() += other.getX();
+        this->getG() += other.getY();
+        this->getB() += other.getZ();
+        this->clamp();
+        return *this;
+    }
+
+    Color & Color::operator+=(const double &other)
+    {
+        this->getR() += other;
+        this->getG() += other;
+        this->getB() += other;
+        this->clamp();
+        return *this;
+    }
+
+    Color & Color::operator+=(const Vector &other)
+    {
+        this->getR() += other.getX();
+        this->getG() += other.getY();
+        this->getB() += other.getZ();
+        this->getA() += other.getW();
+        this->clamp();
+        return *this;
+    }
+
+    Color::Color(const Color &other):
+        Vector(other)
+    {
+    }
+
+    Color & Color::operator=(const Color &other)
+    {
+        if (this == &other)
+            return *this;
+        Vector::operator=(other);
+        return *this;
+    }
+
+    Color &Color::operator=(const Vector3D &vector)
+    {
+        this->getR() = vector.getX();
+        this->getG() = vector.getY();
+        this->getB() = vector.getZ();
+        this->clamp();
+        return *this;
+    }
+
+    Color & Color::clamp()
+    {
+        this->getR() = std::clamp(this->getR(), 0.0, 1.0);
+        this->getG() = std::clamp(this->getG(), 0.0, 1.0);
+        this->getB() = std::clamp(this->getB(), 0.0, 1.0);
+        this->getA() = std::clamp(this->getA(), 0.0, 1.0);
+        return *this;
     }
 } // Maths
