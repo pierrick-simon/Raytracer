@@ -58,7 +58,7 @@ namespace RayTracer {
 
         [[nodiscard]] std::vector<std::unique_ptr<IObject>>
             parseSimilarPrimitives(libconfig::Setting const &element,
-                std::unique_ptr<RayTracer::IObjectPlugin> const &plugins) const;
+                std::unique_ptr<IObjectPlugin> const &plugins) const;
 
     private:
         std::string _filepath;

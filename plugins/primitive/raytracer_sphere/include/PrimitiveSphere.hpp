@@ -11,7 +11,7 @@
     #include <memory>
     #include "IObject.hpp"
     #include "Material.hpp"
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     class PrimitiveSphere : public IObject {
@@ -28,7 +28,7 @@ namespace RayTracer {
 
     private:
 
-        HitInfo computeHitInfos(const Ray &, double) noexcept;
+        HitInfo computeHitInfos(const Ray &, double) const noexcept;
         double solveQuadratic(double a, double b,
             double c, double delta) noexcept;
 

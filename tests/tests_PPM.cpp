@@ -5,6 +5,7 @@
 ** tests_PPM
 */
 
+#include <iostream>
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
 #include "PortablePixMap.hpp"
@@ -36,7 +37,7 @@ Test(PPM, setPix_out_of_range)
     RayTracer::PortablePixMap tmp(w, h);
 
     try {
-        tmp.setPix(w, h, Maths::RGB());
+        tmp.setPix(w, h, Maths::Color());
         cr_assert(false);
     } catch (RayTracer::PortablePixMap::OutOfRangeException &e) {
         cr_assert_str_eq(e.what(), "Portable PixMap out of range.");
@@ -50,15 +51,15 @@ Test(PPM, setPix_getPix_success)
     std::size_t n = 0;
     std::size_t pix = 128;
     RayTracer::PortablePixMap tmp(w, h);
-    Maths::RGB color(pix, pix, pix);
+    Maths::Color color(pix, pix, pix);
 
     
     try {
         tmp.setPix(n, n, color);
-        Maths::RGB test = tmp.getPix(n, n);
-        cr_assert_eq(test.x, color.x);
-        cr_assert_eq(test.y, color.y);
-        cr_assert_eq(test.z, color.z);
+        Maths::Color test = tmp.getPix(n, n);
+        cr_assert_eq(test.getX(), color.getX());
+        cr_assert_eq(test.getY(), color.getY());
+        cr_assert_eq(test.getZ(), color.getZ());
     } catch (RayTracer::PortablePixMap::OutOfRangeException &_) {
         cr_assert(false);
     }
@@ -84,7 +85,8 @@ Test(PPM, save)
 
     tmp.save(filename);
     filename += ".ppm";
-    cr_assert_str_eq(readFile("screenshots/" + filename, false).c_str(), readFile(filename, true).c_str());
+    auto content = readFile("screenshots/" + filename, false);
+    cr_assert_eq(content, readFile(filename, true));
 }
 
 Test(PPM_LOAD, normal)
@@ -97,7 +99,7 @@ Test(PPM_LOAD, normal)
         filename = "test";
         tmp.save(filename);
         filename += ".ppm";
-        cr_assert_str_eq(readFile("screenshots/" + filename, false).c_str(), readFile(filename, true).c_str());
+        cr_assert_eq(readFile("screenshots/" + filename, false), readFile(filename, true));
     } catch (RayTracer::PortablePixMap::NoSuchFileException &_) {
         cr_assert(false);
     } catch (RayTracer::PortablePixMap::WrongExtensionException &_) {

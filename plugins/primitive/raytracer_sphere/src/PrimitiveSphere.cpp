@@ -17,16 +17,14 @@ namespace RayTracer {
     {
     }
 
-    HitInfo PrimitiveSphere::computeHitInfos(const Ray &ray, double x) noexcept
+    HitInfo PrimitiveSphere::computeHitInfos(const Ray &ray, double x)
+        const noexcept
     {
         HitInfo hit;
-        hit.hitPos.x = ray.origin.x + (ray.direction.x * x);
-        hit.hitPos.y = ray.origin.y + (ray.direction.y * x);
-        hit.hitPos.z = ray.origin.z + (ray.direction.z * x);
-        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
-        hit.impactNormal.x = (hit.hitPos.x - _origin.x) / _radius;
-        hit.impactNormal.y = (hit.hitPos.y - _origin.y) / _radius;
-        hit.impactNormal.z = (hit.hitPos.z - _origin.z) / _radius;
+        Maths::Vector3D directionMultiplied = ray.direction * x;
+        hit.hitPos = ray.origin + directionMultiplied;
+        hit.hitDist = hit.hitPos.distance(ray.origin);
+        hit.impactNormal = (hit.hitPos - _origin) / _radius;
         hit.material = _material;
         return hit;
     }
@@ -49,12 +47,12 @@ namespace RayTracer {
     {
         Maths::Vector3D origin = ray.origin - _origin;
 
-        double a = (ray.direction.x * ray.direction.x) + (
-                       ray.direction.y * ray.direction.y) + (
-                       ray.direction.z * ray.direction.z);
+        double a = (ray.direction.getX() * ray.direction.getX()) + (
+                       ray.direction.getY() * ray.direction.getY()) + (
+                       ray.direction.getZ() * ray.direction.getZ());
         double b = ray.direction.dot(Maths::Vector3D(origin)) * 2;
-        double c = (origin.x * origin.x) + (origin.y * origin.y)
-                   + (origin.z * origin.z) - (_radius * _radius);
+        double c = (origin.getX() * origin.getX()) + (origin.getY() * origin.getY())
+                   + (origin.getZ() * origin.getZ()) - (_radius * _radius);
         double delta = (b * b) - (4 * a * c);
         if (delta < 0)
             return {};

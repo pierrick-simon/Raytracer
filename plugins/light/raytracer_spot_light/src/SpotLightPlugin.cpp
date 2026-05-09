@@ -23,7 +23,7 @@ namespace RayTracer {
         Maths::Point3D origin = ParserUtils::parsePoint3D(element["position"]);
         Maths::Vector3D direction = ParserUtils::parseVector3D(
             element["direction"]);
-        Maths::RGB color = ParserUtils::parseColor(element["color"]);
+        Maths::Color color = ParserUtils::parseColor(element["color"]);
         double falloutDistance = ParserUtils::parseDouble(element,
             "falloutDistance");
         double outerAngle = ParserUtils::parseDouble(element, "outerConeAngle");

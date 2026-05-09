@@ -9,7 +9,7 @@
     #define DISPLAY_HPP
 
     #include <utility>
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
 

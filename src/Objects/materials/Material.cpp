@@ -14,7 +14,7 @@
 
 namespace RayTracer {
 
-    Material::Builder &Material::Builder::color(Maths::RGB color)
+    Material::Builder &Material::Builder::color(Maths::Color color)
     {
         _color = color;
         return *this;
@@ -55,25 +55,22 @@ namespace RayTracer {
         _specular(b.getSpecular()),
         _roughness(b.getRoughness()),
         _opacity(b.getOpacity()),
-        _refraction(b.getRefraction())
+        _refraction(b.getRefraction()),
+        _color(b.getColor())
     {
-        _colorPercentage.x = 
-            (double)b.getColor().x / std::numeric_limits<unsigned char>::max();
-        _colorPercentage.y = 
-            (double)b.getColor().y / std::numeric_limits<unsigned char>::max();
-        _colorPercentage.z = 
-            (double)b.getColor().z / std::numeric_limits<unsigned char>::max();
         _metallic = std::clamp(_metallic, 0.0, 1.0);
         _specular = std::clamp(_specular, 0.0, 1.0);
         _roughness = std::clamp(_roughness, 0.0, 1.0);
         _opacity = std::clamp(_opacity, 0.0, 1.0);
+        _color.clamp();
     }
 
     Ray Material::getReflectRay(const Ray &ray, const HitInfo &hit) const
     {
-        auto reflect = ray.direction
+        Maths::Vector3D reflect = ray.direction
                 - hit.impactNormal * 2.0 * ray.direction.dot(hit.impactNormal);
-        return {hit.hitPos + hit.impactNormal * DOUBLE_OFFSET,
+        Maths::Vector3D delta = hit.impactNormal * DOUBLE_OFFSET;
+        return {hit.hitPos + delta,
             reflect.normalized()};
     }
 
@@ -95,7 +92,8 @@ namespace RayTracer {
         double k = 1.0 - eta * eta * (1.0 - cosI * cosI);
         if (k >= DOUBLE_OFFSET) {
             Maths::Vector3D T = ray.direction * eta - N * (eta * cosI + std::sqrt(k));
-            refract = {hit.hitPos - N * DOUBLE_OFFSET, T.normalized()};
+            Maths::Vector3D delta = N * DOUBLE_OFFSET;
+            refract = {hit.hitPos - delta, T.normalized()};
         } else {
             HitInfo info = hit;
             info.impactNormal = N;

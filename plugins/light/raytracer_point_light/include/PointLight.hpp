@@ -9,16 +9,16 @@
     #define PRIMITIVESPHERE_HPP
 
     #include "ALightSource.hpp"
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     class PointLight : public ALightSource {
     public:
-        PointLight(const Maths::Point3D &pos, Maths::RGB color, double falloutDistance);
+        PointLight(const Maths::Point3D &pos, Maths::Color color, double falloutDistance);
 
-        [[nodiscard]] Maths::RGB getLightAmount(const Ray &) const override;
+        [[nodiscard]] Maths::Color getLightAmount(const Ray &) const override;
     private:
-        Maths::RGB _color;
+        Maths::Color _color;
         double _falloutDistance;
     };
 }
