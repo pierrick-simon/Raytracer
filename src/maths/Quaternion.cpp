@@ -39,11 +39,11 @@ namespace Maths {
 
     Vector3D Quaternion::operator*(const Vector3D &point) const
     {
-        Quaternion pointQuat{0, point.x, point.y, point.z};
+        Quaternion pointQuat{0, point.getX(), point.getY(), point.getZ()};
 
         Quaternion result = *this * pointQuat * this->inversed();
 
-        return {result._x, result._y, result._z};
+        return Vector3D{result._x, result._y, result._z};
     }
 
     Quaternion &Quaternion::operator*=(const Quaternion &rhs)
@@ -149,6 +149,11 @@ namespace Maths {
         return this->_z;
     }
 
+    Quaternion::Quaternion() :
+        Quaternion(identity())
+    {
+    }
+
     Quaternion::Quaternion(double w, double x, double y, double z) :
         _w(w),
         _x(x),
@@ -173,5 +178,11 @@ namespace Maths {
         stream << quaternion.getY() << ", ";
         stream << quaternion.getZ() << "}";
         return stream;
+    }
+
+    Vector3D &operator*=(Vector3D &vector, const Quaternion &rotation)
+    {
+        vector = rotation * vector;
+        return vector;
     }
 } // Maths

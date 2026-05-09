@@ -19,7 +19,7 @@ namespace Maths {
      */
     class Quaternion {
     public:
-        Quaternion() = delete;
+        Quaternion();
 
         Quaternion(double w, double x, double y, double z);
 
@@ -149,6 +149,8 @@ namespace Maths {
     };
 
     std::ostream &operator<<(std::ostream &stream, const Quaternion &quaternion);
+
+    Vector3D &operator*=(Vector3D &vector, const Quaternion &rotation);
 } // Maths
 
 #endif

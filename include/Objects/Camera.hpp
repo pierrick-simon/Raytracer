@@ -8,6 +8,7 @@
 #ifndef CAMERA_HPP
     #define CAMERA_HPP
 
+#include "Quaternion.hpp"
 #include "Vector3.hpp"
 #include "Rectangle.hpp"
 #include "Ray.hpp"
@@ -16,27 +17,27 @@ namespace RayTracer {
     class Camera {
         public:
             Camera() = default;
-            Camera(Maths::Vector3U const &resolution, Maths::Point3D const
-                &position, Maths::Vector3D const &rotation, double fov);
+            Camera(Maths::Vector2U const &resolution, Maths::Point3D const
+                &position, Maths::Quaternion const &rotation, double fov);
 
             Ray ray(const double &u, const double &v) const noexcept;
             void updateCamera() noexcept;
 
-            void setResolution(Maths::Vector3U const &reso) noexcept;
+            void setResolution(Maths::Vector2U const &reso) noexcept;
             void setPosition(Maths::Point3D const &pos) noexcept;
-            void setRotation(Maths::Vector3D const &rot) noexcept;
+            void setRotation(Maths::Quaternion const &rot) noexcept;
             void setFov(double fov) noexcept;
 
             [[nodiscard]] double getFov() const noexcept;
             [[nodiscard]] std::size_t getNbPixel() const noexcept;
-            [[nodiscard]] Maths::Vector3U getResolution() const noexcept;
+            [[nodiscard]] Maths::Vector2U getResolution() const noexcept;
             [[nodiscard]] Maths::Point3D getPosition() const noexcept;
-            [[nodiscard]] Maths::Vector3D getRotation() const noexcept;
+            [[nodiscard]] Maths::Quaternion getRotation() const noexcept;
         private:
-            Maths::Vector3U _resolution;
+            Maths::Vector2U _resolution;
             std::size_t _nbPix;
             Maths::Point3D _position;
-            Maths::Vector3D _rotation;
+            Maths::Quaternion _rotation;
             double _fov;
             Rectangle _screen;
     };

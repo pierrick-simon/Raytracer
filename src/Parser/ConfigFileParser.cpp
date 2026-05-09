@@ -16,7 +16,8 @@
 #include "ParserUtils.hpp"
 
 namespace RayTracer {
-    ConfigFileParser::ConfigFileParser(std::string filepath, std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
+    ConfigFileParser::ConfigFileParser(std::string filepath,
+        std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
         std::vector<std::unique_ptr<ILightSourcePlugin>> &lightPlugins,
         BuilderMap &materials) :
         _primitivePlugins(primitivePlugins),
@@ -30,7 +31,7 @@ namespace RayTracer {
         if (!file.is_open())
             throw ParserError("No Such File.");
         _filepath = {std::move(filepath)};
-        for (const auto& builder: materials)
+        for (const auto &builder: materials)
             _presetMaterialBuilders.insert(builder);
         libconfig::Config cfg;
         cfg.readFile(_filepath.c_str());
@@ -64,11 +65,12 @@ namespace RayTracer {
         unsigned int resWidth = 0;
         reso.lookupValue("width", resWidth);
         reso.lookupValue("height", resHeight);
-        const Maths::Vector3U resolution{resWidth, resHeight, 0};
+        const Maths::Vector2U resolution{resWidth, resHeight};
         const libconfig::Setting &pos = root["camera"]["position"];
         const Maths::Point3D position = ParserUtils::parseVector3D(pos);
         const libconfig::Setting &rot = root["camera"]["rotation"];
-        const Maths::Vector3D rotation = TORAD(ParserUtils::parseVector3D(rot));
+        const Maths::Quaternion rotation =
+            ParserUtils::parseQuaternionFromEuler(rot);
 
         return Camera{resolution, position, rotation, fov};
     }
@@ -107,9 +109,9 @@ namespace RayTracer {
         for (int i = 0; i < element.getLength(); ++i) {
             Material::Builder builder{};
             if (element[i].exists("type")
-                && _presetMaterialBuilders.find(element[i]["type"])
-                    != _presetMaterialBuilders.end())
-                builder = _presetMaterialBuilders.find(element[i]["type"])->second;
+                && _presetMaterialBuilders.contains(element[i]["type"]))
+                builder = _presetMaterialBuilders.find(element[i]["type"])->
+                    second;
             std::string name = element[i]["name"];
             _presetMaterialBuilders.emplace(name,
                 ParserUtils::parseMaterial(element[i], builder));
@@ -117,7 +119,7 @@ namespace RayTracer {
     }
 
     std::vector<std::unique_ptr<IObject>>
-        ConfigFileParser::parsePrimitives() const
+    ConfigFileParser::parsePrimitives() const
     {
         libconfig::Config cfg;
         std::vector<std::unique_ptr<IObject>> objects = {};
@@ -151,15 +153,16 @@ namespace RayTracer {
     }
 
     std::vector<std::unique_ptr<IObject>> ConfigFileParser::
-        parseSimilarPrimitives(libconfig::Setting const &element,
-            std::unique_ptr<IObjectPlugin> const &plugins) const
+    parseSimilarPrimitives(libconfig::Setting const &element,
+        std::unique_ptr<IObjectPlugin> const &plugins) const
     {
         int count = element.getLength();
         std::vector<std::unique_ptr<IObject>> object;
 
         for (int i = 0; i < count; ++i) {
             const libconfig::Setting &prim = element[i];
-            object.push_back(plugins->parseObject(prim, _presetMaterialBuilders));
+            object.push_back(
+                plugins->parseObject(prim, _presetMaterialBuilders));
         }
         return std::move(object);
     }

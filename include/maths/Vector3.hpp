@@ -10,14 +10,15 @@
 
     #include <algorithm>
     #include <cmath>
+    #include <type_traits>
 
     #include "Matrix.hpp"
 
     #define TORAD(X) (X * (M_PI / 180.0))
 
 namespace Maths {
-    template<typename Type>
-    class Point3;
+    template<typename T>
+    concept Scalar = std::is_arithmetic_v<std::remove_cvref_t<T>>;
 
     template<std::size_t Dim, typename Type>
     class Vector : public Matrix<Dim, 1, Type> {
@@ -29,9 +30,12 @@ namespace Maths {
         {
         }
 
-        Vector(const Matrix<Dim, 1, Type> &matrix);
+        explicit constexpr Vector() :
+            Matrix<Dim, 1, Type>(0)
+        {
+        }
 
-        Vector &operator=(const Matrix<Dim, 1, Type> &matrix);
+        Vector(const Matrix<Dim, 1, Type> &matrix);
 
         const Type &operator[](size_t index) const
         {
@@ -43,12 +47,33 @@ namespace Maths {
             return (*this)(index, 0);
         }
 
+        template<typename OtherType>
+            requires Scalar<OtherType>
+        Vector operator*(const OtherType &other) const
+        {
+            Vector result;
+
+            for (size_t i = 0; i < Dim; ++i)
+                result[i] = (*this)[i] * other;
+            return result;
+        }
+
+        Vector operator*(const Vector &other) const
+        {
+            Vector result;
+
+            for (size_t i = 0; i < Dim; ++i)
+                result[i] = (*this)[i] * other[i];
+            return result;
+        }
+
+
         [[nodiscard]] double norm() const
         {
             double sum = 0;
 
             for (size_t i = 0; i < Dim; ++i)
-                sum += (*this)[i];
+                sum += (*this)[i] * (*this)[i];
 
             return std::sqrt(sum);
         }
@@ -64,7 +89,7 @@ namespace Maths {
 
         [[nodiscard]] double distance(const Vector &rhs) const
         {
-            Vector delta = *this - delta;
+            Vector delta = *this - rhs;
             return delta.norm();
         }
 
@@ -160,16 +185,6 @@ namespace Maths {
     {
     }
 
-    template<std::size_t Dim, typename Type>
-    Vector<Dim, Type> &Vector<Dim, Type>::operator=(
-        const Matrix<Dim, 1, Type> &matrix)
-    {
-        if (*this == matrix)
-            return *this;
-        this->_matrix = matrix.getMatrix();
-        return *this;
-    }
-
     template<typename Type>
     using Vector3 = Vector<3, Type>;
 
@@ -177,6 +192,13 @@ namespace Maths {
     using RGB = Vector3<unsigned char>;
     using Vector3U = Vector3<unsigned int>;
     using Vector3I = Vector3<int>;
+
+    template<typename Type>
+    using Vector2 = Vector<2, Type>;
+
+    using Vector2D = Vector2<double>;
+    using Vector2U = Vector2<unsigned int>;
+    using Vector2I = Vector2<int>;
 }
 
 #endif

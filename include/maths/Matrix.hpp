@@ -54,7 +54,7 @@ namespace Maths {
     public:
         using MatrixType = std::array<std::array<Type, NbColumn>, NbRow>;
 
-        explicit Matrix();;
+        explicit Matrix();
 
         explicit Matrix(Type defaultValue);
 
@@ -73,7 +73,7 @@ namespace Maths {
                     this->_matrix[row][col] = values[row * NbColumn + col];
         }
 
-        Type operator()(std::size_t row, std::size_t col) const;
+        const Type &operator()(std::size_t row, std::size_t col) const;
 
         Type &operator()(std::size_t row, std::size_t col);
 
@@ -144,10 +144,9 @@ namespace Maths {
 
         template<typename ScalarType>
             requires Multipliable<Type, ScalarType>
-        Matrix<NbRow, NbColumn, ProductType<ScalarType>> operator*(
-            const ScalarType &scalar) const
+        Matrix operator*(const ScalarType &scalar) const
         {
-            Matrix<NbRow, NbColumn, ProductType<ScalarType>> result;
+            Matrix result;
 
             for (std::size_t i = 0; i < NbRow; ++i)
                 for (std::size_t j = 0; j < NbColumn; ++j)
@@ -192,13 +191,7 @@ namespace Maths {
 
         [[nodiscard]] bool operator==(const Matrix &other) const
         {
-            bool equal = false;
-
-            if (*this == other)
-                equal = true;
-            else
-                equal = this->getMatrix() == other.getMatrix();
-            return equal;
+            return this->getMatrix() == other.getMatrix();
         }
 
         [[nodiscard]] bool operator!=(const Matrix &other) const
@@ -209,10 +202,9 @@ namespace Maths {
         template<typename ScalarType>
             requires Addable<Type, ScalarType>
                      && AssignableFrom<Type, AdditionType<ScalarType>>
-        Matrix<NbRow, NbColumn, AdditionType<ScalarType>> operator+(
-            const ScalarType &scalar) const
+        Matrix operator+(const ScalarType &scalar) const
         {
-            Matrix<NbRow, NbColumn, AdditionType<ScalarType>> result;
+            Matrix result;
             for (std::size_t i = 0; i < NbRow; ++i)
                 for (std::size_t j = 0; j < NbColumn; ++j)
                     result(i, j) = (*this)(i, j) + scalar;
@@ -323,7 +315,7 @@ namespace Maths {
     }
 
     template<std::size_t NbRow, std::size_t NbColumn, typename Type>
-    Type Matrix<NbRow, NbColumn, Type>::operator()(std::size_t row,
+    const Type &Matrix<NbRow, NbColumn, Type>::operator()(std::size_t row,
         std::size_t col) const
     {
         return this->_matrix[row][col];

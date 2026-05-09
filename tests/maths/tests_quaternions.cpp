@@ -15,9 +15,9 @@
 template<typename Type>
 static bool pointEq(const Maths::Point3<Type> &rhs, const Maths::Point3<Type> &lhs, auto epsilon)
 {
-    return std::abs(rhs.x - lhs.x) <= epsilon
-        && std::abs(rhs.y - lhs.y) <= epsilon
-        && std::abs(rhs.z - lhs.z) <= epsilon;
+    return std::abs(rhs.getX() - lhs.getX()) <= epsilon
+        && std::abs(rhs.getY() - lhs.getY()) <= epsilon
+        && std::abs(rhs.getZ() - lhs.getZ()) <= epsilon;
 }
 
 Test(quaternion, pointRotation)

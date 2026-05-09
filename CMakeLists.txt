@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28.3)
-project(RayTracer)
+project(RayTracer CXX)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/plugins)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
@@ -40,6 +40,14 @@ set(HEADERS
 )
 
 include_directories(${HEADERS})
+
+option(ENABLE_ASAN "Enable Address Sanitizer" OFF)
+
+if (ENABLE_ASAN)
+    set(ASAN_FLAGS -fsanitize=address -fno-omit-frame-pointer)
+    add_compile_options(${ASAN_FLAGS})
+    add_link_options(${ASAN_FLAGS})
+endif()
 
 add_executable(raytracer ${MAIN} ${SRCS})
 target_link_libraries(raytracer sfml-graphics sfml-window sfml-system config++)

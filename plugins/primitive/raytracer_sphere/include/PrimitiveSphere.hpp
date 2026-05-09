@@ -28,7 +28,7 @@ namespace RayTracer {
 
     private:
 
-        HitInfo computeHitInfos(const Ray &, double) noexcept;
+        HitInfo computeHitInfos(const Ray &, double) const noexcept;
         double solveQuadratic(double a, double b,
             double c, double delta) noexcept;
 

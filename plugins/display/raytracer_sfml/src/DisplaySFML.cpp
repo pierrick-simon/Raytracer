@@ -82,7 +82,7 @@ void RayTracer::DisplaySFML::draw(PortablePixMap ppm)
     for (size_t i = 0; i < ppm.getHeight(); i++) {
         for (size_t j = 0; j < ppm.getWidth(); j++) {
             auto color = ppm.getPix(j, i);
-            _pix.setFillColor({color.x, color.y, color.z});
+            _pix.setFillColor({color.getX(), color.getY(), color.getZ()});
             _pix.setPosition({static_cast<float>(j), static_cast<float>(i)});
             _window.draw(_pix);
         }

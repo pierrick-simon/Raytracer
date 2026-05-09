@@ -23,7 +23,7 @@ namespace RayTracer {
         this->loadLightPlugins();
         auto const parser = ConfigFileParser(args.front(),
             this->_primitivesPlugins, this->_lightsPlugins,
-            this->_presetMaterialBuilders);
+            _presetMaterialBuilders);
         _camera = parser.parseCamera();
         _lights = parser.parseLights();
         _objects = parser.parsePrimitives();
@@ -41,10 +41,10 @@ namespace RayTracer {
 
     void RayTracer::throwRays() noexcept
     {
-        Maths::Vector3U res = _camera.getResolution();
+        Maths::Vector2U res = _camera.getResolution();
 
-        for (std::size_t i = 0; i < res.x; ++i) {
-            for (std::size_t j = 0; j < res.y; ++j) {
+        for (std::size_t i = 0; i < res.getX(); ++i) {
+            for (std::size_t j = 0; j < res.getY(); ++j) {
                 setPixel(i, j, res);
             }
         }
@@ -54,7 +54,7 @@ namespace RayTracer {
     double RayTracer::getSpecular(const Ray &ray,
         const Ray &lihtRay, HitInfo &info)
     {        
-        auto r = ray.direction - info.impactNormal
+        Maths::Vector3D r = ray.direction - info.impactNormal
             * info.impactNormal.dot(ray.direction) * 2;
         auto dot = lihtRay.direction.dot(r.normalized());
         if (dot <= DOUBLE_OFFSET)
@@ -77,10 +77,7 @@ namespace RayTracer {
             if (diffuse <= DOUBLE_OFFSET)
                 continue;
             if (!getHitObject(lightRay)) {
-                Maths::Vector3D lightColor(
-                    light->getLightAmount(lightRay).x / 255.0,
-                    light->getLightAmount(lightRay).y / 255.0,
-                    light->getLightAmount(lightRay).z / 255.0);            
+                Maths::Vector3D lightColor(light->getLightAmount(lightRay) / 255.0);
                 color += lightColor * (info.material.getDiffuse() * diffuse
                     * _lights.getDiffuse()
                     + getSpecular(ray, lightRay, info)
@@ -147,17 +144,17 @@ namespace RayTracer {
 
 
     void RayTracer::setPixel(
-        std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept
+        std::size_t x, std::size_t y, Maths::Vector2U resolution) noexcept
     {
-        double u = (1.0 / resolution.x) * x;
-        double v = (1.0 / resolution.y) * y;
+        double u = (1.0 / resolution.getX()) * x;
+        double v = (1.0 / resolution.getY()) * y;
         Ray ray = _camera.ray(u, v);
         double max = std::numeric_limits<unsigned char>::max();
-        auto c = parseObject(ray, 0) * max;
-        Maths::RGB color((unsigned char)std::min(c.x, max),
-            (unsigned char)std::min(c.y, max),
-            (unsigned char)std::min(c.z, max));
-        loadingBar(x * _camera.getResolution().y + y);
+        Maths::Vector3D c = parseObject(ray, 0) * max;
+        Maths::RGB color((unsigned char)std::min(c.getX(), max),
+            (unsigned char)std::min(c.getY(), max),
+            (unsigned char)std::min(c.getZ(), max));
+        loadingBar(x * _camera.getResolution().getY() + y);
         _ppm.setPix(x, y, color);
     }
 

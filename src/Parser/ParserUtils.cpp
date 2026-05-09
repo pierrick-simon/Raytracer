@@ -35,6 +35,16 @@ namespace RayTracer {
         return Maths::Vector3D{x, y, z};
     }
 
+    Maths::Quaternion ParserUtils::parseQuaternionFromEuler(
+        libconfig::Setting const &element)
+    {
+        double x = parseDouble(element, "x");
+        double y = parseDouble(element, "y");
+        double z = parseDouble(element, "z");
+
+        return Maths::Quaternion::fromEulerDegrees(x, y, z);
+    }
+
     Maths::Point3D ParserUtils::parsePoint3D(
         libconfig::Setting const &element)
     {
@@ -91,10 +101,10 @@ namespace RayTracer {
         if (element["material"].isGroup()) {
             libconfig::Setting const &material = element["material"];
             if (material.exists("name")
-                && builders.find(material["name"]) != builders.end())
+                && builders.contains(material["name"]))
                     builder = builders.find(material["name"])->second;
             builder = parseMaterial(material, builder);
-        } else if (builders.find(element["material"]) != builders.end())
+        } else if (builders.contains(element["material"]))
             builder = builders.find(element["material"])->second;
         else
             throw libconfig::SettingTypeException(element);

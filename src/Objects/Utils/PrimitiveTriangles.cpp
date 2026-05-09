@@ -17,9 +17,9 @@ namespace RayTracer {
     std::optional<HitInfo> PrimitiveTriangle::fillHitInfo(Ray const &ray,
         Maths::Vector3D const &AB, Maths::Vector3D const &AC, double t)
     {
-        HitInfo hit{};
+        HitInfo hit = HitInfo();
         hit.hitPos = ray.origin + ray.direction * t;
-        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).norm();
+        hit.hitDist = hit.hitPos.distance(ray.origin);
         hit.impactNormal = AB.crossProduct(AC).normalized();
         hit.material = _material;
         return std::make_optional<HitInfo>(hit);
@@ -33,7 +33,7 @@ namespace RayTracer {
             return std::nullopt;
 
         double invDet = 1.0 / det;
-        Maths::Vector3D AO(_a, ray.origin);
+        Maths::Vector3D AO = _a - ray.origin;
 
         double u = AO.dot(h) * invDet;
         if (u < 0.0 || u > 1.0)
@@ -53,8 +53,8 @@ namespace RayTracer {
     std::optional<HitInfo> PrimitiveTriangle::hits(Ray const &ray)
     {
 
-        Maths::Vector3D AB(_a, _b);
-        Maths::Vector3D AC(_a, _c);
+        Maths::Vector3D AB = _a - _b;
+        Maths::Vector3D AC = _a - _c;
         Maths::Vector3D h = ray.direction.crossProduct(AC);
         
         return rayTriangleMollerTrumboreAlgo(ray, AB, AC, h);

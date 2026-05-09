@@ -28,8 +28,7 @@ namespace RayTracer {
 
         std::optional<HitInfo> hits(const Ray &ray) override;
 
-        static const std::unordered_map<std::string, Axis> getAxisName()
-            {return _axisName;}
+        static std::unordered_map<std::string, Axis> getAxisName();
 
         [[nodiscard]] Axis getAxis() const;
         [[nodiscard]] double getPos() const;

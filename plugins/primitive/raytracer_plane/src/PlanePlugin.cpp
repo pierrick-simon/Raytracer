@@ -21,8 +21,7 @@ namespace RayTracer {
     {
         std::cout << "Loading plane..." << std::endl;
         std::string axisName = element["axis"];
-        if (PrimitivePlane::getAxisName().find(axisName)
-            == PrimitivePlane::getAxisName().end())
+        if (!PrimitivePlane::getAxisName().contains(axisName))
             throw libconfig::SettingTypeException(element);
         double pos = ParserUtils::parseDouble(element, "position");
         return std::make_unique<PrimitivePlane>(PrimitivePlane::getAxisName()

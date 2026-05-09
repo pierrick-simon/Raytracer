@@ -8,15 +8,14 @@
 #ifndef INFO_HPP
     #define INFO_HPP
 
-    #include "Vector3.hpp"
-    #include "Ray.hpp"
+    #include "Point3.hpp"
     #include "Material.hpp"
 
 namespace RayTracer {
     struct HitInfo {
         Maths::Point3D hitPos;
         Maths::Vector3D impactNormal;
-        double hitDist;
+        double hitDist = 0;
         Material material = Material::Builder().build();
     };
 }

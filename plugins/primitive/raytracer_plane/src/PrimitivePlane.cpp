@@ -35,23 +35,24 @@ namespace RayTracer {
     {
         std::optional<HitInfo> info = std::nullopt;
 
-        double origin = ray.origin.x * _normal.x + ray.origin.y
-            * _normal.y + ray.origin.z * _normal.z;
-        double direction = ray.direction.x * _normal.x + ray.direction.y
-            * _normal.y + ray.direction.z * _normal.z;
+        double origin = ray.origin.dot(_normal);
+        double direction = ray.direction.getX() * _normal.getX() + ray.direction.getY()
+            * _normal.getY() + ray.direction.getZ() * _normal.getZ();
         if (direction != 0) {
             double t = (_pos - origin) / direction;
             if (t > 0) {
-               Maths::Point3D point(
-                    ray.origin.x + t * ray.direction.x,
-                    ray.origin.y + t * ray.direction.y,
-                    ray.origin.z + t * ray.direction.z
-                );
+               Maths::Point3D point = ray.origin + ray.direction * t;
                 info = {point, _normal,
-                    Maths::Vector3D(point, ray.origin).norm(), _material};
+                    point.distance(ray.origin), _material};
             }
         }
         return info;
+    }
+
+    std::unordered_map<std::string, PrimitivePlane::Axis>
+        PrimitivePlane::getAxisName()
+    {
+        return _axisName;
     }
 
     PrimitivePlane::Axis PrimitivePlane::getAxis() const

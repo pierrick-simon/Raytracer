@@ -13,7 +13,7 @@ namespace RayTracer {
     std::optional<HitInfo> TriangleShape::hits(Ray const &ray)
     {
         auto bestT = DBL_MAX;
-        HitInfo bestHit{};
+        HitInfo bestHit = HitInfo();
         bool hit = false;
 
         for (auto &tri: _triangles) {

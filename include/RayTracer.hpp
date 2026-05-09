@@ -18,7 +18,6 @@
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
     #include "ConfigFileParser.hpp"
-    #include "Material.hpp"
 
 namespace RayTracer {
     constexpr int EPISUCCESS = 0;
@@ -37,7 +36,7 @@ namespace RayTracer {
         void run() noexcept;
         void throwRays() noexcept;
         void setPixel(
-            std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept;
+            std::size_t x, std::size_t y, Maths::Vector2U resolution) noexcept;
 
         static void showHelp();
 

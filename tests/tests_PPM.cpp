@@ -56,9 +56,9 @@ Test(PPM, setPix_getPix_success)
     try {
         tmp.setPix(n, n, color);
         Maths::RGB test = tmp.getPix(n, n);
-        cr_assert_eq(test.x, color.x);
-        cr_assert_eq(test.y, color.y);
-        cr_assert_eq(test.z, color.z);
+        cr_assert_eq(test.getX(), color.getX());
+        cr_assert_eq(test.getY(), color.getY());
+        cr_assert_eq(test.getZ(), color.getZ());
     } catch (RayTracer::PortablePixMap::OutOfRangeException &_) {
         cr_assert(false);
     }

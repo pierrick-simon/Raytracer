@@ -61,9 +61,9 @@ void RayTracer::PortablePixMap::save(std::string name)
     file << +std::numeric_limits<unsigned char>::max()
         << "\n";
     for (Maths::RGB pix: _map) {
-        file << +pix.x << " ";
-        file << +pix.y << " ";
-        file << +pix.z << "\n";
+        file << +pix.getX() << " ";
+        file << +pix.getY() << " ";
+        file << +pix.getZ() << "\n";
     }
 }
 
