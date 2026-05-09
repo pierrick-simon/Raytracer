@@ -12,7 +12,7 @@
 
 namespace Maths {
     Color::Color() :
-        Color(WHITE)
+        Color(BLACK)
     {
     }
 

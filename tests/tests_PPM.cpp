@@ -5,6 +5,7 @@
 ** tests_PPM
 */
 
+#include <iostream>
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
 #include "PortablePixMap.hpp"
