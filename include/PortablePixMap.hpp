@@ -15,7 +15,7 @@
     #include <exception>
     #include <filesystem>
     #include <fstream>
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     constexpr std::string_view SCREEN = "screenshots";

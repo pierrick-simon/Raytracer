@@ -7,7 +7,7 @@
 
 #ifndef QUATERNION_HPP
     #define QUATERNION_HPP
-#include "Vector3.hpp"
+#include "Vector.hpp"
 
 namespace Maths {
     /**

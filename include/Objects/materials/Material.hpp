@@ -9,7 +9,7 @@
     #define MATERIAL_HPP
 
     #include <optional>
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
     #include "Ray.hpp"
 
 namespace RayTracer {

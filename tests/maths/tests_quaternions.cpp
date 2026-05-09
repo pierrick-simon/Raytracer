@@ -9,7 +9,7 @@
 #include <iostream>
 #include <criterion/criterion.h>
 
-#include "Point3.hpp"
+#include "Point.hpp"
 #include "Quaternion.hpp"
 
 template<typename Type>
@@ -27,5 +27,5 @@ Test(quaternion, pointRotation)
     Maths::Point3D point{-1, -1, 1};
 
     point = rotation * point;
-    cr_assert(pointEq(point, Maths::Point3D(1, -1, 1), 1e-6));
+    cr_assert(pointEq(point, Maths::Point3D(-1, 1, 1), 1e-6));
 }

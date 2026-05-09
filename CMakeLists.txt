@@ -26,6 +26,7 @@ set(SRCS
     src/Objects/Utils/TriangleShape.cpp
     src/Objects/Utils/PrimitiveTriangles.cpp
     src/maths/Quaternion.cpp
+    src/maths/Color.cpp
 )
 
 set(HEADERS

@@ -5,7 +5,7 @@
 ** Rectangle
 */
 
-#include "Point3.hpp"
+#include "Point.hpp"
 #include "Rectangle.hpp"
 
 Maths::Point3D RayTracer::Rectangle::pointAt(double u, double v) const noexcept

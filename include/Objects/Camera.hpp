@@ -9,7 +9,7 @@
     #define CAMERA_HPP
 
 #include "Quaternion.hpp"
-#include "Vector3.hpp"
+#include "Vector.hpp"
 #include "Rectangle.hpp"
 #include "Ray.hpp"
 

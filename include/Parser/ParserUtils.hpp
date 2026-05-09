@@ -9,8 +9,8 @@
     #define PARSERUTILS_HPP
     #include <libconfig.h++>
 
-    #include "Vector3.hpp"
-    #include "Point3.hpp"
+    #include "Vector.hpp"
+    #include "Point.hpp"
     #include "IObjectPlugin.hpp"
     #include "Material.hpp"
 #include "Quaternion.hpp"

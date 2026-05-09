@@ -11,7 +11,7 @@
     #include <memory>
     #include "IObject.hpp"
     #include "Material.hpp"
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     class PrimitiveSphere : public IObject {

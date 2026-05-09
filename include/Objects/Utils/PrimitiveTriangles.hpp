@@ -8,9 +8,9 @@
 #ifndef PRIMITIVETRIANGLES_HPP
     #define PRIMITIVETRIANGLES_HPP
     #include <IObject.hpp>
-    #include <Point3.hpp>
+    #include <Point.hpp>
     #include <Ray.hpp>
-    #include <Vector3.hpp>
+    #include <Vector.hpp>
 
 namespace RayTracer {
     class PrimitiveTriangle {

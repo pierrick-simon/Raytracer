@@ -8,7 +8,7 @@
 #include <float.h>
 #include <criterion/criterion.h>
 
-#include "Vector3.hpp"
+#include "Vector.hpp"
 
 
 Test(Vector3, addition)

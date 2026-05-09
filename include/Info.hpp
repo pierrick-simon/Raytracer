@@ -8,7 +8,7 @@
 #ifndef INFO_HPP
     #define INFO_HPP
 
-    #include "Point3.hpp"
+    #include "Point.hpp"
     #include "Material.hpp"
 
 namespace RayTracer {

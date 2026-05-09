@@ -8,7 +8,7 @@
 #ifndef ILIGHTSOURCE_HPP
     #define ILIGHTSOURCE_HPP
     #include "Ray.hpp"
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     class ILightSource {

@@ -12,7 +12,7 @@
     #include <unordered_map>
     #include <string>
     #include "IObject.hpp"
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     class PrimitivePlane : public IObject {

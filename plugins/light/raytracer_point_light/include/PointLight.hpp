@@ -9,7 +9,7 @@
     #define PRIMITIVESPHERE_HPP
 
     #include "ALightSource.hpp"
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     class PointLight : public ALightSource {
