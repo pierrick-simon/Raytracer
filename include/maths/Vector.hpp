@@ -92,7 +92,7 @@ namespace Maths {
 
         [[nodiscard]] double distance(const Vector &rhs) const
         {
-            Vector delta = *this - rhs;
+            Vector delta = rhs - *this;
             return delta.norm();
         }
 
