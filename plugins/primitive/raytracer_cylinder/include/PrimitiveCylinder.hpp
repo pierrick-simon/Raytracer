@@ -22,6 +22,11 @@ namespace RayTracer {
         std::optional<HitInfo> hits(const Ray &ray) override;
         HitInfo fillHitInfo(const Ray &ray, double t) const;
         void hitCaps(Ray const &ray, std::optional<double> &bestT) const;
+
+        void computeHitSurface(const Ray &ray, double a,
+            double b,
+            double delta, std::optional<double> &bestT) const;
+
         std::optional<double> hitSurface(const Ray &ray) const;
         Maths::Vector3D cylNormal(Maths::Vector3D p) const;
         HitInfo fillHitInfinite(const Ray &ray, double t) const;
