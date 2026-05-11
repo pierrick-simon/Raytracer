@@ -78,6 +78,16 @@ namespace Maths {
             return std::sqrt(sum);
         }
 
+        [[nodiscard]] double norm_squared() const
+        {
+            double sum = 0;
+
+            for (size_t i = 0; i < Dim; ++i)
+                sum += (*this)[i] * (*this)[i];
+
+            return sum;
+        }
+
         [[nodiscard]] Vector normalized() const
         {
             Vector normalized = *this;

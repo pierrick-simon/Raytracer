@@ -74,32 +74,51 @@ namespace RayTracer {
             reflect.normalized()};
     }
 
+    static Maths::Vector3D refract(const Maths::Vector3D &uv, const Maths::Vector3D &n, double eta)
+    {
+        auto cos_theta = std::min(-uv.dot(n), 1.0);
+        Maths::Vector3D r_out_perp = (uv + n * cos_theta) * eta;
+        Maths::Vector3D r_out_par = n * -std::sqrt(std::abs(1.0 - r_out_perp.norm_squared()));
+        return r_out_perp + r_out_par;
+    }
+
+    std::optional<Ray> Material::scatter(const Ray &ray, const HitInfo &hit) const
+    {
+        double ri = hit.impactNormal.dot(ray.direction) >= 0 ? 1.0 / this->_refraction : this->_refraction;
+
+        Maths::Vector3D unit_dir = ray.direction.normalized();
+        Maths::Vector3D refracted = refract(unit_dir, hit.impactNormal, ri);
+
+        return Ray{hit.hitPos, refracted};
+    }
+
     std::optional<Ray> Material::getRefractRay(
         const Ray &ray, const HitInfo &hit) const
     {
-        std::optional<Ray> refract = std::nullopt;
-        Maths::Vector3D N = hit.impactNormal;
-        double cosI = ray.direction.dot(N);
-        double n1 = 1.0;
-        double n2 = _refraction;
-
-        if (cosI > DOUBLE_OFFSET) {
-            std::swap(n1, n2);
-            N *= -1;
-        }
-        cosI = std::abs(cosI);
-        double eta = n2 ? n1 / n2 : 0;
-        double k = 1.0 - eta * eta * (1.0 - cosI * cosI);
-        if (k >= DOUBLE_OFFSET) {
-            Maths::Vector3D T = ray.direction * eta - N * (eta * cosI + std::sqrt(k));
-            Maths::Vector3D delta = N * DOUBLE_OFFSET;
-            refract = {hit.hitPos - delta, T.normalized()};
-        } else {
-            HitInfo info = hit;
-            info.impactNormal = N;
-            refract = getReflectRay(ray, info);
-        }
-        return refract;
+        return scatter(ray, hit);
+        // std::optional<Ray> refract = std::nullopt;
+        // Maths::Vector3D N = hit.impactNormal;
+        // double cosI = ray.direction.dot(N);
+        // double n1 = 1.0;
+        // double n2 = _refraction;
+        //
+        // if (cosI > DOUBLE_OFFSET) {
+        //     std::swap(n1, n2);
+        //     N *= -1;
+        // }
+        // cosI = std::abs(cosI);
+        // double eta = n2 ? n1 / n2 : 0;
+        // double k = 1.0 - eta * eta * (1.0 - cosI * cosI);
+        // if (k >= DOUBLE_OFFSET) {
+        //     Maths::Vector3D T = ray.direction * eta - N * (eta * cosI + std::sqrt(k));
+        //     Maths::Vector3D delta = N * DOUBLE_OFFSET;
+        //     refract = {hit.hitPos - delta, T.normalized()};
+        // } else {
+        //     HitInfo info = hit;
+        //     info.impactNormal = N;
+        //     refract = getReflectRay(ray, info);
+        // }
+        // return refract;
     }
 
     double Material::getFresnel(const Ray &ray, const HitInfo &hit) const
