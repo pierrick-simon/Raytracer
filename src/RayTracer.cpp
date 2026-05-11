@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <cmath>
+#include <chrono>
 
 #include "RayTracer.hpp"
 
@@ -43,12 +44,15 @@ namespace RayTracer {
     {
         Maths::Vector2U res = _camera.getResolution();
 
+        auto t1 = std::chrono::high_resolution_clock::now();
         for (std::size_t i = 0; i < res.getX(); ++i) {
             for (std::size_t j = 0; j < res.getY(); ++j) {
                 setPixel(i, j, res);
             }
         }
-        fprintf(stdout, "\nDone !!\n");
+        auto t2 = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> ms = t2 - t1;
+        std::cout << "\nDone in " << ms.count() / 1000 << "s" << std::endl;
     }
 
     double RayTracer::getSpecular(const Ray &ray,
@@ -59,8 +63,7 @@ namespace RayTracer {
         auto dot = lihtRay.direction.dot(r.normalized());
         if (dot <= DOUBLE_OFFSET)
             return 0;
-        return std::pow(dot,
-            info.material.getShininess());
+        return std::pow(dot, info.material.getShininess());
     }
 
     Maths::Color RayTracer::parseLight(const Ray &ray, HitInfo &info)
@@ -234,20 +237,19 @@ namespace RayTracer {
 
     void RayTracer::loadingBar(std::size_t pix)
     {
-        double percentage = static_cast<double>(pix)
+        _loadingPercentage = static_cast<double>(pix)
             / static_cast<double>(_camera.getNbPixel());
         
-        if (percentage - 0.015 > _loadingPercentage)
-            _loadingPercentage += 0.015;
-        else
-            return;
-        if (_loadingPercentage < 1.0 / 3.0)
-            fprintf(stdout, "\e[0;31m");
-        else if (_loadingPercentage < 2.0 / 3.0)
-            fprintf(stdout, "\e[0;33m");
-        else
-            fprintf(stdout, "\e[0;32m");
-        fprintf(stdout, "#\e[0;37m");
-        fflush(stdout);
+        std::cout << "[";
+        int pos = 100 * _loadingPercentage;
+        for (int i = 0; i < 100; ++i) {
+            if (i < pos)
+                std::cout << "=";
+            else if (i == pos)
+                std::cout << ">";
+            else std::cout << " ";
+        }
+        std::cout << "] " << static_cast<int>(_loadingPercentage * 100);
+        std::cout << " %\r" << std::flush;
     }
 }
