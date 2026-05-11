@@ -15,7 +15,9 @@
     #include <exception>
     #include <filesystem>
     #include <fstream>
-    #include "Vector3.hpp"
+
+    #include "Color.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     constexpr std::string_view SCREEN = "screenshots";
@@ -25,14 +27,15 @@ namespace RayTracer {
     class PortablePixMap {
         public:
             PortablePixMap() {};
-            PortablePixMap(Maths::Vector3U vec)
-                : _width(vec.x), _height(vec.y), _map(_width * _height) {};
+            PortablePixMap(Maths::Vector2U vec)
+                : _width(vec.getX()), _height(vec.getY()), _map(_width * _height) {};
             PortablePixMap(std::size_t width, std::size_t height)
                 : _width(width), _height(height), _map(width * height) {};
             PortablePixMap(std::string filepath);
 
-            void setPix(std::size_t width, std::size_t height, Maths::RGB pix);
-            Maths::RGB getPix(std::size_t width, std::size_t height);
+            void setPix(std::size_t width, std::size_t height, Maths::Color pix);
+
+            Maths::Color getPix(std::size_t width, std::size_t height);
             size_t getHeight() {return _height;}
             size_t getWidth() {return _width;}
 
@@ -72,7 +75,7 @@ namespace RayTracer {
 
             std::size_t _width;
             std::size_t _height;
-            std::vector<Maths::RGB> _map = {};
+            std::vector<Maths::Color> _map = {};
     };
 };
 

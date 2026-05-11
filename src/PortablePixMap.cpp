@@ -30,7 +30,7 @@ RayTracer::PortablePixMap::PortablePixMap(std::string filepath)
 }
 
 void RayTracer::PortablePixMap::setPix(
-    std::size_t width, std::size_t height, Maths::RGB pix)
+    std::size_t width, std::size_t height, Maths::Color pix)
 {
     if (_height <= height || _width <= width)
         throw  OutOfRangeException();
@@ -38,7 +38,7 @@ void RayTracer::PortablePixMap::setPix(
     _map[idx] = pix;
 }
 
-Maths::RGB RayTracer::PortablePixMap::getPix(
+Maths::Color RayTracer::PortablePixMap::getPix(
     std::size_t width, std::size_t height)
 {
     if (_height <= height || _width <= width)
@@ -60,10 +60,11 @@ void RayTracer::PortablePixMap::save(std::string name)
     file << _width << " " << _height << "\n";
     file << +std::numeric_limits<unsigned char>::max()
         << "\n";
-    for (Maths::RGB pix: _map) {
-        file << +pix.x << " ";
-        file << +pix.y << " ";
-        file << +pix.z << "\n";
+    for (auto &pix: _map) {
+        auto rgbColor = pix.to8Bit();
+        file << +rgbColor.getX() << " ";
+        file << +rgbColor.getY() << " ";
+        file << +rgbColor.getZ() << "\n";
     }
 }
 
@@ -146,14 +147,13 @@ bool RayTracer::PortablePixMap::readBody(std::string line)
     int g;
     int b;
     tmp >> r >> g >> b;
-    int maxChar = static_cast<int>(
-            std::numeric_limits<unsigned char>::max());
+    int maxChar = std::numeric_limits<unsigned char>::max();
     if (tmp.fail() || !tmp.eof()
         || r < 0 || r > maxChar
         || g < 0 || g > maxChar
         || b < 0 || b > maxChar)
         value = false;
     else
-        _map.push_back(Maths::RGB(r, g, b));
+        _map.push_back(Maths::Color::from8Bit(r, g, b));
     return value;
 }

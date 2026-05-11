@@ -21,7 +21,7 @@ namespace RayTracer {
     {
         std::cout << "Loading point light..." << std::endl;
         Maths::Point3D origin(element["x"], element["y"], element["z"]);
-        Maths::RGB color = ParserUtils::parseColor(element["color"]);
+        Maths::Color color = ParserUtils::parseColor(element["color"]);
         double falloutDistance = element["falloutDistance"];
 
         return std::make_unique<PointLight>(origin, color, falloutDistance);
