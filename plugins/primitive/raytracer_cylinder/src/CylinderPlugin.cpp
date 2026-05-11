@@ -27,9 +27,9 @@ namespace RayTracer {
 
         Maths::Point3D origin = ParserUtils::parseVector3D(element["origin"]);
         Material mat = ParserUtils::getBuilder(element, builders).build();
-        r = element["r"];
+        r = ParserUtils::parseDouble(element, "r");
         if (element.exists("h"))
-            h = element["h"];
+            h = ParserUtils::parseDouble(element, "h");
         else
             h = std::nullopt;
         return std::make_unique<PrimitiveCylinder>(origin, r, h, mat);

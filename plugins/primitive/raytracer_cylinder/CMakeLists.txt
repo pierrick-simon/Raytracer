@@ -11,6 +11,7 @@ set(CYLINDER
 set(SHARED_SRCS
         Parser/ParserUtils.cpp
         Objects/materials/Material.cpp
+        maths/Color.cpp
 )
 
 list(TRANSFORM SHARED_SRCS PREPEND ${CMAKE_SOURCE_DIR}/src/)
