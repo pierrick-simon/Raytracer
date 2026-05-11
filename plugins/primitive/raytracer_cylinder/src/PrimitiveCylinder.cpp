@@ -24,10 +24,10 @@ namespace RayTracer {
     HitInfo PrimitiveCylinder::fillHitInfo(const Ray &ray, double t) const
     {
         HitInfo hit;
-        hit.hitPos.x = ray.origin.x + (ray.direction.x * t);
-        hit.hitPos.y = ray.origin.y + (ray.direction.y * t);
-        hit.hitPos.z = ray.origin.z + (ray.direction.z * t);
-        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
+        hit.hitPos.getX() = ray.origin.getX() + (ray.direction.getX() * t);
+        hit.hitPos.getY() = ray.origin.getY() + (ray.direction.getY() * t);
+        hit.hitPos.getZ() = ray.origin.getZ() + (ray.direction.getZ() * t);
+        hit.hitDist = hit.hitPos.distance(ray.origin);
         hit.impactNormal = cylNormal(hit.hitPos);
         hit.material = _material;
         return hit;
@@ -35,13 +35,13 @@ namespace RayTracer {
 
     void PrimitiveCylinder::hitCaps(Ray const &ray, std::optional<double> &bestT) const
     {
-        double ox = ray.origin.x - _origin.x;
-        double oy = ray.origin.y - _origin.y;
-        double oz = ray.origin.z - _origin.z;
+        double ox = ray.origin.getX() - _origin.getX();
+        double oy = ray.origin.getY() - _origin.getY();
+        double oz = ray.origin.getZ() - _origin.getZ();
 
-        double dx = ray.direction.x;
-        double dy = ray.direction.y;
-        double dz = ray.direction.z;
+        double dx = ray.direction.getX();
+        double dy = ray.direction.getY();
+        double dz = ray.direction.getZ();
 
         if (std::abs(dz) > DOUBLE_OFFSET) {
             double t = -oz / dz;
@@ -65,8 +65,8 @@ namespace RayTracer {
 
     void PrimitiveCylinder::computeHitSurface(const Ray &ray, double a, double b, double delta, std::optional<double> &bestT) const
     {
-        double dz = ray.direction.z;
-        double oz = ray.origin.z - _origin.z;
+        double dz = ray.direction.getZ();
+        double oz = ray.origin.getZ() - _origin.getZ();
 
         double sqrtDelta = sqrt(delta);
         for (double t: {(-b - sqrtDelta) / (2.0 * a), (-b + sqrtDelta) / (2.0 * a)}) {
@@ -83,11 +83,11 @@ namespace RayTracer {
 
     std::optional<double> PrimitiveCylinder::hitSurface(const Ray &ray) const
     {
-        double ox = ray.origin.x - _origin.x;
-        double oy = ray.origin.y - _origin.y;
+        double ox = ray.origin.getX() - _origin.getX();
+        double oy = ray.origin.getY() - _origin.getY();
 
-        double dx = ray.direction.x;
-        double dy = ray.direction.y;
+        double dx = ray.direction.getX();
+        double dy = ray.direction.getY();
 
 
         double a = dx * dx + dy * dy;
@@ -116,18 +116,18 @@ namespace RayTracer {
 
     Maths::Vector3D PrimitiveCylinder::cylNormal(Maths::Vector3D p) const
     {
-        double pz = p.z - _origin.z;
+        double pz = p.getZ() - _origin.getZ();
         Maths::Vector3D result;
 
         if (pz <= DOUBLE_OFFSET)
-            result = {0, 0, -1};
+            result = Maths::Vector3D{0, 0, -1};
         else if (pz >= _height.value() - DOUBLE_OFFSET)
-            result =  {0, 0, 1};
+            result =  Maths::Vector3D{0, 0, 1};
         else {
-            double nx = p.x - _origin.x;
-            double ny = p.y - _origin.y;
+            double nx = p.getX() - _origin.getX();
+            double ny = p.getY() - _origin.getY();
             double len = sqrt(nx * nx + ny * ny);
-            result = {nx / len, ny / len, 0};
+            result = Maths::Vector3D{nx / len, ny / len, 0};
         }
         return result;
     }
@@ -135,15 +135,15 @@ namespace RayTracer {
     HitInfo PrimitiveCylinder::fillHitInfinite(const Ray &ray, double t) const
     {
         HitInfo hit;
-        hit.hitPos.x = ray.origin.x + ray.direction.x * t;
-        hit.hitPos.y = ray.origin.y + ray.direction.y * t;
-        hit.hitPos.z = ray.origin.z + ray.direction.z * t;
-        hit.hitDist = Maths::Vector3D(hit.hitPos, ray.origin).length();
+        hit.hitPos.getX() = ray.origin.getX() + ray.direction.getX() * t;
+        hit.hitPos.getY() = ray.origin.getY() + ray.direction.getY() * t;
+        hit.hitPos.getZ() = ray.origin.getZ() + ray.direction.getZ() * t;
+        hit.hitDist = hit.hitPos.distance(ray.origin);
 
-        double nx = hit.hitPos.x - _origin.x;
-        double ny = hit.hitPos.y - _origin.y;
+        double nx = hit.hitPos.getX() - _origin.getX();
+        double ny = hit.hitPos.getY() - _origin.getY();
         double len = sqrt(nx * nx + ny * ny);
-        hit.impactNormal = {nx / len, ny / len, 0};
+        hit.impactNormal = Maths::Vector3D{nx / len, ny / len, 0};
 
         hit.material = _material;
         return hit;
@@ -151,11 +151,11 @@ namespace RayTracer {
 
     std::optional<HitInfo> PrimitiveCylinder::hitsInfinite(const Ray &ray) const
     {
-        double ox = ray.origin.x - _origin.x;
-        double oy = ray.origin.y - _origin.y;
+        double ox = ray.origin.getX() - _origin.getX();
+        double oy = ray.origin.getY() - _origin.getY();
 
-        double dx = ray.direction.x;
-        double dy = ray.direction.y;
+        double dx = ray.direction.getX();
+        double dy = ray.direction.getY();
 
         double a = dx * dx + dy * dy;
         double b = 2.0 * (ox * dx + oy * dy);

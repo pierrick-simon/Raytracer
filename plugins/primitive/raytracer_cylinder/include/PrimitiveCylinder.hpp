@@ -7,11 +7,9 @@
 
 #ifndef PRIMITIVECYLINDER_HPP
     #define PRIMITIVECYLINDER_HPP
-
-    #include <memory>
     #include "IObject.hpp"
     #include "Material.hpp"
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     class PrimitiveCylinder : public IObject {
