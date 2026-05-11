@@ -146,6 +146,11 @@ namespace Maths {
             return result;
         }
 
+        Vector operator-(const Vector &rhs) const
+        {
+            return Matrix<Dim, 1, Type>::operator-(rhs);
+        }
+
         const Type &getX() const
             requires (Dim >= 1 && Dim <= 4)
         {
