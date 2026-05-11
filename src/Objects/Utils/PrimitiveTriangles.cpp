@@ -53,8 +53,8 @@ namespace RayTracer {
     std::optional<HitInfo> PrimitiveTriangle::hits(Ray const &ray)
     {
 
-        Maths::Vector3D AB = _a - _b;
-        Maths::Vector3D AC = _a - _c;
+        Maths::Vector3D AB = _b - _a;
+        Maths::Vector3D AC = _c - _a;
         Maths::Vector3D h = ray.direction.crossProduct(AC);
         
         return rayTriangleMollerTrumboreAlgo(ray, AB, AC, h);
