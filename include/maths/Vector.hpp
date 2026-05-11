@@ -137,6 +137,15 @@ namespace Maths {
             );
         }
 
+        Vector operator-() const
+        {
+            Vector result;
+
+            for (size_t i = 0; i < Dim; ++i)
+                result[i] = -(*this)[i];
+            return result;
+        }
+
         const Type &getX() const
             requires (Dim >= 1 && Dim <= 4)
         {
