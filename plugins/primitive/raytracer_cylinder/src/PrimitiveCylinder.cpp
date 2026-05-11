@@ -33,49 +33,57 @@ namespace RayTracer {
         return hit;
     }
 
-    void PrimitiveCylinder::hitCaps(Ray const &ray, std::optional<double> &bestT) const
+    void PrimitiveCylinder::getBestT(std::optional<double> &bestT,
+        const Ray &ray, double dz) const
     {
         double ox = ray.origin.getX() - _origin.getX();
         double oy = ray.origin.getY() - _origin.getY();
         double oz = ray.origin.getZ() - _origin.getZ();
-
         double dx = ray.direction.getX();
         double dy = ray.direction.getY();
-        double dz = ray.direction.getZ();
+        double t = -oz / dz;
 
-        if (std::abs(dz) > DOUBLE_OFFSET) {
-            double t = -oz / dz;
-            if (t > DOUBLE_OFFSET) {
-                double hx = ox + dx * t;
-                double hy = oy + dy * t;
-                if (hx * hx + hy * hy <= _radius * _radius)
-                    if (!bestT.has_value() || t < bestT.value())
-                        bestT = t;
-            }
-            t = (_height.value() - oz) / dz;
-            if (t > DOUBLE_OFFSET) {
-                double hx = ox + dx * t;
-                double hy = oy + dy * t;
-                if (hx * hx + hy * hy <= _radius * _radius)
-                    if (!bestT.has_value() || t < bestT.value())
-                        bestT = t;
-            }
+        if (t > DOUBLE_OFFSET) {
+            double hx = ox + dx * t;
+            double hy = oy + dy * t;
+            if (hx * hx + hy * hy <= _radius * _radius && (!bestT.has_value() ||
+                t < bestT.value()))
+                bestT = t;
+        }
+        t = (_height.value() - oz) / dz;
+        if (t > DOUBLE_OFFSET) {
+            double hx = ox + dx * t;
+            double hy = oy + dy * t;
+            if (hx * hx + hy * hy <= _radius * _radius && (!bestT.has_value() ||
+                t < bestT.value()))
+                bestT = t;
         }
     }
 
-    void PrimitiveCylinder::computeHitSurface(const Ray &ray, double a, double b, double delta, std::optional<double> &bestT) const
+    void PrimitiveCylinder::hitCaps(Ray const &ray,
+        std::optional<double> &bestT) const
+    {
+        double dz = ray.direction.getZ();
+
+        if (std::abs(dz) > DOUBLE_OFFSET)
+            getBestT(bestT, ray, dz);
+    }
+
+    void PrimitiveCylinder::computeHitSurface(const Ray &ray, double a,
+        double b, double delta, std::optional<double> &bestT) const
     {
         double dz = ray.direction.getZ();
         double oz = ray.origin.getZ() - _origin.getZ();
 
         double sqrtDelta = sqrt(delta);
-        for (double t: {(-b - sqrtDelta) / (2.0 * a), (-b + sqrtDelta) / (2.0 * a)}) {
+        for (double t:
+             {(-b - sqrtDelta) / (2.0 * a), (-b + sqrtDelta) / (2.0 * a)}) {
             if (t < DOUBLE_OFFSET)
                 continue;
             double hitZ = oz + dz * t;
-            if (hitZ >= 0.0 && hitZ <= _height.value()) {
-                if (!bestT.has_value() || t < bestT.value())
-                    bestT = t;
+            if (hitZ >= 0.0 && hitZ <= _height.value() && (!bestT.has_value() ||
+                t < bestT.value())) {
+                bestT = t;
                 break;
             }
         }
@@ -88,7 +96,6 @@ namespace RayTracer {
 
         double dx = ray.direction.getX();
         double dy = ray.direction.getY();
-
 
         double a = dx * dx + dy * dy;
         double b = 2.0 * (ox * dx + oy * dy);
@@ -122,7 +129,7 @@ namespace RayTracer {
         if (pz <= DOUBLE_OFFSET)
             result = Maths::Vector3D{0, 0, -1};
         else if (pz >= _height.value() - DOUBLE_OFFSET)
-            result =  Maths::Vector3D{0, 0, 1};
+            result = Maths::Vector3D{0, 0, 1};
         else {
             double nx = p.getX() - _origin.getX();
             double ny = p.getY() - _origin.getY();
@@ -153,20 +160,17 @@ namespace RayTracer {
     {
         double ox = ray.origin.getX() - _origin.getX();
         double oy = ray.origin.getY() - _origin.getY();
-
         double dx = ray.direction.getX();
         double dy = ray.direction.getY();
 
         double a = dx * dx + dy * dy;
         double b = 2.0 * (ox * dx + oy * dy);
         double c = ox * ox + oy * oy - _radius * _radius;
-
         double delta = b * b - 4.0 * a * c;
-
         bool hit = true;
+
         if (delta < 0.0)
             hit = false;
-
         double sqrtDelta = sqrt(delta);
         double t1 = (-b - sqrtDelta) / (2.0 * a);
         double t2 = (-b + sqrtDelta) / (2.0 * a);
@@ -174,7 +178,8 @@ namespace RayTracer {
         double t = t1 > DOUBLE_OFFSET ? t1 : t2;
         if (t < DOUBLE_OFFSET)
             hit = false;
-        return hit ? fillHitInfinite(ray, t) : std::optional<HitInfo>(std::nullopt);
+        return hit
+            ? fillHitInfinite(ray, t) : std::optional<HitInfo>(std::nullopt);
     }
 
     const Maths::Point3D &PrimitiveCylinder::getOrigin() const

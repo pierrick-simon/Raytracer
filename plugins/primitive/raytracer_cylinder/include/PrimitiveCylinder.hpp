@@ -19,6 +19,10 @@ namespace RayTracer {
 
         std::optional<HitInfo> hits(const Ray &ray) override;
         HitInfo fillHitInfo(const Ray &ray, double t) const;
+
+        void getBestT(std::optional<double> &bestT,
+            const Ray &ray, double dz) const;
+
         void hitCaps(Ray const &ray, std::optional<double> &bestT) const;
 
         void computeHitSurface(const Ray &ray, double a,
