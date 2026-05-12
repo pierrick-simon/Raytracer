@@ -274,15 +274,15 @@ namespace RayTracer {
     void RayTracer::updateLoadingBar()
     {
         std::cout << "[";
-        int pos = 100 * _loadingPercentage;
+        int p = _loadingPercentage * 100;
         for (int i = 0; i < 100; ++i) {
-            if (i < pos)
+            if (i < p)
                 std::cout << "=";
-            else if (i == pos)
+            else if (i == p)
                 std::cout << ">";
             else std::cout << " ";
         }
-        std::cout << "] " << static_cast<int>(_loadingPercentage * 100);
+        std::cout << "] " << p;
         std::cout << " %\r" << std::flush;
     }
 }
