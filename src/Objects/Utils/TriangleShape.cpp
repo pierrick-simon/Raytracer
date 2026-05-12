@@ -10,13 +10,13 @@
 #include "TriangleShape.hpp"
 
 namespace RayTracer {
-    std::optional<HitInfo> TriangleShape::hits(Ray const &ray)
+    std::optional<HitInfo> TriangleShape::hits(Ray const &ray) const
     {
-        auto bestT = DBL_MAX;
+        auto bestT = std::numeric_limits<double>::max();
         HitInfo bestHit = HitInfo();
         bool hit = false;
 
-        for (auto &tri: _triangles) {
+        for (const auto &tri: _triangles) {
             auto result = tri.hits(ray);
             if (result.has_value() && result->hitDist < bestT) {
                 bestT = result->hitDist;
