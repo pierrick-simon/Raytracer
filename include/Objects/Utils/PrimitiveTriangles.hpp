@@ -7,10 +7,8 @@
 
 #ifndef PRIMITIVETRIANGLES_HPP
     #define PRIMITIVETRIANGLES_HPP
-    #include <IObject.hpp>
-    #include <Point3.hpp>
-    #include <Ray.hpp>
-    #include <Vector3.hpp>
+    #include <optional>
+    #include "IObject.hpp"
 
 namespace RayTracer {
     class PrimitiveTriangle {
@@ -19,12 +17,12 @@ namespace RayTracer {
             const Maths::Point3D &c, const Material &mat);
 
         std::optional<HitInfo> fillHitInfo(Ray const &ray, Maths::Vector3D const &AB,
-            Maths::Vector3D const &AC, double t);
+            Maths::Vector3D const &AC, double t) const;
 
         std::optional<HitInfo> rayTriangleMollerTrumboreAlgo(Ray const &ray,
-            Maths::Vector3D AB, Maths::Vector3D AC, Maths::Vector3D h);
+            Maths::Vector3D AB, Maths::Vector3D AC, Maths::Vector3D h) const;
 
-        std::optional<HitInfo> hits(Ray const &ray);
+        std::optional<HitInfo> hits(Ray const &ray) const;
 
     private:
 

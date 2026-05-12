@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SHARED_SRCS
     PortablePixMap.cpp
+    maths/Color.cpp
 )
 
 list(TRANSFORM SHARED_SRCS PREPEND ${CMAKE_SOURCE_DIR}/src/)

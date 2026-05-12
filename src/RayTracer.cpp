@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <algorithm>
 #include <cmath>
+#include <chrono>
 
 #include "RayTracer.hpp"
 
@@ -23,7 +24,7 @@ namespace RayTracer {
         this->loadLightPlugins();
         auto const parser = ConfigFileParser(args.front(),
             this->_primitivesPlugins, this->_lightsPlugins,
-            this->_presetMaterialBuilders);
+            _presetMaterialBuilders);
         _camera = parser.parseCamera();
         _lights = parser.parseLights();
         _objects = parser.parsePrimitives();
@@ -41,32 +42,33 @@ namespace RayTracer {
 
     void RayTracer::throwRays() noexcept
     {
-        Maths::Vector3U res = _camera.getResolution();
+        Maths::Vector2U res = _camera.getResolution();
 
-        for (std::size_t i = 0; i < res.x; ++i) {
-            for (std::size_t j = 0; j < res.y; ++j) {
+        auto t1 = std::chrono::high_resolution_clock::now();
+        for (std::size_t i = 0; i < res.getX(); ++i) {
+            for (std::size_t j = 0; j < res.getY(); ++j) {
                 setPixel(i, j, res);
             }
         }
-        fprintf(stdout, "\nDone !!\n");
+        auto t2 = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> ms = t2 - t1;
+        std::cout << "\nDone in " << ms.count() / 1000 << "s" << std::endl;
     }
 
     double RayTracer::getSpecular(const Ray &ray,
         const Ray &lihtRay, HitInfo &info)
     {        
-        auto r = ray.direction - info.impactNormal
+        Maths::Vector3D r = ray.direction - info.impactNormal
             * info.impactNormal.dot(ray.direction) * 2;
         auto dot = lihtRay.direction.dot(r.normalized());
         if (dot <= DOUBLE_OFFSET)
             return 0;
-        return std::pow(dot,
-            info.material.getShininess());
+        return std::pow(dot, info.material.getShininess());
     }
 
-    Maths::Vector3D RayTracer::parseLight(const Ray &ray, HitInfo &info)
+    Maths::Color RayTracer::parseLight(const Ray &ray, HitInfo &info)
     {
-        Maths::Vector3D color = 
-            info.material.getColorPercentage() * _lights.getAmbient();
+        Maths::Color color(info.material.getColor() * _lights.getAmbient());
 
         for (auto &light : _lights.getLights()) {
             Ray lightRay;
@@ -77,10 +79,7 @@ namespace RayTracer {
             if (diffuse <= DOUBLE_OFFSET)
                 continue;
             if (!getHitObject(lightRay)) {
-                Maths::Vector3D lightColor(
-                    light->getLightAmount(lightRay).x / 255.0,
-                    light->getLightAmount(lightRay).y / 255.0,
-                    light->getLightAmount(lightRay).z / 255.0);            
+                Maths::Color lightColor = light->getLightAmount(lightRay);
                 color += lightColor * (info.material.getDiffuse() * diffuse
                     * _lights.getDiffuse()
                     + getSpecular(ray, lightRay, info)
@@ -91,32 +90,31 @@ namespace RayTracer {
         return color;
     }
 
-    Maths::Vector3D RayTracer::hitColor(const Ray &ray,
-    HitInfo &info, std::size_t depth)
+    Maths::Color RayTracer::hitColor(const Ray &ray,
+        HitInfo &info, std::size_t depth)
     {
         auto hit = info;
         if (ray.direction.dot(hit.impactNormal) > 0)
             hit.impactNormal *= -1;
-        Maths::Vector3D localColor = parseLight(ray, hit);
-        Maths::Vector3D reflectColor(0, 0, 0);
+        Maths::Color localColor = parseLight(ray, hit);
+        Maths::Color reflectColor = Maths::Color::BLACK;
         if (info.material.getSpecular() > DOUBLE_OFFSET) 
             reflectColor =
                 parseObject(info.material.getReflectRay(ray, hit), depth + 1);
-        Maths::Vector3D refractColor(0, 0, 0);
+        Maths::Color refractColor = Maths::Color::BLACK;
         if (1 - info.material.getOpacity() > DOUBLE_OFFSET) {
             auto refract = info.material.getRefractRay(ray, info);
             if (refract)
                 refractColor = parseObject(*refract, depth + 1);
         }
         double F = info.material.getFresnel(ray, hit);
-        Maths::Vector3D color =
-            localColor
+        Maths::Color color(localColor
             + reflectColor * F
-            + refractColor * (1 - F);
+            + refractColor * (1 - F));
 
-        color = color * info.material.getOpacity()
-            + refractColor * (1 - info.material.getOpacity());
-        return color * info.material.getColorPercentage();
+        color = Maths::Color(color * info.material.getOpacity()
+                             + refractColor * (1 - info.material.getOpacity()));
+        return Maths::Color(color * info.material.getColor());
     }
 
     std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray)
@@ -133,9 +131,9 @@ namespace RayTracer {
         return closerHit;
     }
 
-    Maths::Vector3D RayTracer::parseObject(const Ray &ray, std::size_t depth)
+    Maths::Color RayTracer::parseObject(const Ray &ray, std::size_t depth)
     {
-        Maths::Vector3D color(0.0, 0.0, 0.0);
+        Maths::Color color = Maths::Color::BLACK;
     
         if (depth < MAX_DEPTH) {
             auto closerHit = getHitObject(ray);
@@ -147,18 +145,14 @@ namespace RayTracer {
 
 
     void RayTracer::setPixel(
-        std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept
+        std::size_t x, std::size_t y, Maths::Vector2U resolution) noexcept
     {
-        double u = (1.0 / resolution.x) * x;
-        double v = (1.0 / resolution.y) * y;
+        double u = (1.0 / resolution.getX()) * x;
+        double v = (1.0 / resolution.getY()) * y;
         Ray ray = _camera.ray(u, v);
-        double max = std::numeric_limits<unsigned char>::max();
-        auto c = parseObject(ray, 0) * max;
-        Maths::RGB color((unsigned char)std::min(c.x, max),
-            (unsigned char)std::min(c.y, max),
-            (unsigned char)std::min(c.z, max));
-        loadingBar(x * _camera.getResolution().y + y);
-        _ppm.setPix(x, y, color);
+        Maths::Color c(parseObject(ray, 0));
+        loadingBar(x * _camera.getResolution().getY() + y);
+        _ppm.setPix(x, y, c);
     }
 
     void RayTracer::showHelp()
@@ -243,20 +237,19 @@ namespace RayTracer {
 
     void RayTracer::loadingBar(std::size_t pix)
     {
-        double percentage = static_cast<double>(pix)
+        _loadingPercentage = static_cast<double>(pix)
             / static_cast<double>(_camera.getNbPixel());
         
-        if (percentage - 0.015 > _loadingPercentage)
-            _loadingPercentage += 0.015;
-        else
-            return;
-        if (_loadingPercentage < 1.0 / 3.0)
-            fprintf(stdout, "\e[0;31m");
-        else if (_loadingPercentage < 2.0 / 3.0)
-            fprintf(stdout, "\e[0;33m");
-        else
-            fprintf(stdout, "\e[0;32m");
-        fprintf(stdout, "#\e[0;37m");
-        fflush(stdout);
+        std::cout << "[";
+        int pos = 100 * _loadingPercentage;
+        for (int i = 0; i < 100; ++i) {
+            if (i < pos)
+                std::cout << "=";
+            else if (i == pos)
+                std::cout << ">";
+            else std::cout << " ";
+        }
+        std::cout << "] " << static_cast<int>(_loadingPercentage * 100);
+        std::cout << " %\r" << std::flush;
     }
 }

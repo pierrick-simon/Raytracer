@@ -35,6 +35,16 @@ namespace RayTracer {
         return Maths::Vector3D{x, y, z};
     }
 
+    Maths::Quaternion ParserUtils::parseQuaternionFromEuler(
+        libconfig::Setting const &element)
+    {
+        double x = parseDouble(element, "x");
+        double y = parseDouble(element, "y");
+        double z = parseDouble(element, "z");
+
+        return Maths::Quaternion::fromEulerDegrees(x, y, z);
+    }
+
     Maths::Point3D ParserUtils::parsePoint3D(
         libconfig::Setting const &element)
     {
@@ -45,7 +55,7 @@ namespace RayTracer {
         return Maths::Point3D{x, y, z};
     }
 
-    Maths::RGB ParserUtils::parseColor(libconfig::Setting const &element)
+    Maths::Color ParserUtils::parseColor(libconfig::Setting const &element)
     {
         unsigned int r = 0;
         unsigned int g = 0;
@@ -56,11 +66,7 @@ namespace RayTracer {
         element.lookupValue("b", b);
         if (r > 255 || g > 255 || b > 255)
             throw libconfig::SettingTypeException(element);
-        return Maths::RGB{
-            static_cast<unsigned char>(r),
-            static_cast<unsigned char>(g),
-            static_cast<unsigned char>(b)
-        };
+        return Maths::Color::from8Bit(r, g, b);
     }
 
     Material::Builder ParserUtils::parseMaterial(
@@ -68,17 +74,17 @@ namespace RayTracer {
         Material::Builder builder)
     {
         if (element.exists("color"))
-            builder.color(ParserUtils::parseColor(element["color"]));
+            builder.color(parseColor(element["color"]));
         if (element.exists("metallic"))
-            builder.metallic(ParserUtils::parseDouble(element, "metallic"));
+            builder.metallic(parseDouble(element, "metallic"));
         if (element.exists("specular"))
-            builder.specular(ParserUtils::parseDouble(element, "specular"));
+            builder.specular(parseDouble(element, "specular"));
         if (element.exists("roughness"))
-            builder.roughness(ParserUtils::parseDouble(element, "roughness"));
+            builder.roughness(parseDouble(element, "roughness"));
         if (element.exists("opacity"))
-            builder.opacity(ParserUtils::parseDouble(element, "opacity"));
+            builder.opacity(parseDouble(element, "opacity"));
         if (element.exists("refraction"))
-            builder.refraction(ParserUtils::parseDouble(element, "refraction"));
+            builder.refraction(parseDouble(element, "refraction"));
         return builder;
     }
 
@@ -86,15 +92,15 @@ namespace RayTracer {
         libconfig::Setting const &element,
         BuilderMap &builders)
     {
-        Material::Builder builder;
+        Material::Builder builder{};
 
         if (element["material"].isGroup()) {
             libconfig::Setting const &material = element["material"];
             if (material.exists("name")
-                && builders.find(material["name"]) != builders.end())
+                && builders.contains(material["name"]))
                     builder = builders.find(material["name"])->second;
             builder = parseMaterial(material, builder);
-        } else if (builders.find(element["material"]) != builders.end())
+        } else if (builders.contains(element["material"]))
             builder = builders.find(element["material"])->second;
         else
             throw libconfig::SettingTypeException(element);

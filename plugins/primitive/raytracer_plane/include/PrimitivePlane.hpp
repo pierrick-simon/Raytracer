@@ -12,7 +12,7 @@
     #include <unordered_map>
     #include <string>
     #include "IObject.hpp"
-    #include "Vector3.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     class PrimitivePlane : public IObject {
@@ -28,8 +28,7 @@ namespace RayTracer {
 
         std::optional<HitInfo> hits(const Ray &ray) override;
 
-        static const std::unordered_map<std::string, Axis> getAxisName()
-            {return _axisName;}
+        static std::unordered_map<std::string, Axis> getAxisName();
 
         [[nodiscard]] Axis getAxis() const;
         [[nodiscard]] double getPos() const;

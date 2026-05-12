@@ -9,7 +9,8 @@
     #define MATERIAL_HPP
 
     #include <optional>
-    #include "Vector3.hpp"
+    #include "Color.hpp"
+    #include "Vector.hpp"
     #include "Ray.hpp"
 
 namespace RayTracer {
@@ -22,7 +23,7 @@ namespace RayTracer {
                 public:
                     Builder() = default;
 
-                    Builder &color(Maths::RGB color);
+                    Builder &color(Maths::Color color);
                     Builder &metallic(double metallic);
                     Builder &specular(double specular);
                     Builder &roughness(double roughness);
@@ -31,7 +32,7 @@ namespace RayTracer {
 
                     Material build() const {return Material(*this);}
 
-                    [[nodiscard]] Maths::RGB getColor() const {return _color;}
+                    [[nodiscard]] Maths::Color getColor() const {return _color;}
                     [[nodiscard]] double getMetallic() const {return _metallic;}
                     [[nodiscard]] double getSpecular() const {return _specular;}
                     [[nodiscard]] double getRoughness() const {return _roughness;}
@@ -39,7 +40,7 @@ namespace RayTracer {
                     [[nodiscard]] double getRefraction() const {return _refraction;}
 
                 private:
-                    Maths::RGB _color = Maths::RGB(255, 255, 255);
+                    Maths::Color _color = Maths::Color::WHITE;
                     double _metallic;
                     double _specular;
                     double _roughness;
@@ -54,19 +55,19 @@ namespace RayTracer {
             std::optional<Ray> getRefractRay(const Ray &ray, const HitInfo &hit) const;
             double getFresnel(const Ray &ray, const HitInfo &hit) const;
 
-            Maths::Vector3D getColorPercentage() const
-                {return _colorPercentage;}
+            Maths::Color getColor() const
+                {return _color;}
             double getSpecular() const {return _specular;}
             double getRoughness() const {return _roughness;}
             double getOpacity() const {return _opacity;}
 
-            Maths::Vector3D getDiffuse() const
-                {return _colorPercentage * (1 - _metallic);}
+            Maths::Color getDiffuse() const
+                {return Maths::Color(_color * (1 - _metallic));}
             double getShininess() const
                 {return (1 - _roughness) * 100;}
     
         private:            
-            Maths::Vector3D _colorPercentage;
+            Maths::Color _color;
             double _metallic;
             double _specular;
             double _roughness;

@@ -18,7 +18,6 @@
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
     #include "ConfigFileParser.hpp"
-    #include "Material.hpp"
 
 namespace RayTracer {
     constexpr int EPISUCCESS = 0;
@@ -37,7 +36,7 @@ namespace RayTracer {
         void run() noexcept;
         void throwRays() noexcept;
         void setPixel(
-            std::size_t x, std::size_t y, Maths::Vector3U resolution) noexcept;
+            std::size_t x, std::size_t y, Maths::Vector2U resolution) noexcept;
 
         static void showHelp();
 
@@ -59,14 +58,16 @@ namespace RayTracer {
 
         void loadPrimitivePlugins();
         void loadLightPlugins();
-      
-        Maths::Vector3D hitColor(const Ray &ray,
+
+        Maths::Color hitColor(const Ray &ray,
             HitInfo &info, std::size_t depth);
         std::optional<HitInfo> getHitObject(Ray const &ray);
         double getSpecular(const Ray &ray,
             const Ray &lihtRay, HitInfo &info);
-        Maths::Vector3D parseObject(const Ray &ray, std::size_t depht);
-        Maths::Vector3D parseLight(const Ray &ray, HitInfo &info);
+
+        Maths::Color parseObject(const Ray &ray, std::size_t depht);
+
+        Maths::Color parseLight(const Ray &ray, HitInfo &info);
 
         void loadingBar(std::size_t pix);
 
