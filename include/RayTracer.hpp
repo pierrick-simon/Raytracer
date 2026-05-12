@@ -13,11 +13,13 @@
     #include <optional>
     #include <exception>
     #include <unordered_map>
+    #include <thread>
 
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
     #include "ConfigFileParser.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     constexpr int EPISUCCESS = 0;
@@ -35,8 +37,9 @@ namespace RayTracer {
 
         void run() noexcept;
         void throwRays() noexcept;
-        void setPixel(
-            std::size_t x, std::size_t y, Maths::Vector2U resolution) noexcept;
+        
+        void rayWorker(Maths::Vector2U start,
+            Maths::Vector2U end, Maths::Vector2U res);
 
         static void showHelp();
 
@@ -51,6 +54,7 @@ namespace RayTracer {
             const char *what() const noexcept override;
         };
 
+
     private:
         void runDisplay();
         void parseOptionalArgs(std::queue<std::string> args);
@@ -58,6 +62,7 @@ namespace RayTracer {
 
         void loadPrimitivePlugins();
         void loadLightPlugins();
+
 
         Maths::Color hitColor(const Ray &ray,
             HitInfo &info, std::size_t depth);
@@ -68,8 +73,6 @@ namespace RayTracer {
         Maths::Color parseObject(const Ray &ray, std::size_t depht);
 
         Maths::Color parseLight(const Ray &ray, HitInfo &info);
-
-        void loadingBar(std::size_t pix);
 
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
@@ -82,10 +85,20 @@ namespace RayTracer {
         std::vector<std::unique_ptr<ILightSourcePlugin>> _lightsPlugins;
         LightConfig _lights;
         double _loadingPercentage = 0.0;
+        std::mutex _mutex;
+        std::vector<std::thread> _workers;
 
         static BuilderMap
             _presetMaterialBuilders;
         static constexpr std::string_view PLUGINS_FOLDER = "plugins";
+
+        class RayWorker {
+            public:
+                Maths::Vector2U resolution;
+                Maths::Vector2U start;
+                Maths::Vector2U end;
+        };
+
     };
 };
 

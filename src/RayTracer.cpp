@@ -40,16 +40,54 @@ namespace RayTracer {
         _ppm.save(_name);
     }
 
+    void RayTracer::rayWorker(Maths::Vector2U start,
+        Maths::Vector2U end, Maths::Vector2U res)
+    {
+        std::vector<Maths::Color> update;
+        update.reserve((end.getX() - start.getX()) * (end.getY() - start.getY()));
+        for (std::size_t i = start.getX(); i < end.getX(); ++i) {
+            for (std::size_t j = start.getY(); j < end.getY(); ++j) {
+                double u = (1.0 / res.getX()) * i;
+                double v = (1.0 / res.getY()) * j;
+                Ray ray = _camera.ray(u, v);
+                update.emplace_back(parseObject(ray, 0));
+            }
+        }
+
+        size_t idx = 0;
+        auto iter = update.begin();
+        _mutex.lock();
+        for (std::size_t i = start.getX(); i < end.getX(); ++i) {
+            for (std::size_t j = start.getY(); j < end.getY(); ++j) {
+                _ppm.setPix(i, j, *iter);
+                ++iter;
+            }
+        }
+        _mutex.unlock();
+    }
+
     void RayTracer::throwRays() noexcept
     {
         Maths::Vector2U res = _camera.getResolution();
+        std::size_t splitx = 8;
+        std::size_t splity = 8;
 
         auto t1 = std::chrono::high_resolution_clock::now();
-        for (std::size_t i = 0; i < res.getX(); ++i) {
-            for (std::size_t j = 0; j < res.getY(); ++j) {
-                setPixel(i, j, res);
+        auto rw = [this](Maths::Vector2U start,
+            Maths::Vector2U end, Maths::Vector2U res)
+            { rayWorker(start, end, res); };
+        std::size_t stepx = res.getX() / splitx;
+        std::size_t stepy = res.getY() / splity;
+        for (std::size_t i = 0; i < splitx; ++i) {
+            for (std::size_t j = 0; j < splity; ++j) {
+                Maths::Vector2U start(stepx * i, stepy * j);
+                Maths::Vector2U end(stepx * (i + 1), stepy * (j + 1));
+                _workers.emplace_back(rw, start, end, res);
             }
         }
+        auto end = _workers.end();
+        for (auto worker = _workers.begin(); worker != end; ++worker)
+            worker->join();
         auto t2 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> ms = t2 - t1;
         std::cout << "\nDone in " << ms.count() / 1000 << "s" << std::endl;
@@ -143,18 +181,6 @@ namespace RayTracer {
         return color;
     }
 
-
-    void RayTracer::setPixel(
-        std::size_t x, std::size_t y, Maths::Vector2U resolution) noexcept
-    {
-        double u = (1.0 / resolution.getX()) * x;
-        double v = (1.0 / resolution.getY()) * y;
-        Ray ray = _camera.ray(u, v);
-        Maths::Color c(parseObject(ray, 0));
-        loadingBar(x * _camera.getResolution().getY() + y);
-        _ppm.setPix(x, y, c);
-    }
-
     void RayTracer::showHelp()
     {
         std::ifstream file({std::string(HELP)});
@@ -233,23 +259,5 @@ namespace RayTracer {
                 this->_lightsPluginsLoaders.emplace_back(std::move(loader));
             }
         }
-    }
-
-    void RayTracer::loadingBar(std::size_t pix)
-    {
-        _loadingPercentage = static_cast<double>(pix)
-            / static_cast<double>(_camera.getNbPixel());
-        
-        std::cout << "[";
-        int pos = 100 * _loadingPercentage;
-        for (int i = 0; i < 100; ++i) {
-            if (i < pos)
-                std::cout << "=";
-            else if (i == pos)
-                std::cout << ">";
-            else std::cout << " ";
-        }
-        std::cout << "] " << static_cast<int>(_loadingPercentage * 100);
-        std::cout << " %\r" << std::flush;
     }
 }
