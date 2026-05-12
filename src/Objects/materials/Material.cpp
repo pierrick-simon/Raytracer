@@ -74,22 +74,34 @@ namespace RayTracer {
             reflect.normalized()};
     }
 
-    static Maths::Vector3D refract(const Maths::Vector3D &uv, const Maths::Vector3D &n, double eta)
+    static std::optional<Maths::Vector3D> refract(
+        const Maths::Vector3D &uv, const Maths::Vector3D &n, double eta)
     {
-        auto cos_theta = std::min(-uv.dot(n), 1.0);
+        double cos_theta = std::min((-uv).dot(n), 1.0);
         Maths::Vector3D r_out_perp = (uv + n * cos_theta) * eta;
-        Maths::Vector3D r_out_par = n * -std::sqrt(std::abs(1.0 - r_out_perp.norm_squared()));
+        double k = 1.0 - r_out_perp.norm_squared();
+        if (k < 0.0) {
+            return std::nullopt;
+        }
+        Maths::Vector3D r_out_par = n * -std::sqrt(k);
         return r_out_perp + r_out_par;
     }
 
     std::optional<Ray> Material::scatter(const Ray &ray, const HitInfo &hit) const
     {
-        double ri = hit.impactNormal.dot(ray.direction) >= 0 ? 1.0 / this->_refraction : this->_refraction;
-
+        double ior = std::max(_refraction, DOUBLE_OFFSET);
+        bool front_face = ray.direction.dot(hit.impactNormal) < 0.0;
+        Maths::Vector3D normal = front_face ? hit.impactNormal : hit.impactNormal * -1.0;
+        double eta = front_face ? 1.0 / ior : ior;
         Maths::Vector3D unit_dir = ray.direction.normalized();
-        Maths::Vector3D refracted = refract(unit_dir, hit.impactNormal, ri);
-
-        return Ray{hit.hitPos, refracted};
+        std::optional<Maths::Vector3D> refracted = refract(unit_dir, normal, eta);
+        if (!refracted) {
+            HitInfo info = hit;
+            info.impactNormal = normal;
+            return getReflectRay(ray, info);
+        }
+        Maths::Vector3D delta = normal * DOUBLE_OFFSET;
+        return Ray{hit.hitPos - delta, refracted->normalized()};
     }
 
     std::optional<Ray> Material::getRefractRay(
