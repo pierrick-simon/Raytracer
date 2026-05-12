@@ -81,7 +81,7 @@ namespace RayTracer {
         std::vector<DLLoader<ILightSourcePlugin>> _lightsPluginsLoaders;
         std::vector<std::unique_ptr<ILightSourcePlugin>> _lightsPlugins;
         LightConfig _lights;
-        double _loadingPercentage = 0.0;
+        int _lastPercent = 0;
 
         static BuilderMap
             _presetMaterialBuilders;
