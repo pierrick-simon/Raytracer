@@ -12,9 +12,10 @@
 #include <chrono>
 
 #include "RayTracer.hpp"
+#include "ArgsParser.hpp"
 
 namespace RayTracer {
-    RayTracer::RayTracer(std::queue<std::string> args)
+    RayTracer::RayTracer(std::vector<std::string> args)
     {
         if (args.empty() || args.front() == HELP_FLAG) {
             showHelp();
@@ -203,23 +204,31 @@ namespace RayTracer {
             display->draw(_ppm);
     }
 
-    void RayTracer::parseOptionalArgs(std::queue<std::string> args)
+    void RayTracer::parseOptionalArgs(std::vector<std::string> args)
     {
-        if (args.empty())
-            return;
-        if (!args.empty() && args.front() == DISPLAY_FLAG && args.size() == 2) {
-            args.pop();
-            _display.emplace(args.front());
-            if (_display->getType() != LibType::GRAPHICS)
-                throw IncorrectLibTypeException();
-        } else {
+        try {
+            auto libName = ArgsParser::getArg<std::string>(args, "--display");
+            if (libName.has_value()) {
+                _display.emplace(libName.value());
+                if (_display->getType() != LibType::GRAPHICS)
+                    throw IncorrectLibTypeException();
+            }
+            auto sd = ArgsParser::getArg<int>(args, "--screenDivision");
+            if (sd.has_value())
+                _nbScreenSplit = sd.value();
+            auto md = ArgsParser::getArg<int>(args, "--maxDepth");
+            if (md.has_value())
+                _maxDepth = md.value();
+            if (!args.empty() || _nbScreenSplit <= 0 || _maxDepth <= 0)
+                throw ArgsParserError();
+        } catch (ArgsParserError) {
             showHelp();
             throw HelpException();
         }
     }
 
     void RayTracer::initVars(
-        std::reference_wrapper<std::queue<std::string>> args)
+        std::reference_wrapper<std::vector<std::string>> args)
     {
         _ppm = _camera.getResolution();
         std::filesystem::path path(args.get().front());
@@ -227,7 +236,7 @@ namespace RayTracer {
         size_t pos = _name.find(ARG_EXT);
         if (pos != std::string::npos)
             _name.replace(pos, _name.length() - pos, "\0");
-        args.get().pop();
+        args.get().erase(args.get().begin());
     }
 
     void RayTracer::loadPrimitivePlugins()

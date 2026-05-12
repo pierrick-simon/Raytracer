@@ -8,12 +8,12 @@
 #ifndef RAYTRACER_HPP
     #define RAYTRACER_HPP
 
-    #include <queue>
     #include <string>
     #include <optional>
     #include <exception>
     #include <unordered_map>
     #include <thread>
+    #include <functional>
 
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
@@ -32,7 +32,7 @@ namespace RayTracer {
 
     class RayTracer {
     public:
-        RayTracer(std::queue<std::string> args);
+        RayTracer(std::vector<std::string> args);
 
         void run() noexcept;
         void throwRays() noexcept;
@@ -56,8 +56,8 @@ namespace RayTracer {
 
     private:
         void runDisplay();
-        void parseOptionalArgs(std::queue<std::string> args);
-        void initVars(std::reference_wrapper<std::queue<std::string>> args);
+        void parseOptionalArgs(std::vector<std::string> args);
+        void initVars(std::reference_wrapper<std::vector<std::string>> args);
 
         void loadPrimitivePlugins();
         void loadLightPlugins();
@@ -86,8 +86,8 @@ namespace RayTracer {
         std::vector<std::unique_ptr<ILightSourcePlugin>> _lightsPlugins;
         LightConfig _lights;
         double _loadingPercentage = 0.0;
-        std::size_t _maxDepth = 10;
-        std::size_t _nbScreenSplit = 2;
+        int _maxDepth = 10;
+        int _nbScreenSplit = 4;
         std::mutex _mutex;
         std::vector<std::thread> _workers;
 
