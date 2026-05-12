@@ -43,6 +43,8 @@ namespace RayTracer {
         };
         SpotLight(const Builder &builder);
 
+        double getAnglePercentage(double angleDelta) const;
+
         [[nodiscard]] Maths::Color getLightAmount(const Ray &) const override;
 
     private:

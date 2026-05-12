@@ -5,9 +5,10 @@
 ** DisplaySFML
 */
 
-#include "SpotLight.hpp"
-
 #include <numeric>
+
+#include "SpotLight.hpp"
+#include "maths/Utils.hpp"
 
 namespace RayTracer {
     SpotLight::Builder SpotLight::Builder::builder()
@@ -102,18 +103,29 @@ namespace RayTracer {
     {
     }
 
+    double SpotLight::getAnglePercentage(double angleDelta) const
+    {
+        double percent = 0;
+
+        if (this->_innerConeAngle == this->_outerConeAngle)
+            percent = angleDelta < this->_innerConeAngle ? 1 : 0;
+        else
+            percent = Maths::invertedLerp(_innerConeAngle,
+            _outerConeAngle, angleDelta);
+        return percent;
+    }
+
     Maths::Color SpotLight::getLightAmount(const Ray &ray) const
     {
         auto delta = Maths::Vector3D(this->_pos - ray.origin);
         double angleDelta = delta.getAngle(ray.direction);
-        double anglePercentage =
-            angleDelta / (_outerConeAngle - _innerConeAngle);
+        double anglePercentage = this->getAnglePercentage(angleDelta);
         anglePercentage = std::clamp(anglePercentage, 0.0, 1.0);
         double distance = this->_pos.distance(ray.origin);
         double distancePercentage = distance / this->_falloutDistance;
         distancePercentage = (1 - std::clamp(distancePercentage, 0.0, 1.0));
 
         return Maths::Color(this->_color *
-                        std::midpoint(distancePercentage, anglePercentage));
+                            std::midpoint(distancePercentage, anglePercentage));
     }
 }

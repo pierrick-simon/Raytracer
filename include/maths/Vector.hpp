@@ -92,7 +92,7 @@ namespace Maths {
 
         [[nodiscard]] double distance(const Vector &rhs) const
         {
-            Vector delta = *this - rhs;
+            Vector delta = rhs - *this;
             return delta.norm();
         }
 
@@ -108,7 +108,7 @@ namespace Maths {
         [[nodiscard]] double getAngle(const Vector &other) const
         {
             double denom = this->norm() * other.norm();
-            if (denom == 0.0)
+            if (denom <= std::numeric_limits<double>::epsilon())
                 return 0.0;
 
             double cosv = this->dot(other) / denom;
