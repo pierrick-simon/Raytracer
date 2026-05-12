@@ -237,19 +237,22 @@ namespace RayTracer {
 
     void RayTracer::loadingBar(std::size_t pix)
     {
-        _loadingPercentage = static_cast<double>(pix)
+        double currentPercentF = static_cast<double>(pix)
             / static_cast<double>(_camera.getNbPixel());
-        
+        int currentPercent = static_cast<int>(100 * currentPercentF);
+
+        if (_lastPercent == currentPercent)
+            return;
+        _lastPercent = currentPercent;
         std::cout << "[";
-        int pos = 100 * _loadingPercentage;
         for (int i = 0; i < 100; ++i) {
-            if (i < pos)
+            if (i < _lastPercent)
                 std::cout << "=";
-            else if (i == pos)
+            else if (i == _lastPercent)
                 std::cout << ">";
             else std::cout << " ";
         }
-        std::cout << "] " << static_cast<int>(_loadingPercentage * 100);
+        std::cout << "] " << _lastPercent;
         std::cout << " %\r" << std::flush;
     }
 }
