@@ -7,3 +7,5 @@ DESCRIPTION
     
     OPTION (Optional arguments)
         --display <PATH>
+        --maxDepth <NUMBER>
+        --screenDivision <NUMBER>

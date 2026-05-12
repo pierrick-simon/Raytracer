@@ -29,7 +29,6 @@ namespace RayTracer {
     constexpr std::string_view DISPLAY_FLAG = "--display";
     constexpr std::string_view ARG_EXT = ".cfg";
     constexpr double DOUBLE_OFFSET = 1e-4;
-    constexpr std::size_t MAX_DEPTH = 10;
 
     class RayTracer {
     public:
@@ -39,7 +38,7 @@ namespace RayTracer {
         void throwRays() noexcept;
         
         void rayWorker(Maths::Vector2U start,
-            Maths::Vector2U end, Maths::Vector2U res, std::size_t nbDivision);
+            Maths::Vector2U end, Maths::Vector2U res);
 
         static void showHelp();
 
@@ -87,6 +86,8 @@ namespace RayTracer {
         std::vector<std::unique_ptr<ILightSourcePlugin>> _lightsPlugins;
         LightConfig _lights;
         double _loadingPercentage = 0.0;
+        std::size_t _maxDepth = 10;
+        std::size_t _nbScreenSplit = 2;
         std::mutex _mutex;
         std::vector<std::thread> _workers;
 

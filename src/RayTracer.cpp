@@ -41,7 +41,7 @@ namespace RayTracer {
     }
 
     void RayTracer::rayWorker(Maths::Vector2U start,
-        Maths::Vector2U end, Maths::Vector2U res, std::size_t nbDivision)
+        Maths::Vector2U end, Maths::Vector2U res)
     {
         std::vector<Maths::Color> update;
         update.reserve((end.getX() - start.getX()) * (end.getY() - start.getY()));
@@ -63,7 +63,8 @@ namespace RayTracer {
                 ++iter;
             }
         }
-        _loadingPercentage += 1.0 / (std::pow(static_cast<double>(nbDivision), 2));
+        _loadingPercentage += 1.0 /
+            (std::pow(static_cast<double>(_nbScreenSplit), 2));
         updateLoadingBar();
         _mutex.unlock();
     }
@@ -71,19 +72,18 @@ namespace RayTracer {
     void RayTracer::throwRays() noexcept
     {
         Maths::Vector2U res = _camera.getResolution();
-        std::size_t nbDivision = 8;
 
         auto t1 = std::chrono::high_resolution_clock::now();
         auto rw = [this](Maths::Vector2U start, Maths::Vector2U end,
-            Maths::Vector2U res, std::size_t nbDivision)
-            { rayWorker(start, end, res, nbDivision); };
-        std::size_t stepx = res.getX() / nbDivision;
-        std::size_t stepy = res.getY() / nbDivision;
-        for (std::size_t i = 0; i < nbDivision; ++i) {
-            for (std::size_t j = 0; j < nbDivision; ++j) {
+            Maths::Vector2U res)
+            { rayWorker(start, end, res); };
+        std::size_t stepx = res.getX() / _nbScreenSplit;
+        std::size_t stepy = res.getY() / _nbScreenSplit;
+        for (std::size_t i = 0; i < _nbScreenSplit; ++i) {
+            for (std::size_t j = 0; j < _nbScreenSplit; ++j) {
                 Maths::Vector2U start(stepx * i, stepy * j);
                 Maths::Vector2U end(stepx * (i + 1), stepy * (j + 1));
-                _workers.emplace_back(rw, start, end, res, nbDivision);
+                _workers.emplace_back(rw, start, end, res);
             }
         }
         auto end = _workers.end();
@@ -174,7 +174,7 @@ namespace RayTracer {
     {
         Maths::Color color = Maths::Color::BLACK;
     
-        if (depth < MAX_DEPTH) {
+        if (depth < _maxDepth) {
             auto closerHit = getHitObject(ray);
             if (closerHit)
                 color = hitColor(ray, *closerHit, depth);
