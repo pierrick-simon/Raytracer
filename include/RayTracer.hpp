@@ -39,7 +39,7 @@ namespace RayTracer {
         void throwRays() noexcept;
         
         void rayWorker(Maths::Vector2U start,
-            Maths::Vector2U end, Maths::Vector2U res);
+            Maths::Vector2U end, Maths::Vector2U res, std::size_t nbDivision);
 
         static void showHelp();
 
@@ -74,6 +74,8 @@ namespace RayTracer {
 
         Maths::Color parseLight(const Ray &ray, HitInfo &info);
 
+        void updateLoadingBar();
+
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
         std::string _name;
@@ -91,13 +93,6 @@ namespace RayTracer {
         static BuilderMap
             _presetMaterialBuilders;
         static constexpr std::string_view PLUGINS_FOLDER = "plugins";
-
-        class RayWorker {
-            public:
-                Maths::Vector2U resolution;
-                Maths::Vector2U start;
-                Maths::Vector2U end;
-        };
 
     };
 };

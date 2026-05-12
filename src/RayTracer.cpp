@@ -41,7 +41,7 @@ namespace RayTracer {
     }
 
     void RayTracer::rayWorker(Maths::Vector2U start,
-        Maths::Vector2U end, Maths::Vector2U res)
+        Maths::Vector2U end, Maths::Vector2U res, std::size_t nbDivision)
     {
         std::vector<Maths::Color> update;
         update.reserve((end.getX() - start.getX()) * (end.getY() - start.getY()));
@@ -63,26 +63,27 @@ namespace RayTracer {
                 ++iter;
             }
         }
+        _loadingPercentage += 1.0 / (std::pow(static_cast<double>(nbDivision), 2));
+        updateLoadingBar();
         _mutex.unlock();
     }
 
     void RayTracer::throwRays() noexcept
     {
         Maths::Vector2U res = _camera.getResolution();
-        std::size_t splitx = 8;
-        std::size_t splity = 8;
+        std::size_t nbDivision = 8;
 
         auto t1 = std::chrono::high_resolution_clock::now();
-        auto rw = [this](Maths::Vector2U start,
-            Maths::Vector2U end, Maths::Vector2U res)
-            { rayWorker(start, end, res); };
-        std::size_t stepx = res.getX() / splitx;
-        std::size_t stepy = res.getY() / splity;
-        for (std::size_t i = 0; i < splitx; ++i) {
-            for (std::size_t j = 0; j < splity; ++j) {
+        auto rw = [this](Maths::Vector2U start, Maths::Vector2U end,
+            Maths::Vector2U res, std::size_t nbDivision)
+            { rayWorker(start, end, res, nbDivision); };
+        std::size_t stepx = res.getX() / nbDivision;
+        std::size_t stepy = res.getY() / nbDivision;
+        for (std::size_t i = 0; i < nbDivision; ++i) {
+            for (std::size_t j = 0; j < nbDivision; ++j) {
                 Maths::Vector2U start(stepx * i, stepy * j);
                 Maths::Vector2U end(stepx * (i + 1), stepy * (j + 1));
-                _workers.emplace_back(rw, start, end, res);
+                _workers.emplace_back(rw, start, end, res, nbDivision);
             }
         }
         auto end = _workers.end();
@@ -259,5 +260,20 @@ namespace RayTracer {
                 this->_lightsPluginsLoaders.emplace_back(std::move(loader));
             }
         }
+    }
+    
+    void RayTracer::updateLoadingBar()
+    {
+        std::cout << "[";
+        int pos = 100 * _loadingPercentage;
+        for (int i = 0; i < 100; ++i) {
+            if (i < pos)
+                std::cout << "=";
+            else if (i == pos)
+                std::cout << ">";
+            else std::cout << " ";
+        }
+        std::cout << "] " << static_cast<int>(_loadingPercentage * 100);
+        std::cout << " %\r" << std::flush;
     }
 }
