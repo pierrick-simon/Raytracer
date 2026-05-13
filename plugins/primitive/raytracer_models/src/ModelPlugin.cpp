@@ -21,9 +21,9 @@ namespace RayTracer {
     {
         std::cout << "Loading model..." << std::endl;
         Maths::Point3D origin = ParserUtils::parsePoint3D(element);
-        double r = ParserUtils::parseDouble(element, "r");
+        std::string path = element["path"];
 
-        return std::make_unique<Model>(origin, r,
+        return std::make_unique<Model>(origin, path,
             ParserUtils::getBuilder(element, map).build());
     }
 
