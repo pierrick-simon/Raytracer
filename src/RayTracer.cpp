@@ -12,9 +12,10 @@
 #include <chrono>
 
 #include "RayTracer.hpp"
+#include "ArgsParser.hpp"
 
 namespace RayTracer {
-    RayTracer::RayTracer(std::queue<std::string> args)
+    RayTracer::RayTracer(std::vector<std::string> args)
     {
         if (args.empty() || args.front() == HELP_FLAG) {
             showHelp();
@@ -40,16 +41,60 @@ namespace RayTracer {
         _ppm.save(_name);
     }
 
+    void RayTracer::updateRays(Maths::Vector2U start,
+        Maths::Vector2U end, std::vector<Maths::Color> update)
+    {
+        auto iter = update.begin();
+        _mutex.lock();
+        for (std::size_t i = start.getX(); i < end.getX(); ++i) {
+            for (std::size_t j = start.getY(); j < end.getY(); ++j) {
+                _ppm.setPix(i, j, *iter);
+                ++iter;
+            }
+        }
+        _loadingPercentage += 1.0 /
+            (std::pow(static_cast<double>(_nbScreenSplit), 2));
+        updateLoadingBar();
+        _mutex.unlock();
+    }
+
+    void RayTracer::rayWorker(Maths::Vector2U start,
+        Maths::Vector2U end, Maths::Vector2U res)
+    {
+        std::vector<Maths::Color> update;
+        update.reserve((end.getX() - start.getX()) * (end.getY() - start.getY()));
+        for (std::size_t i = start.getX(); i < end.getX(); ++i) {
+            for (std::size_t j = start.getY(); j < end.getY(); ++j) {
+                Maths::Vector2D v((1.0 / res.getX()) * i, (1.0 / res.getY()) * j);
+                Ray ray = _camera.ray(v);
+                update.emplace_back(parseObject(ray, 0));
+            }
+        }
+
+        updateRays(start, end, update);
+    }
+
     void RayTracer::throwRays() noexcept
     {
         Maths::Vector2U res = _camera.getResolution();
 
         auto t1 = std::chrono::high_resolution_clock::now();
-        for (std::size_t i = 0; i < res.getX(); ++i) {
-            for (std::size_t j = 0; j < res.getY(); ++j) {
-                setPixel(i, j, res);
+        updateLoadingBar();
+        auto rw = [this](Maths::Vector2U start, Maths::Vector2U end,
+            Maths::Vector2U res)
+            { rayWorker(start, end, res); };
+        double stepx = res.getX() / (double)_nbScreenSplit;
+        double stepy = res.getY() / (double)_nbScreenSplit;
+        for (std::size_t i = 0; i < _nbScreenSplit; ++i) {
+            for (std::size_t j = 0; j < _nbScreenSplit; ++j) {
+                Maths::Vector2U start(std::round(stepx * i), std::round(stepy * j));
+                Maths::Vector2U end(std::round(stepx * (i + 1)), std::round(stepy * (j + 1)));
+                _workers.emplace_back(rw, start, end, res);
             }
         }
+        auto end = _workers.end();
+        for (auto worker = _workers.begin(); worker != end; ++worker)
+            worker->join();
         auto t2 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> ms = t2 - t1;
         std::cout << "\nDone in " << ms.count() / 1000 << "s" << std::endl;
@@ -135,24 +180,12 @@ namespace RayTracer {
     {
         Maths::Color color = Maths::Color::BLACK;
     
-        if (depth < MAX_DEPTH) {
+        if (depth < _maxDepth) {
             auto closerHit = getHitObject(ray);
             if (closerHit)
                 color = hitColor(ray, *closerHit, depth);
         }
         return color;
-    }
-
-
-    void RayTracer::setPixel(
-        std::size_t x, std::size_t y, Maths::Vector2U resolution) noexcept
-    {
-        double u = (1.0 / resolution.getX()) * x;
-        double v = (1.0 / resolution.getY()) * y;
-        Ray ray = _camera.ray(u, v);
-        Maths::Color c(parseObject(ray, 0));
-        loadingBar(x * _camera.getResolution().getY() + y);
-        _ppm.setPix(x, y, c);
     }
 
     void RayTracer::showHelp()
@@ -176,23 +209,30 @@ namespace RayTracer {
             display->draw(_ppm);
     }
 
-    void RayTracer::parseOptionalArgs(std::queue<std::string> args)
+    void RayTracer::parseOptionalArgs(std::vector<std::string> args)
     {
-        if (args.empty())
-            return;
-        if (!args.empty() && args.front() == DISPLAY_FLAG && args.size() == 2) {
-            args.pop();
-            _display.emplace(args.front());
-            if (_display->getType() != LibType::GRAPHICS)
-                throw IncorrectLibTypeException();
-        } else {
+        try {
+            auto libName = ArgsParser::getArg<std::string>(args, "--display");
+            if (libName.has_value())
+                _display.emplace(libName.value());
+            if (_display.has_value() && _display->getType() != LibType::GRAPHICS)
+                    throw IncorrectLibTypeException();
+            auto sd = ArgsParser::getArg<int>(args, "--screenDivision");
+            if (sd.has_value())
+                _nbScreenSplit = sd.value();
+            auto md = ArgsParser::getArg<int>(args, "--maxDepth");
+            if (md.has_value())
+                _maxDepth = md.value();
+            if (!args.empty() || _nbScreenSplit <= 0 || _maxDepth <= 0)
+                throw ArgsParserError();
+        } catch (ArgsParserError) {
             showHelp();
             throw HelpException();
         }
     }
 
     void RayTracer::initVars(
-        std::reference_wrapper<std::queue<std::string>> args)
+        std::reference_wrapper<std::vector<std::string>> args)
     {
         _ppm = _camera.getResolution();
         std::filesystem::path path(args.get().front());
@@ -200,7 +240,7 @@ namespace RayTracer {
         size_t pos = _name.find(ARG_EXT);
         if (pos != std::string::npos)
             _name.replace(pos, _name.length() - pos, "\0");
-        args.get().pop();
+        args.get().erase(args.get().begin());
     }
 
     void RayTracer::loadPrimitivePlugins()
@@ -234,25 +274,19 @@ namespace RayTracer {
             }
         }
     }
-
-    void RayTracer::loadingBar(std::size_t pix)
+    
+    void RayTracer::updateLoadingBar()
     {
-        double currentPercentF = static_cast<double>(pix)
-            / static_cast<double>(_camera.getNbPixel());
-        int currentPercent = static_cast<int>(100 * currentPercentF);
-
-        if (_lastPercent == currentPercent)
-            return;
-        _lastPercent = currentPercent;
         std::cout << "[";
+        int p = _loadingPercentage * 100;
         for (int i = 0; i < 100; ++i) {
-            if (i < _lastPercent)
+            if (i < p)
                 std::cout << "=";
-            else if (i == _lastPercent)
+            else if (i == p)
                 std::cout << ">";
             else std::cout << " ";
         }
-        std::cout << "] " << _lastPercent;
+        std::cout << "] " << p;
         std::cout << " %\r" << std::flush;
     }
 }

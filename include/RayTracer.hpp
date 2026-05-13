@@ -8,16 +8,18 @@
 #ifndef RAYTRACER_HPP
     #define RAYTRACER_HPP
 
-    #include <queue>
     #include <string>
     #include <optional>
     #include <exception>
     #include <unordered_map>
+    #include <thread>
+    #include <functional>
 
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
     #include "IDisplay.hpp"
     #include "ConfigFileParser.hpp"
+    #include "Vector.hpp"
 
 namespace RayTracer {
     constexpr int EPISUCCESS = 0;
@@ -27,16 +29,16 @@ namespace RayTracer {
     constexpr std::string_view DISPLAY_FLAG = "--display";
     constexpr std::string_view ARG_EXT = ".cfg";
     constexpr double DOUBLE_OFFSET = 1e-4;
-    constexpr std::size_t MAX_DEPTH = 10;
 
     class RayTracer {
     public:
-        RayTracer(std::queue<std::string> args);
+        RayTracer(std::vector<std::string> args);
 
         void run() noexcept;
         void throwRays() noexcept;
-        void setPixel(
-            std::size_t x, std::size_t y, Maths::Vector2U resolution) noexcept;
+        
+        void rayWorker(Maths::Vector2U start,
+            Maths::Vector2U end, Maths::Vector2U res);
 
         static void showHelp();
 
@@ -51,13 +53,17 @@ namespace RayTracer {
             const char *what() const noexcept override;
         };
 
+
     private:
         void runDisplay();
-        void parseOptionalArgs(std::queue<std::string> args);
-        void initVars(std::reference_wrapper<std::queue<std::string>> args);
+        void parseOptionalArgs(std::vector<std::string> args);
+        void initVars(std::reference_wrapper<std::vector<std::string>> args);
 
         void loadPrimitivePlugins();
         void loadLightPlugins();
+
+        void updateRays(Maths::Vector2U start,
+            Maths::Vector2U end, std::vector<Maths::Color> update);
 
         Maths::Color hitColor(const Ray &ray,
             HitInfo &info, std::size_t depth);
@@ -69,7 +75,7 @@ namespace RayTracer {
 
         Maths::Color parseLight(const Ray &ray, HitInfo &info);
 
-        void loadingBar(std::size_t pix);
+        void updateLoadingBar();
 
         std::optional<DLLoader<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
@@ -81,11 +87,16 @@ namespace RayTracer {
         std::vector<DLLoader<ILightSourcePlugin>> _lightsPluginsLoaders;
         std::vector<std::unique_ptr<ILightSourcePlugin>> _lightsPlugins;
         LightConfig _lights;
-        int _lastPercent = 0;
+        double _loadingPercentage = 0.0;
+        int _maxDepth = 10;
+        int _nbScreenSplit = 4;
+        std::mutex _mutex;
+        std::vector<std::thread> _workers;
 
         static BuilderMap
             _presetMaterialBuilders;
         static constexpr std::string_view PLUGINS_FOLDER = "plugins";
+
     };
 };
 

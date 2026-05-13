@@ -6,4 +6,7 @@ DESCRIPTION
         scene configuration
     
     OPTION (Optional arguments)
+        -h / --help
         --display <PATH>
+        --maxDepth <NUMBER>
+        --screenDivision <NUMBER>
