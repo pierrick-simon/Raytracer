@@ -71,22 +71,13 @@ RayTracer::Action RayTracer::DisplaySFML::mousseButton(sf::Event event)
     return action;
 }
 
-void RayTracer::DisplaySFML::draw(PortablePixMap ppm)
+void RayTracer::DisplaySFML::draw()
 {
-    _size = {static_cast<float>(ppm.getWidth()),
-        static_cast<float>(ppm.getHeight())};
-     _window.clear(DARKBLUE);
-    resized();
+    _texture.update(_image);
+    _window.clear(DARKBLUE);
     _background.setSize(_size);
     _window.draw(_background);
-    for (size_t i = 0; i < ppm.getHeight(); i++) {
-        for (size_t j = 0; j < ppm.getWidth(); j++) {
-            auto color = ppm.getPix(j, i).to8Bit();
-            _pix.setFillColor({color.getX(), color.getY(), color.getZ()});
-            _pix.setPosition({static_cast<float>(j), static_cast<float>(i)});
-            _window.draw(_pix);
-        }
-    }
+    _window.draw(_sprite);
     _window.display();
 }
 
@@ -109,6 +100,26 @@ void RayTracer::DisplaySFML::resized()
 
     _view.setViewport(sf::FloatRect(pos.x, pos.y, size.x, size.y));
     _window.setView(_view);
+}
+
+void RayTracer::DisplaySFML::setSceneSize(
+    std::size_t width, std::size_t height)
+{
+    _size = {static_cast<float>(width),
+        static_cast<float>(height)};
+    resized();
+    _image.create(width, height);
+    _texture.loadFromImage(_image);
+    _sprite.setTexture(_texture);
+}
+
+void RayTracer::DisplaySFML::setPix(
+    std::size_t width, std::size_t height, Maths::Color8bit color)
+{
+    if (_image.getSize().x <= width || _image.getSize().y <= height)
+        return;
+    _image.setPixel(width, height,
+        sf::Color(color.getX(), color.getY(), color.getZ(), color.getW()));
 }
 
 const std::unordered_map<sf::Keyboard::Key, RayTracer::Action>

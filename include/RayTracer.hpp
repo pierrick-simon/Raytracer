@@ -14,6 +14,7 @@
     #include <unordered_map>
     #include <thread>
     #include <functional>
+    #include <atomic>
 
     #include "PortablePixMap.hpp"
     #include "DLLoader.hpp"
@@ -24,6 +25,7 @@
 namespace RayTracer {
     constexpr int EPISUCCESS = 0;
     constexpr int EPIERROR = 84;
+    constexpr int SKIP = -1;
     constexpr std::string_view HELP = "docs/help.txt";
     constexpr std::string_view HELP_FLAG = "--help";
     constexpr std::string_view DISPLAY_FLAG = "--display";
@@ -56,6 +58,8 @@ namespace RayTracer {
 
     private:
         void runDisplay();
+        int throwDisplay();
+        void updateDisplayColor(std::size_t i, std::size_t j, Maths::Color8bit color);
         void parseOptionalArgs(std::vector<std::string> args);
         void initVars(std::reference_wrapper<std::vector<std::string>> args);
 
@@ -77,7 +81,8 @@ namespace RayTracer {
 
         void updateLoadingBar();
 
-        std::optional<DLLoader<IDisplay>> _display = std::nullopt;
+        std::optional<DLLoader<IDisplay>> _displayLoader = std::nullopt;
+        std::optional<std::unique_ptr<IDisplay>> _display = std::nullopt;
         PortablePixMap _ppm;
         std::string _name;
         Camera _camera;
@@ -92,6 +97,7 @@ namespace RayTracer {
         int _nbScreenSplit = 4;
         std::mutex _mutex;
         std::vector<std::thread> _workers;
+        bool _renderDone = false;
 
         static BuilderMap
             _presetMaterialBuilders;

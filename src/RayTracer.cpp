@@ -33,11 +33,37 @@ namespace RayTracer {
         parseOptionalArgs(args);
     }
 
+    int RayTracer::throwDisplay()
+    {
+        int value = EPISUCCESS;
+        _renderDone = false;
+        std::thread renderThread([this]() {
+            throwRays();
+            _renderDone = true;
+        });
+        while (!_renderDone) {
+            auto event = _display->get()->getEvent();
+            if (event.first == Action::Close) {
+                renderThread.join();
+                _ppm.save(_name);
+                value = SKIP;
+                break;
+            }
+            _display->get()->draw();
+        }
+        if (value != SKIP)
+            renderThread.join();
+        return value;
+    }
+
     void RayTracer::run() noexcept
     {
-        throwRays();
-        if (_display.has_value())
+        if (_display.has_value()) {
+            if (throwDisplay() == SKIP)
+                return;
             runDisplay();
+        } else
+            throwRays();
         _ppm.save(_name);
     }
 
@@ -58,6 +84,12 @@ namespace RayTracer {
         _mutex.unlock();
     }
 
+    void RayTracer::updateDisplayColor(std::size_t i, std::size_t j, Maths::Color8bit color)
+    {
+        if (_display)
+            _display->get()->setPix(i, j, color);
+    }
+
     void RayTracer::rayWorker(Maths::Vector2U start,
         Maths::Vector2U end, Maths::Vector2U res)
     {
@@ -68,9 +100,9 @@ namespace RayTracer {
                 Maths::Vector2D v((1.0 / res.getX()) * i, (1.0 / res.getY()) * j);
                 Ray ray = _camera.ray(v);
                 update.emplace_back(parseObject(ray, 0));
+                updateDisplayColor(i, j, update.back().to8Bit());
             }
         }
-
         updateRays(start, end, update);
     }
 
@@ -203,10 +235,8 @@ namespace RayTracer {
 
     void RayTracer::runDisplay()
     {
-        auto display = _display.value().getInstance();
-
-        while (display->getEvent().first != Action::Close)
-            display->draw(_ppm);
+        while (_display->get()->getEvent().first != Action::Close)
+            _display->get()->draw();
     }
 
     void RayTracer::parseOptionalArgs(std::vector<std::string> args)
@@ -214,8 +244,8 @@ namespace RayTracer {
         try {
             auto libName = ArgsParser::getArg<std::string>(args, "--display");
             if (libName.has_value())
-                _display.emplace(libName.value());
-            if (_display.has_value() && _display->getType() != LibType::GRAPHICS)
+                _displayLoader.emplace(libName.value());
+            if (_displayLoader.has_value() && _displayLoader->getType() != LibType::GRAPHICS)
                     throw IncorrectLibTypeException();
             auto sd = ArgsParser::getArg<int>(args, "--screenDivision");
             if (sd.has_value())
@@ -225,6 +255,11 @@ namespace RayTracer {
                 _maxDepth = md.value();
             if (!args.empty() || _nbScreenSplit <= 0 || _maxDepth <= 0)
                 throw ArgsParserError();
+            if (_displayLoader) {
+                _display = _displayLoader->getInstance();
+                _display->get()->setSceneSize(_camera.getResolution().getX(),
+                    _camera.getResolution().getY());
+            }
         } catch (ArgsParserError) {
             showHelp();
             throw HelpException();
@@ -234,7 +269,7 @@ namespace RayTracer {
     void RayTracer::initVars(
         std::reference_wrapper<std::vector<std::string>> args)
     {
-        _ppm = _camera.getResolution();
+        _ppm = PortablePixMap(_camera.getResolution());
         std::filesystem::path path(args.get().front());
         _name = path.filename();
         size_t pos = _name.find(ARG_EXT);
