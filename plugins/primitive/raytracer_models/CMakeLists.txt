@@ -4,8 +4,8 @@ project(RayTracer)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(SPHERE
-    raytracer_sphere
+set(MODEL
+    raytracer_model
 )
 
 set(SHARED_SRCS
@@ -16,12 +16,12 @@ set(SHARED_SRCS
 
 list(TRANSFORM SHARED_SRCS PREPEND ${CMAKE_SOURCE_DIR}/src/)
 
-set(SRCS_SPHERE
-    src/PrimitiveSphere.cpp
+set(SRCS_MODEL
+    src/Model.cpp
     src/LibEntryPoints.cpp
-    src/SpherePlugin.cpp
+    src/ModelPlugin.cpp
 )
 
-add_library(${SPHERE} SHARED ${SRCS_SPHERE} ${SHARED_SRCS})
-set_target_properties(${SPHERE} PROPERTIES PREFIX "")
-target_include_directories(${SPHERE} PRIVATE include)
+add_library(${MODEL} SHARED ${SRCS_MODEL} ${SHARED_SRCS})
+set_target_properties(${MODEL} PROPERTIES PREFIX "")
+target_include_directories(${MODEL} PRIVATE include)
