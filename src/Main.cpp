@@ -13,7 +13,9 @@
 
 int main(int ac, char **av)
 {
-    std::queue<std::string> args(std::deque<std::string>(av + 1, av + ac));
+    std::vector<std::string> args;
+    for (++av;*av != NULL; ++av)
+        args.emplace_back(*av);
     try {
         RayTracer::RayTracer tmp(args);
         tmp.run();

@@ -52,6 +52,7 @@ namespace RayTracer {
 
 
             Ray getReflectRay(const Ray &ray, const HitInfo &hit) const;
+
             std::optional<Ray> getRefractRay(const Ray &ray, const HitInfo &hit) const;
             double getFresnel(const Ray &ray, const HitInfo &hit) const;
 
