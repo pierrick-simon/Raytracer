@@ -114,7 +114,7 @@ namespace RayTracer {
     }
 
     const std::unordered_map<std::string, void (Model::*)(
-            std::istringstream &)> LINE_PARSE_FUNCTION = {
+            std::istringstream &)> Model::LINE_PARSE_FUNCTION = {
         {"v", &Model::addVertex},
         {"vt", &Model::addVertexTexture},
         {"vn", &Model::addVertexNormal},
