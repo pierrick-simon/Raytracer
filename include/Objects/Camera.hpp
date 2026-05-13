@@ -20,7 +20,7 @@ namespace RayTracer {
             Camera(Maths::Vector2U const &resolution, Maths::Point3D const
                 &position, Maths::Quaternion const &rotation, double fov);
 
-            Ray ray(const double &u, const double &v) const noexcept;
+            Ray ray(const Maths::Vector2D &v) const noexcept;
             void updateCamera() noexcept;
 
             void setResolution(Maths::Vector2U const &reso) noexcept;

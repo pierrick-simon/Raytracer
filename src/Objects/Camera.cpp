@@ -80,9 +80,9 @@ namespace RayTracer {
         _screen.setLeftSide(pointV - rectOrigin);
     }
 
-    Ray Camera::ray(const double &u, const double &v) const noexcept
+    Ray Camera::ray(const Maths::Vector2D &v) const noexcept
     {
-        Maths::Point3D p = _screen.pointAt(u, v);
+        Maths::Point3D p = _screen.pointAt(v.getX(), v.getY());
         return {_position, p - _position};
     }
 

@@ -65,9 +65,8 @@ namespace RayTracer {
         update.reserve((end.getX() - start.getX()) * (end.getY() - start.getY()));
         for (std::size_t i = start.getX(); i < end.getX(); ++i) {
             for (std::size_t j = start.getY(); j < end.getY(); ++j) {
-                double u = (1.0 / res.getX()) * i;
-                double v = (1.0 / res.getY()) * j;
-                Ray ray = _camera.ray(u, v);
+                Maths::Vector2D v((1.0 / res.getX()) * i, (1.0 / res.getY()) * j);
+                Ray ray = _camera.ray(v);
                 update.emplace_back(parseObject(ray, 0));
             }
         }
