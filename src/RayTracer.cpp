@@ -43,27 +43,39 @@ namespace RayTracer {
         });
         while (!_renderDone) {
             auto event = _display->get()->getEvent();
-            if (event.first == Action::Close) {
-                renderThread.join();
-                _ppm.save(_name);
+            if (event.first == Action::Close
+                || event.first == Action::Escape) {
                 value = SKIP;
+                break;
+            }
+            auto update = updateCamera(event);
+            if (update) {
+                value = UPDATE;
                 break;
             }
             _display->get()->draw();
         }
-        if (value != SKIP)
-            renderThread.join();
+        renderThread.join();
         return value;
     }
 
     void RayTracer::run() noexcept
     {
-        if (_display.has_value()) {
-            if (throwDisplay() == SKIP)
-                return;
-            runDisplay();
-        } else
-            throwRays();
+        while (true) {
+            if (_display.has_value()) {
+                _loadingPercentage = 0.0;
+                _workers.clear();
+                auto result = throwDisplay();
+                if (result == SKIP)
+                    return;
+                if (result == UPDATE)
+                    continue;
+                runDisplay();
+            } else {
+                throwRays();
+            }
+            break;
+        }
         _ppm.save(_name);
     }
 
@@ -235,8 +247,18 @@ namespace RayTracer {
 
     void RayTracer::runDisplay()
     {
-        while (_display->get()->getEvent().first != Action::Close)
+        Event event = _display->get()->getEvent();
+    
+        while (event.first != Action::Close
+            && event.first != Action::Escape) {
+            auto update = updateCamera(event);
+            if (update) {
+                run();
+                break;
+            }
             _display->get()->draw();
+            event = _display->get()->getEvent();
+        }
     }
 
     void RayTracer::parseOptionalArgs(std::vector<std::string> args)
@@ -323,5 +345,55 @@ namespace RayTracer {
         }
         std::cout << "] " << p;
         std::cout << " %\r" << std::flush;
+    }
+
+    bool RayTracer::moveCamera(Event event)
+    {
+        auto action = event.first;
+        auto pos = _camera.getPosition();
+
+        if (action == Action::Z)
+            pos.getX() += 1;
+        if (action == Action::S)
+            pos.getX() -= 1;
+        if (action == Action::D)
+            pos.getY() += 1;
+        if (action == Action::Q)
+            pos.getY() -= 1;
+        if (action == Action::LShift)
+            pos.getZ() += 1;
+        if (action == Action::LControl)
+            pos.getZ() -= 1;
+        bool update = pos != _camera.getPosition();
+        _camera.setPosition(pos);
+        return update;
+    }
+
+    bool RayTracer::rotateCamera(Event event)
+    {
+        auto action = event.first;
+        auto rotation = _camera.getRotation();
+
+        if (action == Action::Up)
+            rotation *= Maths::Quaternion::fromEulerDegrees(0, 1, 0);
+        if (action == Action::Down)
+            rotation *= Maths::Quaternion::fromEulerDegrees(0, -1, 0);
+        if (action == Action::Right)
+            rotation *= Maths::Quaternion::fromEulerDegrees(1, 0, 0);
+        if (action == Action::Left)
+            rotation *= Maths::Quaternion::fromEulerDegrees(-1, 0, 0);
+        if (action == Action::E)
+            rotation *= Maths::Quaternion::fromEulerDegrees(0, 0, 1);
+        if (action == Action::A)
+            rotation *= Maths::Quaternion::fromEulerDegrees(0, 0, -1);
+        bool update = rotation != _camera.getRotation();
+        _camera.setRotation(rotation);
+        _camera.updateCamera();
+        return update;
+    }
+
+    bool RayTracer::updateCamera(Event event)
+    {
+        return moveCamera(event) || rotateCamera(event);
     }
 }

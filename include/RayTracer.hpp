@@ -25,6 +25,7 @@
 namespace RayTracer {
     constexpr int EPISUCCESS = 0;
     constexpr int EPIERROR = 84;
+    constexpr int UPDATE = 1;
     constexpr int SKIP = -1;
     constexpr std::string_view HELP = "docs/help.txt";
     constexpr std::string_view HELP_FLAG = "--help";
@@ -60,6 +61,10 @@ namespace RayTracer {
         void runDisplay();
         int throwDisplay();
         void updateDisplayColor(std::size_t i, std::size_t j, Maths::Color8bit color);
+        bool moveCamera(Event event);
+        bool rotateCamera(Event event);
+        bool updateCamera(Event event);
+
         void parseOptionalArgs(std::vector<std::string> args);
         void initVars(std::reference_wrapper<std::vector<std::string>> args);
 
