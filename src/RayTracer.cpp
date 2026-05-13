@@ -79,15 +79,16 @@ namespace RayTracer {
         Maths::Vector2U res = _camera.getResolution();
 
         auto t1 = std::chrono::high_resolution_clock::now();
+        updateLoadingBar();
         auto rw = [this](Maths::Vector2U start, Maths::Vector2U end,
             Maths::Vector2U res)
             { rayWorker(start, end, res); };
-        std::size_t stepx = res.getX() / _nbScreenSplit;
-        std::size_t stepy = res.getY() / _nbScreenSplit;
+        double stepx = res.getX() / (double)_nbScreenSplit;
+        double stepy = res.getY() / (double)_nbScreenSplit;
         for (std::size_t i = 0; i < _nbScreenSplit; ++i) {
             for (std::size_t j = 0; j < _nbScreenSplit; ++j) {
-                Maths::Vector2U start(stepx * i, stepy * j);
-                Maths::Vector2U end(stepx * (i + 1), stepy * (j + 1));
+                Maths::Vector2U start(std::round(stepx * i), std::round(stepy * j));
+                Maths::Vector2U end(std::round(stepx * (i + 1)), std::round(stepy * (j + 1)));
                 _workers.emplace_back(rw, start, end, res);
             }
         }
