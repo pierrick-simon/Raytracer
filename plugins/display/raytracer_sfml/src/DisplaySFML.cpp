@@ -81,27 +81,6 @@ void RayTracer::DisplaySFML::draw()
     _window.display();
 }
 
-void RayTracer::DisplaySFML::resized()
-{
-    _view.reset(sf::FloatRect(0, 0, _size.x, _size.y));
-    float windowRatio = static_cast<float>(_window.getSize().x) /
-                        static_cast<float>(_window.getSize().y);
-    float viewRatio   = _size.x / _size.y;
-    sf::Vector2f size = {1, 1};
-    sf::Vector2f pos  = {0, 0};
-
-    if (windowRatio >= viewRatio) {
-        size.x = viewRatio / windowRatio;
-        pos.x  = (1.0f - size.x) / 2.0f;
-    } else {
-        size.y = windowRatio / viewRatio;
-        pos.y  = (1.0f - size.y) / 2.0f;
-    }
-
-    _view.setViewport(sf::FloatRect(pos.x, pos.y, size.x, size.y));
-    _window.setView(_view);
-}
-
 void RayTracer::DisplaySFML::setSceneSize(
     std::size_t width, std::size_t height)
 {
@@ -111,6 +90,25 @@ void RayTracer::DisplaySFML::setSceneSize(
     _image.create(width, height);
     _texture.loadFromImage(_image);
     _sprite.setTexture(_texture);
+}
+
+void RayTracer::DisplaySFML::resized()
+{
+    _view.reset(sf::FloatRect(0, 0, _size.x, _size.y));
+    float windowRatio = static_cast<float>(_window.getSize().x) /
+                        static_cast<float>(_window.getSize().y);
+    float viewRatio = _size.x / _size.y;
+    sf::Vector2f size = {1, 1};
+    sf::Vector2f pos  = {0, 0};
+    if (windowRatio >= viewRatio) {
+        size.x = viewRatio / windowRatio;
+        pos.x = (1.0 - size.x) / 2.0;
+    } else {
+        size.y = windowRatio / viewRatio;
+        pos.y = (1.0 - size.y) / 2.0;
+    }
+    _view.setViewport(sf::FloatRect(pos.x, pos.y, size.x, size.y));
+    _window.setView(_view);
 }
 
 void RayTracer::DisplaySFML::setPix(
@@ -220,6 +218,8 @@ const std::unordered_map<sf::Keyboard::Key, RayTracer::Action>
     {sf::Keyboard::Key::F15, Action::F15},
     {sf::Keyboard::Key::LShift, Action::LShift},
     {sf::Keyboard::Key::RShift, Action::RShift},
+    {sf::Keyboard::Key::LControl, Action::LControl},
+    {sf::Keyboard::Key::RControl, Action::RControl},
 };
 
 const std::unordered_map<int, RayTracer::Action>

@@ -316,9 +316,9 @@ namespace RayTracer {
             pos.getY() += 1;
         if (action == Action::Q)
             pos.getY() -= 1;
-        if (action == Action::LShift)
+        if (action == Action::X)
             pos.getZ() += 1;
-        if (action == Action::LControl)
+        if (action == Action::W)
             pos.getZ() -= 1;
         bool changed = (pos != _camera.getPosition());
         _camera.setPosition(pos);
