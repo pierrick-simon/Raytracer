@@ -8,33 +8,47 @@
 #ifndef PRIMITIVEMODEL_HPP
     #define PRIMITIVEMODEL_HPP
 
-    #include <memory>
+    #include <unordered_map>
+    #include <vector>
+
     #include "IObject.hpp"
     #include "Material.hpp"
     #include "Vector.hpp"
+    #include "data/Vertex.hpp"
+    #include "data/VertexNormal.hpp"
+    #include "data/VertexTexture.hpp"
+    #include "data/Face.hpp"
 
 namespace RayTracer {
     class Model : public IObject {
     public:
-        Model(const Maths::Point3D &origin,
-            double radius, Material Material);
+        Model(const Maths::Point3D &position,
+            const std::string &path, Material material);
 
         std::optional<HitInfo> hits(const Ray &ray) override;
 
-        [[nodiscard]] const Maths::Point3D &getOrigin() const;
-        [[nodiscard]] Maths::Point3D &getOrigin();
+        void addVertex(std::istringstream &line);
 
-        [[nodiscard]] double getRadius() const;
+        void addVertexNormal(std::istringstream &line);
+
+        void addVertexTexture(std::istringstream &line);
+
+        void addFace(std::istringstream &line);
 
     private:
+        static int normalizeIndex(int index, int size) noexcept;
 
-        HitInfo computeHitInfos(const Ray &, double) const noexcept;
-        double solveQuadratic(double a, double b,
-            double c, double delta) noexcept;
+        void parseFile(const std::string &path);
 
-        Maths::Point3D _origin;
-        double _radius;
+        Maths::Point3D _pos;
         Material _material;
+        std::vector<Vertex> _vertices;
+        std::vector<VertexNormal> _normals;
+        std::vector<VertexTexture> _texturesPos;
+        std::vector<Face> _faces;
+
+        static const std::unordered_map<std::string, void (Model::*)(
+            std::istringstream &)> LINE_PARSE_FUNCTION;
     };
 };
 
