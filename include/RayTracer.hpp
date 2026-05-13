@@ -62,6 +62,8 @@ namespace RayTracer {
         void loadPrimitivePlugins();
         void loadLightPlugins();
 
+        void updateRays(Maths::Vector2U start,
+            Maths::Vector2U end, std::vector<Maths::Color> update);
 
         Maths::Color hitColor(const Ray &ray,
             HitInfo &info, std::size_t depth);

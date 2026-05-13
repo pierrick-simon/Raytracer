@@ -41,6 +41,23 @@ namespace RayTracer {
         _ppm.save(_name);
     }
 
+    void RayTracer::updateRays(Maths::Vector2U start,
+        Maths::Vector2U end, std::vector<Maths::Color> update)
+    {
+        auto iter = update.begin();
+        _mutex.lock();
+        for (std::size_t i = start.getX(); i < end.getX(); ++i) {
+            for (std::size_t j = start.getY(); j < end.getY(); ++j) {
+                _ppm.setPix(i, j, *iter);
+                ++iter;
+            }
+        }
+        _loadingPercentage += 1.0 /
+            (std::pow(static_cast<double>(_nbScreenSplit), 2));
+        updateLoadingBar();
+        _mutex.unlock();
+    }
+
     void RayTracer::rayWorker(Maths::Vector2U start,
         Maths::Vector2U end, Maths::Vector2U res)
     {
@@ -55,19 +72,7 @@ namespace RayTracer {
             }
         }
 
-        size_t idx = 0;
-        auto iter = update.begin();
-        _mutex.lock();
-        for (std::size_t i = start.getX(); i < end.getX(); ++i) {
-            for (std::size_t j = start.getY(); j < end.getY(); ++j) {
-                _ppm.setPix(i, j, *iter);
-                ++iter;
-            }
-        }
-        _loadingPercentage += 1.0 /
-            (std::pow(static_cast<double>(_nbScreenSplit), 2));
-        updateLoadingBar();
-        _mutex.unlock();
+        updateRays(start, end, update);
     }
 
     void RayTracer::throwRays() noexcept
