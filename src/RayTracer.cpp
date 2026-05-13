@@ -212,11 +212,10 @@ namespace RayTracer {
     {
         try {
             auto libName = ArgsParser::getArg<std::string>(args, "--display");
-            if (libName.has_value()) {
+            if (libName.has_value())
                 _display.emplace(libName.value());
-                if (_display->getType() != LibType::GRAPHICS)
+            if (_display.has_value() && _display->getType() != LibType::GRAPHICS)
                     throw IncorrectLibTypeException();
-            }
             auto sd = ArgsParser::getArg<int>(args, "--screenDivision");
             if (sd.has_value())
                 _nbScreenSplit = sd.value();
