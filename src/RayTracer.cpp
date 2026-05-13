@@ -124,11 +124,12 @@ namespace RayTracer {
         double stepX = width / static_cast<double>(_nbScreenSplit);
         double stepY = height / static_cast<double>(_nbScreenSplit);
 
-        updateLoadingBar();
+        if (!_display)
+            updateLoadingBar();
         makeWorker(resolution, scale, maxDepth, stepX, stepY);
         for (auto &w : _workers)
             w.join();
-        if (!_cancelRender) {
+        if (!_cancelRender && !_display) {
             auto t2 = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> ms = t2 - t1;
             std::cout << "\nDone in " << ms.count() / 1000 << "s" << std::endl;
@@ -146,9 +147,11 @@ namespace RayTracer {
                 ++iter;
             }
         }
-        _loadingPercentage += 1.0 /
-            (std::pow(static_cast<double>(_nbScreenSplit), 2));
-        updateLoadingBar();
+        if (!_display) {
+            _loadingPercentage += 1.0 /
+                (std::pow(static_cast<double>(_nbScreenSplit), 2));
+            updateLoadingBar();
+        }
         _mutex.unlock();
     }
 
