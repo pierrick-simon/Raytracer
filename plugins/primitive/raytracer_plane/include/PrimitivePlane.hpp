@@ -34,7 +34,7 @@ namespace RayTracer {
         [[nodiscard]] double getPos() const;
 
     private:
-        Maths::Vector3D getNormal(double);
+        Maths::Vector2D getUV(Maths::Vector3D hitPos);
 
         Axis _axis;
         double _pos;
