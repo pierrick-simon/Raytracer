@@ -29,6 +29,8 @@ namespace RayTracer {
         static std::size_t parseSizeT(
             libconfig::Setting const &element, std::string key);
 
+        static Maths::Vector2U parseVector2U(libconfig::Setting const &element);
+
         static Maths::Vector3D parseVector3D(libconfig::Setting const &element);
 
         static Maths::Quaternion parseQuaternionFromEuler(

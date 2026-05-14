@@ -108,9 +108,10 @@ add_custom_target(lights
             raytracer_spot_light)
 
 add_subdirectory(plugins/textureGeneration/raytracer_chessboard)
+add_subdirectory(plugins/textureGeneration/raytracer_perlinnoise)
 
 add_custom_target(textureGenerations
-    DEPENDS raytracer_chessboard)
+    DEPENDS raytracer_chessboard raytracer_perlinnoise)
 
 add_custom_target(plugins
     DEPENDS primitives display lights textureGenerations)

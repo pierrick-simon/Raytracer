@@ -44,6 +44,14 @@ namespace RayTracer {
         return value;
     }
 
+    Maths::Vector2U ParserUtils::parseVector2U(libconfig::Setting const &element)
+    {
+        std::size_t x = parseSizeT(element, "x");
+        std::size_t y = parseSizeT(element, "y");
+
+        return Maths::Vector2U{x, y};
+    }
+
     Maths::Vector3D ParserUtils::parseVector3D(
         libconfig::Setting const &element)
     {
