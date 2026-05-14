@@ -72,12 +72,10 @@ namespace RayTracer {
         while (true) {
             auto event = _display->get()->getEvent();
             _display->get()->draw();
-            if (event.first == Action::Close || event.first == Action::Escape) {
-                if (!sleep)
-                    cancelAndJoin(thread);
+            auto action = handleEvent(event, last, sleep, lowQuality, thread);
+            if (action == EXIT)
                 break;
-            }
-            if (updateCamera(event, last, sleep, lowQuality, thread))
+            else if (action == SKIP)
                 continue;
             if (lowQuality && Clock::now() - last >= SLEEP) {
                 cancelAndJoin(thread);
@@ -89,6 +87,8 @@ namespace RayTracer {
                 sleep = true;
             }
         }
+        if (!sleep)
+            cancelAndJoin(thread);
     }
 
     void RayTracer::makeWorker(Maths::Vector2U resolution, std::size_t scale,
@@ -303,9 +303,8 @@ namespace RayTracer {
     }
 
 
-    bool RayTracer::moveCamera(Event event)
+    bool RayTracer::moveCamera(Action action)
     {
-        auto action = event.first;
         auto pos = _camera.getPosition();
 
         if (action == Action::Z)
@@ -325,9 +324,8 @@ namespace RayTracer {
         return changed;
     }
 
-    bool RayTracer::rotateCamera(Event event)
+    bool RayTracer::rotateCamera(Action action)
     {
-        auto action = event.first;
         auto rotation = _camera.getRotation();
 
         if (action == Action::Up)
@@ -348,20 +346,38 @@ namespace RayTracer {
         return changed;
     }
 
-    bool RayTracer::updateCamera(Event event, Clock::time_point &clock,
+    void RayTracer::updateCamera(Clock::time_point &clock,
         bool &sleep, bool &lowQuality, std::thread &thread)
     {
-        auto update = moveCamera(event) || rotateCamera(event);
+        clock = Clock::now();
+        if (!sleep)
+            cancelAndJoin(thread);
+        sleep = false;
+        lowQuality = true;
+        thread = startRender(LOW_QUALITY_SCALE, LOW_QUALITY_DEPTH);
+    }
 
-        if (update) {
-            clock = Clock::now();
-            if (!sleep)
-                cancelAndJoin(thread);
-            sleep = false;
-            lowQuality = true;
-            thread = startRender(LOW_QUALITY_SCALE, LOW_QUALITY_DEPTH);
+    int RayTracer::handleEvent(Event event, Clock::time_point &clock, bool &sleep,
+        bool &lowQuality, std::thread &thread)
+    {
+        auto actions = event.first;
+        auto update = false;
+        int value = EPISUCCESS;
+
+        for (auto action: actions) {
+            if (action == Action::Close || action == Action::Escape) {
+                value = EXIT;
+                break;
+            }
+            auto move = moveCamera(action);
+            auto rotate = rotateCamera(action);
+            update = update || move || rotate;
         }
-        return update;
+        if (update && value == EPISUCCESS) {
+            updateCamera(clock, sleep, lowQuality, thread);
+            value = SKIP;
+        }
+        return value;
     }
 
     void RayTracer::showHelp()

@@ -127,7 +127,7 @@ namespace RayTracer {
         ActionCount,     //!< Keep last -- the total number of keyboard keys
     };
 
-    using Event = std::pair<Action, Maths::Vector3D>;
+    using Event = std::pair<std::vector<Action>, Maths::Vector3D>;
 };
 
 #endif

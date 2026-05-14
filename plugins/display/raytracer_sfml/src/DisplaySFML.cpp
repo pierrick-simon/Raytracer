@@ -28,23 +28,25 @@ RayTracer::Event RayTracer::DisplaySFML::getEvent()
     sf::Vector2u size = _window.getSize();
     Maths::Vector3D pos(
         (float)(mouspos.x) / size.x, (float)(mouspos.y) / size.y, 0);
-    Action action = Action::None;
-    Event value = {action, pos};
+    std::vector<Action> actions;
     sf::Event event;
 
     while (_window.pollEvent(event)) {
         if (event.type == sf::Event::Closed)
-            value = {Action::Close, pos};
-        action = keyPressed(event);
+            actions.push_back(Action::Close);
+        Action action = mousseButton(event);
         if (action != Action::None)
-            value = {action, pos};
-        action = mousseButton(event);
-        if (action != Action::None)
-            value = {action, pos};
+            actions.push_back(action);
         if (event.type == sf::Event::Resized)
             resized();
     }
-    return value;
+    for (auto [key, action] : _keyMap) {
+        if (key != sf::Keyboard::Key::Unknown
+                && sf::Keyboard::isKeyPressed(key))
+            actions.push_back(action);
+    }
+
+    return {actions, pos};
 }
 
 RayTracer::Action RayTracer::DisplaySFML::keyPressed(sf::Event event)
