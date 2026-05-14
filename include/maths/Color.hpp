@@ -12,6 +12,9 @@
     #include "Vector.hpp"
 
 namespace Maths {
+
+    using Color8bit = Vector<4, unsigned char>;
+
     class Color : public Vector<4, double> {
     public:
         Color();
@@ -31,7 +34,7 @@ namespace Maths {
             unsigned char b,
             unsigned char a = std::numeric_limits<unsigned char>::max());
 
-        [[nodiscard]] Vector<4, unsigned char> to8Bit() const;
+        [[nodiscard]] Color8bit to8Bit() const;
 
         [[nodiscard]] double &getR();
 
@@ -50,6 +53,8 @@ namespace Maths {
         [[nodiscard]] const double &getA() const;
 
         Color &operator*=(const Vector3D &other);
+
+        Color &operator*=(const Color &other);
 
         Color &operator*=(const double &other);
 

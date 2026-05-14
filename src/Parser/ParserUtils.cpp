@@ -25,6 +25,16 @@ namespace RayTracer {
         return nb;
     }
 
+    double ParserUtils::parseBool(
+        libconfig::Setting const &element, std::string key)
+    {
+        bool value = false;
+
+        if (!element.lookupValue(key, value))
+            throw libconfig::SettingTypeException(element);
+        return value;
+    }
+
     Maths::Vector3D ParserUtils::parseVector3D(
         libconfig::Setting const &element)
     {
@@ -105,6 +115,17 @@ namespace RayTracer {
         else
             throw libconfig::SettingTypeException(element);
         return builder;
+    }
+
+    std::optional<Texture> ParserUtils::parseTexture(
+            libconfig::Setting const &element)
+    {
+        std::optional<Texture> texture = std::nullopt;
+    
+        if (element.exists("texture")) {
+            texture = Texture(element["texture"]);
+        }
+        return texture;
     }
 
 } // RayTracer

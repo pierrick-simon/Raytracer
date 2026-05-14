@@ -24,7 +24,8 @@ namespace RayTracer {
         double r = ParserUtils::parseDouble(element, "r");
 
         return std::make_unique<PrimitiveSphere>(origin, r,
-            ParserUtils::getBuilder(element, map).build());
+            ParserUtils::getBuilder(element, map).build(),
+            ParserUtils::parseTexture(element));
     }
 
 } // RayTracer
