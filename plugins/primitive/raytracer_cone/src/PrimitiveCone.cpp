@@ -17,31 +17,29 @@ namespace RayTracer {
         _height(height), _material(std::move(Material))
     {
     }
-
     std::optional<HitInfo> PrimitiveCone::hitsInfinite(Ray const &ray) const
     {
+        std::optional<HitInfo> hitInfo = std::nullopt;
         Maths::Vector3D diff = ray.origin - _origin;
         double k = _height.has_value() ? (_radius / _height.value()) *
             (_radius / _height.value()) : 1.0;
-        double a = ray.direction.getX() * ray.direction.getX() + ray.direction.getY() *
-            ray.direction.getY() - k * ray.direction.getZ() * ray.direction.getZ();
-        double b = 2.0 * (diff.getX() * ray.direction.getX()+ diff.getY() *
+        double a = ray.direction.getX() * ray.direction.getX() + ray.direction.getY()
+            * ray.direction.getY() - k * ray.direction.getZ() * ray.direction.getZ();
+        double b = 2.0 * (diff.getX() * ray.direction.getX() + diff.getY() *
             ray.direction.getY() - k * diff.getZ() * ray.direction.getZ());
         double c = diff.getX() * diff.getX() + diff.getY() * diff.getY()
             - k * diff.getZ() * diff.getZ();
         double delta = b * b - 4.0 * a * c;
 
-        if (delta < 0.0)
-            return std::nullopt;
-
-        double t1 = (-b - sqrt(delta)) / (2.0 * a);
-        double t2 = (-b + sqrt(delta)) / (2.0 * a);
-        double t = t1 > DOUBLE_OFFSET ? t1 : t2;
-
-        if (t < DOUBLE_OFFSET || diff.getZ() + ray.direction.getZ() * t > 0.0)
-            return std::nullopt;
-
-        return fillHitInfo(ray, t);
+        if (delta >= 0.0) {
+            double t1 = (-b - sqrt(delta)) / (2.0 * a);
+            double t2 = (-b + sqrt(delta)) / (2.0 * a);
+            double t = t1 > DOUBLE_OFFSET ? t1 : t2;
+            double hitZ = diff.getZ() + ray.direction.getZ() * t;
+            if (t >= DOUBLE_OFFSET && hitZ <= 0.0)
+                hitInfo = fillHitInfo(ray, t);
+        }
+        return hitInfo;
     }
 
     void PrimitiveCone::getBottomCapBestT(std::optional<double> &bestT,
@@ -52,15 +50,17 @@ namespace RayTracer {
             bestT = t;
     }
 
-    bool PrimitiveCone::getSlideBestT(std::optional<double> &bestT, double t,
-        double hitZ) const
+    bool PrimitiveCone::getSlideBestT(std::optional<double> &bestT,
+    double t, double hitZ) const
     {
-        if (hitZ >= 0.0 && hitZ <= _height.value()) {
-            if (!bestT.has_value() || t < bestT.value())
-                bestT = t;
-            return true;
+        bool result = false;
+
+        if (hitZ >= 0.0 && hitZ <= _height.value()
+            && (!bestT.has_value() || t < bestT.value())) {
+            bestT = t;
+            result = true;
         }
-        return false;
+        return result;
     }
 
     std::optional<double> PrimitiveCone::hitSlide(Ray const &ray,
@@ -110,12 +110,12 @@ namespace RayTracer {
             diff.getZ() - _height.value()) * (diff.getZ() - _height.value());
         double delta = b * b - 4.0 * a * c;
 
-        if (delta < 0.0)
-            return std::nullopt;
-        std::optional<double> bestT = hitSlide(ray, diff, a, b, delta);
-        hitCap(ray, diff, bestT);
-        if (bestT.has_value())
-            hitInfo = fillHitInfo(ray, bestT.value());
+        if (delta >= 0.0) {
+            std::optional<double> bestT = hitSlide(ray, diff, a, b, delta);
+            hitCap(ray, diff, bestT);
+            if (bestT.has_value())
+                hitInfo = fillHitInfo(ray, bestT.value());
+        }
         return hitInfo;
     }
 
@@ -124,20 +124,17 @@ namespace RayTracer {
         return _height == std::nullopt ? hitsInfinite(ray) : hitsCone(ray);
     }
 
-    Maths::Vector3D PrimitiveCone::coneNormal(Maths::Point3D hitPos) const
+    Maths::Vector3D PrimitiveCone::coneNormal(Maths::Point3D const &hitPos) const
     {
-        double x = hitPos.getX() - _origin.getX();
-        double y = hitPos.getY() - _origin.getY();
-        double z = hitPos.getZ() - _origin.getZ();
+        Maths::Vector3D diff = hitPos - _origin;
 
-        if (_height.has_value() && z <= DOUBLE_OFFSET)
+        if (_height.has_value() && diff.getZ() <= DOUBLE_OFFSET)
             return Maths::Vector3D{0, 0, -1};
 
         double k = _height.has_value()
             ? (_radius / _height.value()) * (_radius / _height.value()) : 1.0;
 
-        Maths::Vector3D normal{x, y, -k * z};
-
+        Maths::Vector3D normal{diff.getX(), diff.getY(), -k * diff.getZ()};
         return normal.normalized();
     }
 
