@@ -28,23 +28,25 @@ RayTracer::Event RayTracer::DisplaySFML::getEvent()
     sf::Vector2u size = _window.getSize();
     Maths::Vector3D pos(
         (float)(mouspos.x) / size.x, (float)(mouspos.y) / size.y, 0);
-    Action action = Action::None;
-    Event value = {action, pos};
+    std::vector<Action> actions;
     sf::Event event;
 
     while (_window.pollEvent(event)) {
         if (event.type == sf::Event::Closed)
-            value = {Action::Close, pos};
-        action = keyPressed(event);
+            actions.push_back(Action::Close);
+        Action action = mousseButton(event);
         if (action != Action::None)
-            value = {action, pos};
-        action = mousseButton(event);
-        if (action != Action::None)
-            value = {action, pos};
+            actions.push_back(action);
         if (event.type == sf::Event::Resized)
             resized();
     }
-    return value;
+    for (auto [key, action] : _keyMap) {
+        if (key != sf::Keyboard::Key::Unknown
+                && sf::Keyboard::isKeyPressed(key))
+            actions.push_back(action);
+    }
+
+    return {actions, pos};
 }
 
 RayTracer::Action RayTracer::DisplaySFML::keyPressed(sf::Event event)
@@ -71,23 +73,25 @@ RayTracer::Action RayTracer::DisplaySFML::mousseButton(sf::Event event)
     return action;
 }
 
-void RayTracer::DisplaySFML::draw(PortablePixMap ppm)
+void RayTracer::DisplaySFML::draw()
 {
-    _size = {static_cast<float>(ppm.getWidth()),
-        static_cast<float>(ppm.getHeight())};
-     _window.clear(DARKBLUE);
-    resized();
+    _texture.update(_image);
+    _window.clear(DARKBLUE);
     _background.setSize(_size);
     _window.draw(_background);
-    for (size_t i = 0; i < ppm.getHeight(); i++) {
-        for (size_t j = 0; j < ppm.getWidth(); j++) {
-            auto color = ppm.getPix(j, i).to8Bit();
-            _pix.setFillColor({color.getX(), color.getY(), color.getZ()});
-            _pix.setPosition({static_cast<float>(j), static_cast<float>(i)});
-            _window.draw(_pix);
-        }
-    }
+    _window.draw(_sprite);
     _window.display();
+}
+
+void RayTracer::DisplaySFML::setSceneSize(
+    std::size_t width, std::size_t height)
+{
+    _size = {static_cast<float>(width),
+        static_cast<float>(height)};
+    resized();
+    _image.create(width, height);
+    _texture.loadFromImage(_image);
+    _sprite.setTexture(_texture);
 }
 
 void RayTracer::DisplaySFML::resized()
@@ -95,20 +99,27 @@ void RayTracer::DisplaySFML::resized()
     _view.reset(sf::FloatRect(0, 0, _size.x, _size.y));
     float windowRatio = static_cast<float>(_window.getSize().x) /
                         static_cast<float>(_window.getSize().y);
-    float viewRatio   = _size.x / _size.y;
+    float viewRatio = _size.x / _size.y;
     sf::Vector2f size = {1, 1};
     sf::Vector2f pos  = {0, 0};
-
     if (windowRatio >= viewRatio) {
         size.x = viewRatio / windowRatio;
-        pos.x  = (1.0f - size.x) / 2.0f;
+        pos.x = (1.0 - size.x) / 2.0;
     } else {
         size.y = windowRatio / viewRatio;
-        pos.y  = (1.0f - size.y) / 2.0f;
+        pos.y = (1.0 - size.y) / 2.0;
     }
-
     _view.setViewport(sf::FloatRect(pos.x, pos.y, size.x, size.y));
     _window.setView(_view);
+}
+
+void RayTracer::DisplaySFML::setPix(
+    std::size_t width, std::size_t height, Maths::Color8bit color)
+{
+    if (_image.getSize().x <= width || _image.getSize().y <= height)
+        return;
+    _image.setPixel(width, height,
+        sf::Color(color.getX(), color.getY(), color.getZ(), color.getW()));
 }
 
 const std::unordered_map<sf::Keyboard::Key, RayTracer::Action>
@@ -209,6 +220,8 @@ const std::unordered_map<sf::Keyboard::Key, RayTracer::Action>
     {sf::Keyboard::Key::F15, Action::F15},
     {sf::Keyboard::Key::LShift, Action::LShift},
     {sf::Keyboard::Key::RShift, Action::RShift},
+    {sf::Keyboard::Key::LControl, Action::LControl},
+    {sf::Keyboard::Key::RControl, Action::RControl},
 };
 
 const std::unordered_map<int, RayTracer::Action>
