@@ -13,7 +13,7 @@
 namespace RayTracer {
     class ChessBoard : public ITextureGeneration {
     public:
-        ChessBoard(std::size_t size, std::size_t nbSquare);
+        ChessBoard(std::size_t size, std::size_t nbSquare, Maths::Color color);
 
         PortablePixMap generate();
 
@@ -23,7 +23,7 @@ namespace RayTracer {
         std::size_t _size;
         std::size_t _nbSquare;
         std::size_t _sizeSquare;
-        std::size_t _size2Square;
+        Maths::Color _color;
     };
 };
 

@@ -36,9 +36,9 @@ namespace RayTracer {
     std::size_t ParserUtils::parseSizeT(
             libconfig::Setting const &element, std::string key)
     {
-        int value = 0;
+        unsigned int value = 0;
 
-        if (!element.lookupValue(key, value) || value < 0) {
+        if (!element.lookupValue(key, value)) {
             throw libconfig::SettingTypeException(element);
         }
         return value;
