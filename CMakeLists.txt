@@ -107,5 +107,10 @@ add_custom_target(lights
         DEPENDS raytracer_point_light
             raytracer_spot_light)
 
+add_subdirectory(plugins/textureGeneration/raytracer_chessboard)
+
+add_custom_target(textureGenerations
+    DEPENDS raytracer_chessboard)
+
 add_custom_target(plugins
-    DEPENDS primitives display lights)
+    DEPENDS primitives display lights textureGenerations)

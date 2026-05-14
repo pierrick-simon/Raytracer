@@ -5,10 +5,8 @@
 ** DESCRIPTION
 */
 
-#include "Parser/ParserUtils.hpp"
-    #include <iostream>
-
 #include <iostream>
+#include "ParserUtils.hpp"
 
 namespace RayTracer {
 
@@ -25,13 +23,24 @@ namespace RayTracer {
         return nb;
     }
 
-    double ParserUtils::parseBool(
+    bool ParserUtils::parseBool(
         libconfig::Setting const &element, std::string key)
     {
         bool value = false;
 
         if (!element.lookupValue(key, value))
             throw libconfig::SettingTypeException(element);
+        return value;
+    }
+
+    std::size_t ParserUtils::parseSizeT(
+            libconfig::Setting const &element, std::string key)
+    {
+        int value = 0;
+
+        if (!element.lookupValue(key, value) || value < 0) {
+            throw libconfig::SettingTypeException(element);
+        }
         return value;
     }
 

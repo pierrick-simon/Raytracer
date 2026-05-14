@@ -40,8 +40,9 @@ namespace RayTracer {
         const libconfig::Setting &root = cfg.getRoot();
         if (root.exists("materials"))
             parseMaterials(root["materials"]);
-        if (root.exists("textures"))
-            parseMaterials(root["textures"]);
+        if (root.exists("textures")) {
+            parseTextures(root["textures"]);
+        }
     }
 
     ConfigFileParser::ParserError::ParserError(std::string s) :
@@ -219,13 +220,8 @@ namespace RayTracer {
         }
     }
 
-    void ConfigFileParser::parseTextures(libconfig::Setting const &element)
+    void ConfigFileParser::parseTextures(const libconfig::Setting &root)
     {
-        libconfig::Config cfg;
-
-        cfg.readFile(_filepath.c_str());
-
-        const libconfig::Setting &root = cfg.getRoot()["textures"];
         for (const auto &primitive: root) {
             auto it = std::ranges::find_if(this->_texturesGenerationPlugins,
                 [&](auto &plugin) {
