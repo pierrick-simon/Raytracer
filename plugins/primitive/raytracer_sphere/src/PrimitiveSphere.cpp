@@ -23,9 +23,18 @@ namespace RayTracer {
         HitInfo hit;
         Maths::Vector3D directionMultiplied = ray.direction * x;
         hit.hitPos = ray.origin + directionMultiplied;
+        Maths::Vector3D d = (hit.hitPos - _origin) / _radius;
         hit.hitDist = hit.hitPos.distance(ray.origin);
-        hit.impactNormal = (hit.hitPos - _origin) / _radius;
+        hit.impactNormal = d;
+        d *= -1;
         hit.material = _material;
+        double phi   = std::atan2(d.getY(), d.getX());
+        double theta = std::asin(std::clamp(d.getZ(), -1.0, 1.0));
+
+        hit.uv = Maths::Vector2D(
+            phi / (2.0 * M_PI) + 0.5,
+            theta / M_PI + 0.5
+        );
         return hit;
     }
 
