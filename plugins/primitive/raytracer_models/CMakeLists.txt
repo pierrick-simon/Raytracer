@@ -22,6 +22,7 @@ set(SRCS_MODEL
     src/ModelPlugin.cpp
     src/ObjMaterialLibrary.cpp
     src/data/Triangle.cpp
+    src/data/BoundingBox.cpp
     src/TriangulationData.cpp
     src/data/Vertex.cpp
     src/data/VertexNormal.cpp

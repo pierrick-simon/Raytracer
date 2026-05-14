@@ -70,6 +70,9 @@ namespace RayTracer {
     {
         std::optional<HitInfo> bestHit;
 
+        if (!this->_boundingBox.hits(ray))
+            return std::nullopt;
+
         for (const auto &triangle: this->_triangles) {
             auto hit = triangle.hits(ray);
             if (!hit)
@@ -150,6 +153,8 @@ namespace RayTracer {
             if (it != LINE_PARSE_FUNCTION.end())
                 (this->*it->second)(iss);
         }
+        this->_boundingBox = BoundingBox::fromVertices(this->_vertices,
+            this->_pos);
     }
 
     void Model::validateFace(FaceIndex &index) const

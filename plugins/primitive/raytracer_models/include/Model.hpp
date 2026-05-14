@@ -21,6 +21,7 @@
     #include "ObjMaterialLibrary.hpp"
     #include "Vector.hpp"
     #include "Texture.hpp"
+    #include "data/BoundingBox.hpp"
     #include "data/Vertex.hpp"
     #include "data/VertexNormal.hpp"
     #include "data/VertexTexture.hpp"
@@ -72,6 +73,7 @@ namespace RayTracer {
         std::vector<VertexNormal> _normals;
         std::vector<VertexTexture> _texturesPos;
         std::vector<Triangle> _triangles;
+        BoundingBox _boundingBox;
         std::vector<std::string> _texturePaths;
         std::vector<std::unique_ptr<Texture>> _textures;
         ObjMaterialLibrary _materialLibrary;
