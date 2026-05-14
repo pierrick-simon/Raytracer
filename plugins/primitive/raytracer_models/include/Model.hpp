@@ -32,7 +32,7 @@ namespace RayTracer {
     class Model : public IObject {
     public:
         Model(const Maths::Point3D &position,
-            const std::string &path, Material material);
+            const std::string &path, Material material, double scale);
 
         std::optional<HitInfo> hits(const Ray &ray) override;
 
@@ -79,6 +79,7 @@ namespace RayTracer {
         ObjMaterialLibrary _materialLibrary;
         std::string _currentMaterialName;
         std::filesystem::path _sourcePath;
+        double _scale;
 
         static const std::unordered_map<std::string, void (Model::*)(
             std::istringstream &)> LINE_PARSE_FUNCTION;

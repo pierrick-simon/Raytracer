@@ -6,6 +6,7 @@
 */
 
 #include <utility>
+#include <iostream>
 
 #include "data/Triangle.hpp"
 

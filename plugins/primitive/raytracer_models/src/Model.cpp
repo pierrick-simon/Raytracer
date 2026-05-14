@@ -14,9 +14,6 @@
 #include <cctype>
 
 #include "Model.hpp"
-
-#include <iostream>
-
 #include "TriangulationData.hpp"
 
 namespace RayTracer {
@@ -59,9 +56,10 @@ namespace RayTracer {
     }
 
     Model::Model(const Maths::Point3D &position, const std::string &path,
-        Material material) :
+        Material material, double scale) :
         _pos(position),
-        _material(std::move(material))
+        _material(std::move(material)),
+        _scale(scale)
     {
         this->parseFile(path);
     }
@@ -93,6 +91,7 @@ namespace RayTracer {
         line >> std::ws;
         if (!line.eof())
             throw std::invalid_argument("Invalid vertex line");
+        newVertex *= this->_scale;
         this->_vertices.push_back(newVertex);
     }
 
@@ -120,6 +119,48 @@ namespace RayTracer {
         if (!line.eof())
             throw std::invalid_argument("Invalid vertex texture line");
         this->_texturesPos.push_back(newVertex);
+    }
+
+    void Model::addFace(std::istringstream &line)
+    {
+        Face face;
+
+        line >> face;
+        if (!line.eof() || line.bad() || face.getIndices().size() < 3)
+            throw std::invalid_argument("Invalid face line");
+
+        for (auto &index: face.getIndices())
+            this->validateFace(index);
+        triangulateFace(face);
+    }
+
+    void Model::addMaterialLibrary(std::istringstream &line)
+    {
+        std::string filename;
+        bool hasFilename = false;
+
+        while (line >> filename) {
+            hasFilename = true;
+            std::filesystem::path materialPath = filename;
+            if (!this->_sourcePath.empty())
+                materialPath = this->_sourcePath.parent_path() / materialPath;
+            this->_materialLibrary.parseFile(materialPath.string());
+        }
+        if (!hasFilename)
+            throw std::invalid_argument("Invalid mtllib line");
+    }
+
+    void Model::useMaterial(std::istringstream &line)
+    {
+        std::string name;
+
+        line >> name;
+        if (!line)
+            throw std::invalid_argument("Invalid usemtl line");
+        line >> std::ws;
+        if (!line.eof())
+            throw std::invalid_argument("Invalid usemtl line");
+        this->_currentMaterialName = name;
     }
 
     int Model::normalizeIndex(int index, int size) noexcept
@@ -164,8 +205,8 @@ namespace RayTracer {
         int normalsSize = static_cast<int>(this->_normals.size());
 
         index.v = normalizeIndex(index.v, verticesSize);
-        index.vt = normalizeIndex(index.vt,texturesSize);
-        index.vn = normalizeIndex(index.vn,normalsSize);
+        index.vt = normalizeIndex(index.vt, texturesSize);
+        index.vn = normalizeIndex(index.vn, normalsSize);
 
         if (index.v < 0 || index.v >= verticesSize)
             throw std::invalid_argument("Face vertex index out of range");
@@ -213,9 +254,9 @@ namespace RayTracer {
             return this->_material;
 
         const double specular =
-            (materialData->specular.getR()
-            + materialData->specular.getG()
-            + materialData->specular.getB()) / 3.0;
+        (materialData->specular.getR()
+         + materialData->specular.getG()
+         + materialData->specular.getB()) / 3.0;
 
         return Material::Builder()
             .color(materialData->diffuse)
@@ -292,48 +333,6 @@ namespace RayTracer {
             Maths::Vector3D{vt2[0], vt2[1], vt2[2]}
         };
         return coords;
-    }
-
-    void Model::addFace(std::istringstream &line)
-    {
-        Face face;
-
-        line >> face;
-        if (!line.eof() || line.bad() || face.getIndices().size() < 3)
-            throw std::invalid_argument("Invalid face line");
-
-        for (auto &index: face.getIndices())
-            this->validateFace(index);
-        triangulateFace(face);
-    }
-
-    void Model::addMaterialLibrary(std::istringstream &line)
-    {
-        std::string filename;
-        bool hasFilename = false;
-
-        while (line >> filename) {
-            hasFilename = true;
-            std::filesystem::path materialPath = filename;
-            if (!this->_sourcePath.empty())
-                materialPath = this->_sourcePath.parent_path() / materialPath;
-            this->_materialLibrary.parseFile(materialPath.string());
-        }
-        if (!hasFilename)
-            throw std::invalid_argument("Invalid mtllib line");
-    }
-
-    void Model::useMaterial(std::istringstream &line)
-    {
-        std::string name;
-
-        line >> name;
-        if (!line)
-            throw std::invalid_argument("Invalid usemtl line");
-        line >> std::ws;
-        if (!line.eof())
-            throw std::invalid_argument("Invalid usemtl line");
-        this->_currentMaterialName = name;
     }
 
     const std::unordered_map<std::string, void (Model::*)(
