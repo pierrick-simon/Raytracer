@@ -22,6 +22,9 @@ namespace RayTracer {
         static double parseDouble(
             libconfig::Setting const &element, std::string value);
 
+        static double parseBool(
+            libconfig::Setting const &element, std::string value);
+
         static Maths::Vector3D parseVector3D(libconfig::Setting const &element);
 
         static Maths::Quaternion parseQuaternionFromEuler(

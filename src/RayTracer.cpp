@@ -206,7 +206,7 @@ namespace RayTracer {
 
     Maths::Color RayTracer::parseLight(const Ray &ray, HitInfo &info)
     {
-        Maths::Color color(info.material.getColor() * _lights.getAmbient());
+        Maths::Color color(info.material.getColor(info) * _lights.getAmbient());
 
         for (auto &light : _lights.getLights()) {
             Ray lightRay;
@@ -252,7 +252,7 @@ namespace RayTracer {
 
         color = Maths::Color(color * info.material.getOpacity()
             + refractColor * (1 - info.material.getOpacity()));
-        return Maths::Color(color * info.material.getColor());
+        return Maths::Color(color * info.material.getColor(info));
     }
 
     std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray)

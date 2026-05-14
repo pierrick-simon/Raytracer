@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 #include "RayTracer.hpp"
 #include "Material.hpp"
 #include "Info.hpp"
@@ -49,13 +50,21 @@ namespace RayTracer {
         return *this;
     }
 
+    Material::Builder &Material::Builder::texture(bool texture)
+    {
+        _texture = texture;
+        return *this;
+    }
+
+
     Material::Material(Builder const &b) :
         _metallic(b.getMetallic()),
         _specular(b.getSpecular()),
         _roughness(b.getRoughness()),
         _opacity(b.getOpacity()),
         _refraction(b.getRefraction()),
-        _color(b.getColor())
+        _color(b.getColor()),
+        _texture(b.getTexture())
     {
         _metallic = std::clamp(_metallic, 0.0, 1.0);
         _specular = std::clamp(_specular, 0.0, 1.0);
@@ -123,5 +132,21 @@ namespace RayTracer {
         F0 = F0 * (1 - _metallic) + _metallic;
 
         return F0 + (1 - F0) * std::pow(1 - cosT, 5);
+    }
+
+    Maths::Color Material::getColor(const HitInfo &hit) const
+    {
+        if (!_texture || !hit.uv)
+            return _color;
+        if (hit.inf) {
+            double u = std::fmod(hit.uv->getX(), 255.0);
+            double v = std::fmod(hit.uv->getY(), 255.0);
+            if (u < 0.0)
+                u += 255.0;
+            if (v < 0.0)
+                v += 255.0;
+            return Maths::Color(u / 255.0, 0, (255.0 - v) / 255.0);
+        }
+        return Maths::Color(hit.uv->getX(), 0, hit.uv->getY());
     }
 }

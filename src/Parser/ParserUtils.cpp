@@ -25,6 +25,16 @@ namespace RayTracer {
         return nb;
     }
 
+    double ParserUtils::parseBool(
+        libconfig::Setting const &element, std::string key)
+    {
+        bool value = false;
+
+        if (!element.lookupValue(key, value))
+            throw libconfig::SettingTypeException(element);
+        return value;
+    }
+
     Maths::Vector3D ParserUtils::parseVector3D(
         libconfig::Setting const &element)
     {
@@ -85,6 +95,8 @@ namespace RayTracer {
             builder.opacity(parseDouble(element, "opacity"));
         if (element.exists("refraction"))
             builder.refraction(parseDouble(element, "refraction"));
+        if (element.exists("texture"))
+            builder.texture(parseBool(element, "texture"));
         return builder;
     }
 

@@ -29,6 +29,7 @@ namespace RayTracer {
                     Builder &roughness(double roughness);
                     Builder &opacity(double opacity);
                     Builder &refraction(double refraction);
+                    Builder &texture(bool texture);
 
                     Material build() const {return Material(*this);}
 
@@ -38,6 +39,7 @@ namespace RayTracer {
                     [[nodiscard]] double getRoughness() const {return _roughness;}
                     [[nodiscard]] double getOpacity() const {return _opacity;}
                     [[nodiscard]] double getRefraction() const {return _refraction;}
+                    [[nodiscard]] bool getTexture() const {return _texture;}
 
                 private:
                     Maths::Color _color = Maths::Color::WHITE;
@@ -46,6 +48,7 @@ namespace RayTracer {
                     double _roughness;
                     double _opacity;
                     double _refraction;
+                    bool _texture = false;
             };
 
             explicit Material(Builder const &builder);
@@ -56,8 +59,7 @@ namespace RayTracer {
             std::optional<Ray> getRefractRay(const Ray &ray, const HitInfo &hit) const;
             double getFresnel(const Ray &ray, const HitInfo &hit) const;
 
-            Maths::Color getColor() const
-                {return _color;}
+            Maths::Color getColor(const HitInfo &hit) const;
             double getSpecular() const {return _specular;}
             double getRoughness() const {return _roughness;}
             double getOpacity() const {return _opacity;}
@@ -74,6 +76,7 @@ namespace RayTracer {
             double _roughness;
             double _opacity;
             double _refraction;
+            bool _texture;
     };
 
 }
