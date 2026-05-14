@@ -5,6 +5,7 @@
 ** DisplaySFML
 */
 
+#include <iostream>
 #include "PrimitivePlane.hpp"
 
 namespace RayTracer {
@@ -12,7 +13,8 @@ namespace RayTracer {
         Material material, std::optional<Texture> texture) :
         _axis(axis),
         _pos(pos),
-        _material(material)
+        _material(material),
+        _texture(texture)
     {
         if (_axis == PrimitivePlane::Axis::X)
             _normal = Maths::Vector3D(1, 0, 0);

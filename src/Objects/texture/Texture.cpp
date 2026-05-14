@@ -23,11 +23,15 @@ namespace RayTracer {
                 u += _ppm.getWidth();
             if (v < 0.0)
                 v += _ppm.getHeight();
-            v -= _ppm.getHeight();
+            v = _ppm.getHeight() - v;
         } else {
             u *= _ppm.getWidth();
             v *= _ppm.getHeight();
         }
-        return _ppm.getPix(u, v);
+        std::size_t width = std::round(u);
+        width = std::clamp(width, std::size_t(0), _ppm.getWidth() - 1);
+        std::size_t height = std::round(v);
+        height = std::clamp(height, std::size_t(0), _ppm.getHeight() - 1);
+        return _ppm.getPix(width, height);
     }
 }

@@ -21,9 +21,11 @@ RayTracer::PortablePixMap::PortablePixMap(std::string filepath)
     std::string line;
     if (!readType(file) || !readSize(file) || !readMaxSize(file))
         throw FileException();
-    while (customGetline(line, file))
-        if (!readBody(line))
+    while (customGetline(line, file)) {
+        std::istringstream tmp(line);
+        if (!readBody(tmp))
             throw FileException();
+    }
     if (_map.size() != _height * _width) {
         throw FileException();
     }
@@ -139,21 +141,25 @@ bool RayTracer::PortablePixMap::readMaxSize(
     return value;
 }
 
-bool RayTracer::PortablePixMap::readBody(std::string line)
+bool RayTracer::PortablePixMap::readBody(std::istringstream &line)
 {
     bool value = true;
-    std::istringstream tmp(line);
     int r;
     int g;
     int b;
-    tmp >> r >> g >> b;
+    line >> r >> g >> b;
     int maxChar = std::numeric_limits<unsigned char>::max();
-    if (tmp.fail() || !tmp.eof()
+    if (line.fail()
         || r < 0 || r > maxChar
         || g < 0 || g > maxChar
         || b < 0 || b > maxChar)
         value = false;
     else
         _map.push_back(Maths::Color::from8Bit(r, g, b));
+    if (value) {
+        line >> std::ws;
+        if (!line.eof())
+            value = readBody(line);
+    }
     return value;
 }

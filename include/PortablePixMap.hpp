@@ -71,7 +71,7 @@ namespace RayTracer {
             bool readType(std::reference_wrapper<std::ifstream> file);
             bool readSize(std::reference_wrapper<std::ifstream> file);
             bool readMaxSize(std::reference_wrapper<std::ifstream> file);
-            bool readBody(std::string line);
+            bool readBody(std::istringstream &line);
 
             std::size_t _width;
             std::size_t _height;
