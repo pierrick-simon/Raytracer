@@ -8,7 +8,7 @@
 #ifndef FACE_HPP
     #define FACE_HPP
     #include <vector>
-    #include <istream>
+    #include <iosfwd>
 
 namespace RayTracer {
     struct FaceIndex {

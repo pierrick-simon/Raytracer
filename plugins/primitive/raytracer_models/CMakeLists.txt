@@ -20,6 +20,9 @@ set(SRCS_MODEL
     src/Model.cpp
     src/LibEntryPoints.cpp
     src/ModelPlugin.cpp
+    src/ObjMaterialLibrary.cpp
+    src/data/Triangle.cpp
+    src/TriangulationData.cpp
     src/data/Vertex.cpp
     src/data/VertexNormal.cpp
     src/data/VertexTexture.cpp

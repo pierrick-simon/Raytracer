@@ -13,6 +13,7 @@ namespace RayTracer {
     class VertexTexture {
     public:
         double &operator[](size_t index) noexcept;
+        const double &operator[](size_t index) const noexcept;
 
     private:
         Maths::Vector3D _texturePosition;

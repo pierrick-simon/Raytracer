@@ -5,8 +5,9 @@
 ** DESCRIPTION
 */
 
-#include "data/Face.hpp"
 #include <sstream>
+
+#include "data/Face.hpp"
 
 namespace RayTracer {
     const std::vector<FaceIndex> &Face::getIndices() const noexcept
@@ -21,6 +22,7 @@ namespace RayTracer {
     {
         _indices.push_back(index);
     }
+
     std::istream &operator>>(std::istream &stream, FaceIndex &index)
     {
         std::string token;

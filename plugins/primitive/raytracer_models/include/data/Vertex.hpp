@@ -12,18 +12,7 @@
     #include "Vector.hpp"
 
 namespace RayTracer {
-    class Vertex {
-    public:
-        explicit Vertex();
-
-        double &operator[](size_t index) noexcept;
-
-        double &getWeight() noexcept;
-
-    private:
-        Maths::Vector3D _position;
-        double _weight;
-    };
+    using Vertex = Maths::Vector<4, double>;
 
     std::istream &operator>>(std::istream &stream, Vertex &vertex);
 } // RayTracer

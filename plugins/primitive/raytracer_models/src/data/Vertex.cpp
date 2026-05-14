@@ -10,20 +10,6 @@
 #include "data/Vertex.hpp"
 
 namespace RayTracer {
-    Vertex::Vertex() :
-        _weight(1)
-    {
-    }
-
-    double &Vertex::operator[](size_t index) noexcept
-    {
-        return this->_position[index];
-    }
-
-    double &Vertex::getWeight() noexcept
-    {
-        return this->_weight;
-    }
 
     std::istream &operator>>(std::istream &stream, Vertex &vertex)
     {
@@ -38,9 +24,10 @@ namespace RayTracer {
                     "Invalid argument for vertex at index "
                     + std::to_string(i));
         }
-        stream >> std::ws;
+        if (!stream.eof())
+            stream >> std::ws;
         if (!stream.eof()) {
-            stream >> vertex.getWeight();
+            stream >> vertex.getW();
             if (!stream)
                 throw std::invalid_argument(
                     "Invalid argument for vertex for weight");
