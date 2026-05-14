@@ -10,10 +10,11 @@
 
 namespace RayTracer {
     PrimitiveSphere::PrimitiveSphere(const Maths::Point3D &origin,
-        double radius, Material material) :
+        double radius, Material material, std::optional<Texture> texture) :
         _origin(origin),
         _radius(radius),
-        _material(material)
+        _material(material),
+        _texture(texture)
     {
     }
 
@@ -26,15 +27,15 @@ namespace RayTracer {
         Maths::Vector3D d = (hit.hitPos - _origin) / _radius;
         hit.hitDist = hit.hitPos.distance(ray.origin);
         hit.impactNormal = d;
-        d *= -1;
         hit.material = _material;
-        double phi   = std::atan2(d.getY(), d.getX());
-        double theta = std::asin(std::clamp(d.getZ(), -1.0, 1.0));
 
-        hit.uv = Maths::Vector2D(
-            phi / (2.0 * M_PI) + 0.5,
-            theta / M_PI + 0.5
-        );
+        if (_texture) {
+            d *= -1;
+            double phi = std::atan2(d.getY(), d.getX());
+            double theta = std::asin(std::clamp(d.getZ(), -1.0, 1.0));
+            Maths::Vector2D uv(phi / (2.0 * M_PI) + 0.5, theta / M_PI + 0.5);
+            hit.textureColor = _texture->getColor(uv, false);
+        }
         return hit;
     }
 

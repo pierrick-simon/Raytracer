@@ -95,8 +95,6 @@ namespace RayTracer {
             builder.opacity(parseDouble(element, "opacity"));
         if (element.exists("refraction"))
             builder.refraction(parseDouble(element, "refraction"));
-        if (element.exists("texture"))
-            builder.texture(parseBool(element, "texture"));
         return builder;
     }
 
@@ -117,6 +115,17 @@ namespace RayTracer {
         else
             throw libconfig::SettingTypeException(element);
         return builder;
+    }
+
+    std::optional<Texture> ParserUtils::parseTexture(
+            libconfig::Setting const &element)
+    {
+        std::optional<Texture> texture = std::nullopt;
+    
+        if (element.exists("texture")) {
+            texture = Texture(element["texture"]);
+        }
+        return texture;
     }
 
 } // RayTracer

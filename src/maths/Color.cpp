@@ -110,6 +110,15 @@ namespace Maths {
         return *this;
     }
 
+    Color & Color::operator*=(const Color &other)
+    {
+        this->getR() *= other.getR();
+        this->getG() *= other.getG();
+        this->getB() *= other.getB();
+        this->getA() *= other.getA();
+        return *this;
+    }
+
     Color & Color::operator*=(const double &other)
     {
         this->getR() *= other;

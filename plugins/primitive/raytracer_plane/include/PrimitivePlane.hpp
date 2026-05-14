@@ -13,6 +13,7 @@
     #include <string>
     #include "IObject.hpp"
     #include "Vector.hpp"
+    #include "Texture.hpp"
 
 namespace RayTracer {
     class PrimitivePlane : public IObject {
@@ -24,7 +25,8 @@ namespace RayTracer {
             Z
         };
 
-        PrimitivePlane(Axis axis, double pos, Material material);
+        PrimitivePlane(Axis axis, double pos, Material material,
+            std::optional<Texture> texture = std::nullopt);
 
         std::optional<HitInfo> hits(const Ray &ray) override;
 
@@ -34,12 +36,13 @@ namespace RayTracer {
         [[nodiscard]] double getPos() const;
 
     private:
-        Maths::Vector2D getUV(Maths::Vector3D hitPos);
+        std::optional<Maths::Color> getTextureColor(Maths::Vector3D hitPos);
 
         Axis _axis;
         double _pos;
         Material _material;
         Maths::Vector3D _normal;
+        std::optional<Texture> _texture;
 
         static const std::unordered_map<std::string, Axis> _axisName;
     };

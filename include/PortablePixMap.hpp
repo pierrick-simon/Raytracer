@@ -35,9 +35,9 @@ namespace RayTracer {
 
             void setPix(std::size_t width, std::size_t height, Maths::Color pix);
 
-            Maths::Color getPix(std::size_t width, std::size_t height);
-            size_t getHeight() {return _height;}
-            size_t getWidth() {return _width;}
+            Maths::Color getPix(std::size_t width, std::size_t height) const;
+            size_t getHeight() const {return _height;}
+            size_t getWidth() const {return _width;}
 
             void save(std::string name);
 

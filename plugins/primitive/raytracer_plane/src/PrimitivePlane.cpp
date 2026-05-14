@@ -8,8 +8,8 @@
 #include "PrimitivePlane.hpp"
 
 namespace RayTracer {
-    PrimitivePlane::PrimitivePlane(PrimitivePlane::Axis axis,
-        double pos, Material material) :
+    PrimitivePlane::PrimitivePlane(PrimitivePlane::Axis axis, double pos,
+        Material material, std::optional<Texture> texture) :
         _axis(axis),
         _pos(pos),
         _material(material)
@@ -22,17 +22,21 @@ namespace RayTracer {
             _normal = Maths::Vector3D(0, 0, 1);
     }
 
-    Maths::Vector2D PrimitivePlane::getUV(Maths::Vector3D hitPos)
+    std::optional<Maths::Color> PrimitivePlane::getTextureColor(Maths::Vector3D hitPos)
     {
         Maths::Vector2D uv;
+        std::optional<Maths::Color> color;
     
-        if (_axis == PrimitivePlane::Axis::Z)
-            uv = Maths::Vector2D(hitPos.getY(), hitPos.getX());
-        if (_axis == PrimitivePlane::Axis::X)
-            uv = Maths::Vector2D(hitPos.getY(), hitPos.getZ());
-        if (_axis == PrimitivePlane::Axis::Y)
-            uv = Maths::Vector2D(hitPos.getZ(), hitPos.getX());
-        return uv;
+        if (_texture) {
+            if (_axis == PrimitivePlane::Axis::Z)
+                uv = Maths::Vector2D(hitPos.getY(), hitPos.getX());
+            if (_axis == PrimitivePlane::Axis::X)
+                uv = Maths::Vector2D(hitPos.getY(), hitPos.getZ());
+            if (_axis == PrimitivePlane::Axis::Y)
+                uv = Maths::Vector2D(hitPos.getZ(), hitPos.getX());
+            color = _texture->getColor(uv, true);
+        }
+        return color;
     }
 
     std::optional<HitInfo> PrimitivePlane::hits(const Ray &ray)
@@ -46,8 +50,8 @@ namespace RayTracer {
             double t = (_pos - origin) / direction;
             if (t > 0) {
                Maths::Point3D point = ray.origin + ray.direction * t;
-                info = {point, _normal,
-                    point.distance(ray.origin), _material, getUV(point), true};
+                info = {point, _normal, point.distance(ray.origin),
+                    _material, getTextureColor(point)};
             }
         }
         return info;

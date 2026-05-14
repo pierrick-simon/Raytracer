@@ -22,6 +22,7 @@ set(SRCS
     src/Objects/Lights/ALightSource.cpp
     src/Objects/materials/Material.cpp
     src/Objects/materials/PresetMaterialBuilders.cpp
+    src/Objects/texture/Texture.cpp
     src/Objects/Rectangle.cpp
     src/Objects/Utils/TriangleShape.cpp
     src/Objects/Utils/PrimitiveTriangles.cpp
@@ -38,6 +39,7 @@ set(HEADERS
     include/Objects/Lights
     include/Objects/materials
     include/Objects/Utils
+    include/Objects/texture
 )
 
 include_directories(${HEADERS})

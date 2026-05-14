@@ -39,7 +39,7 @@ void RayTracer::PortablePixMap::setPix(
 }
 
 Maths::Color RayTracer::PortablePixMap::getPix(
-    std::size_t width, std::size_t height)
+    std::size_t width, std::size_t height) const
 {
     if (_height <= height || _width <= width)
         throw  OutOfRangeException();
