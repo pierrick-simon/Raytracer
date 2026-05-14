@@ -14,25 +14,27 @@
 
 #include "ConfigFileParser.hpp"
 #include "ParserUtils.hpp"
+#include "RayTracer.hpp"
 
 namespace RayTracer {
-    ConfigFileParser::ConfigFileParser(std::string filepath,
-        std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
-        std::vector<std::unique_ptr<ILightSourcePlugin>> &lightPlugins,
-        BuilderMap &materials) :
-        _primitivePlugins(primitivePlugins),
-        _lightPlugins(lightPlugins)
+    ConfigFileParser::ConfigFileParser(std::vector<std::string> &args)
     {
-        std::fstream file(filepath);
-
-        if (!filepath.ends_with(FILE_EXT)
-            || filepath.size() <= FILE_EXT.size() + 1)
+        if (args.empty() || args.front() == HELP_FLAG) {
+            RayTracer::showHelp();
+            throw RayTracer::HelpException();
+        }
+        std::fstream file(args.front());
+        this->loadPrimitivePlugins();
+        this->loadLightPlugins();
+        this->loadTexturePlugins();
+        if (!args.front().ends_with(FILE_EXT)
+            || args.front().size() <= FILE_EXT.size() + 1)
             throw ParserError("Wrong Extenstion.");
         if (!file.is_open())
             throw ParserError("No Such File.");
-        _filepath = {std::move(filepath)};
-        for (const auto &builder: materials)
-            _presetMaterialBuilders.insert(builder);
+        _filepath = {std::move(args.front())};
+        for (const auto &builder: _presetMaterialBuilders)
+            _materialBuilders.insert(builder);
         libconfig::Config cfg;
         cfg.readFile(_filepath.c_str());
         const libconfig::Setting &root = cfg.getRoot();
@@ -89,12 +91,12 @@ namespace RayTracer {
         root.lookupValue("diffuse", diffuse);
 
         for (const auto &light: root) {
-            auto it = std::ranges::find_if(this->_lightPlugins,
+            auto it = std::ranges::find_if(this->_lightsPlugins,
                 [&](auto &plugin) {
                     return plugin->getLightsTypeName() == light.getName();
                 });
 
-            if (it != this->_lightPlugins.end()) {
+            if (it != this->_lightsPlugins.end()) {
                 auto pluginObjects = parseSimilarLight(
                     light, *it);
                 std::ranges::move(pluginObjects, std::back_inserter(lights));
@@ -109,11 +111,11 @@ namespace RayTracer {
         for (int i = 0; i < element.getLength(); ++i) {
             Material::Builder builder{};
             if (element[i].exists("type")
-                && _presetMaterialBuilders.contains(element[i]["type"]))
-                builder = _presetMaterialBuilders.find(element[i]["type"])->
+                && _materialBuilders.contains(element[i]["type"]))
+                builder = _materialBuilders.find(element[i]["type"])->
                     second;
             std::string name = element[i]["name"];
-            _presetMaterialBuilders.emplace(name,
+            _materialBuilders.emplace(name,
                 ParserUtils::parseMaterial(element[i], builder));
         }
     }
@@ -128,12 +130,12 @@ namespace RayTracer {
 
         const libconfig::Setting &root = cfg.getRoot()["primitives"];
         for (const auto &primitive: root) {
-            auto it = std::ranges::find_if(this->_primitivePlugins,
+            auto it = std::ranges::find_if(this->_primitivesPlugins,
                 [&](auto &plugin) {
                     return plugin->getObjectsTypeName() == primitive.getName();
                 });
 
-            if (it != this->_primitivePlugins.end()) {
+            if (it != this->_primitivesPlugins.end()) {
                 auto pluginObjects = parseSimilarPrimitives(
                     primitive, *it);
                 std::ranges::move(pluginObjects, std::back_inserter(objects));
@@ -162,8 +164,56 @@ namespace RayTracer {
         for (int i = 0; i < count; ++i) {
             const libconfig::Setting &prim = element[i];
             object.push_back(
-                plugins->parseObject(prim, _presetMaterialBuilders));
+                plugins->parseObject(prim, _materialBuilders));
         }
         return std::move(object);
+    }
+
+    void ConfigFileParser::loadPrimitivePlugins()
+    {
+        std::filesystem::path path(PLUGINS_FOLDER);
+
+        for (auto const &plugin : std::filesystem::directory_iterator(path)) {
+            if (!std::filesystem::is_regular_file(plugin))
+                continue;
+            DLLoader<IObjectPlugin> loader(plugin.path().string());
+
+            if (loader.getType() == LibType::PRIMITIVE) {
+                this->_primitivesPlugins.emplace_back(loader.getInstance());
+                this->_primitivesPluginsLoaders.emplace_back(std::move(loader));
+            }
+        }
+    }
+
+    void ConfigFileParser::loadLightPlugins()
+    {
+        std::filesystem::path path(PLUGINS_FOLDER);
+
+        for (auto const &plugin : std::filesystem::directory_iterator(path)) {
+            if (!std::filesystem::is_regular_file(plugin))
+                continue;
+            DLLoader<ILightSourcePlugin> loader(plugin.path().string());
+
+            if (loader.getType() == LibType::LIGHT_SOURCE) {
+                this->_lightsPlugins.emplace_back(loader.getInstance());
+                this->_lightsPluginsLoaders.emplace_back(std::move(loader));
+            }
+        }
+    }
+
+    void ConfigFileParser::loadTexturePlugins()
+    {
+        std::filesystem::path path(PLUGINS_FOLDER);
+
+        for (auto const &plugin : std::filesystem::directory_iterator(path)) {
+            if (!std::filesystem::is_regular_file(plugin))
+                continue;
+            DLLoader<ITextureGenerationPlugin> loader(plugin.path().string());
+
+            if (loader.getType() == LibType::TEXTURE_GENERATION) {
+                this->_texturesGenerationPlugins.emplace_back(loader.getInstance());
+                this->_texturesGenerationPluginsLoaders.emplace_back(std::move(loader));
+            }
+        }
     }
 }

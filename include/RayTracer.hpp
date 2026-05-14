@@ -22,6 +22,7 @@
     #include "IDisplay.hpp"
     #include "ConfigFileParser.hpp"
     #include "Vector.hpp"
+    #include "ITextureGenerationPlugin.hpp"
 
 namespace RayTracer {
     constexpr int EPISUCCESS = 0;
@@ -85,9 +86,6 @@ namespace RayTracer {
         void parseOptionalArgs(std::vector<std::string> args);
         void initVars(std::reference_wrapper<std::vector<std::string>> args);
 
-        void loadPrimitivePlugins();
-        void loadLightPlugins();
-
         Maths::Color hitColor(const Ray &ray, HitInfo &info,
             std::size_t depth, int maxDepth);
         std::optional<HitInfo> getHitObject(Ray const &ray);
@@ -102,16 +100,15 @@ namespace RayTracer {
         void makeWorker(Maths::Vector2U resolution, std::size_t scale,
             std::size_t maxDepth, double stepX, double stepY);
 
+        ConfigFileParser _configFileParser;
+
         std::optional<DLLoader<IDisplay>> _displayLoader = std::nullopt;
         std::optional<std::unique_ptr<IDisplay>> _display = std::nullopt;
+
         PortablePixMap _ppm;
         std::string _name;
         Camera _camera;
-        std::vector<DLLoader<IObjectPlugin>> _primitivesPluginsLoaders;
-        std::vector<std::unique_ptr<IObjectPlugin>> _primitivesPlugins;
         std::vector<std::unique_ptr<IObject>> _objects;
-        std::vector<DLLoader<ILightSourcePlugin>> _lightsPluginsLoaders;
-        std::vector<std::unique_ptr<ILightSourcePlugin>> _lightsPlugins;
         LightConfig _lights;
         double _loadingPercentage = 0.0;
         int _maxDepth = 10;
@@ -121,9 +118,6 @@ namespace RayTracer {
 
         std::atomic<bool> _renderDone  = false;
         std::atomic<bool> _cancelRender = false;
-
-        static BuilderMap _presetMaterialBuilders;
-        static constexpr std::string_view PLUGINS_FOLDER = "plugins";
     };
 };
 
