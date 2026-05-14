@@ -12,6 +12,10 @@ namespace RayTracer {
     {
     }
 
+    Texture::Texture(PortablePixMap ppm) : _ppm(ppm)
+    {
+    }
+
     Maths::Color Texture::getColor(Maths::Vector2D uv, bool inf) const
     {
         double u = uv.getX();

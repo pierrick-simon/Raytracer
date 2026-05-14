@@ -117,13 +117,29 @@ namespace RayTracer {
         return builder;
     }
 
+    std::optional<Texture> ParserUtils::parseTextureName(
+        std::string name, TextureGenerationMap maps)
+    {
+        std::optional<Texture> texture = std::nullopt;
+
+        for (const auto &map: maps) {
+            if (std::string(name) == map.first) {
+                texture = Texture(map.second);
+                break;
+            }
+        }
+        if (!texture)
+            texture = Texture(name);
+        return texture;
+    }
+
     std::optional<Texture> ParserUtils::parseTexture(
-            libconfig::Setting const &element)
+        libconfig::Setting const &element, TextureGenerationMap maps)
     {
         std::optional<Texture> texture = std::nullopt;
     
         if (element.exists("texture")) {
-            texture = Texture(element["texture"]);
+            texture = parseTextureName(element["texture"], maps);
         }
         return texture;
     }

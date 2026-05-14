@@ -17,7 +17,8 @@ namespace RayTracer {
     }
 
     std::unique_ptr<IObject> SpherePlugin::parseObject(
-        libconfig::Setting const &element, BuilderMap &map)
+        libconfig::Setting const &element, BuilderMap &map,
+        TextureGenerationMap &texture)
     {
         std::cout << "Loading sphere..." << std::endl;
         Maths::Point3D origin = ParserUtils::parsePoint3D(element);
@@ -25,7 +26,7 @@ namespace RayTracer {
 
         return std::make_unique<PrimitiveSphere>(origin, r,
             ParserUtils::getBuilder(element, map).build(),
-            ParserUtils::parseTexture(element));
+            ParserUtils::parseTexture(element, texture));
     }
 
 } // RayTracer

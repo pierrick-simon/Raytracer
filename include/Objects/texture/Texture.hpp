@@ -15,6 +15,7 @@ namespace RayTracer {
     class Texture {
         public:
             Texture(std::string filename);
+            Texture(PortablePixMap ppm);
 
             Maths::Color getColor(Maths::Vector2D uv, bool inf) const;
 

@@ -16,11 +16,14 @@
 
     #include "IObject.hpp"
     #include "Material.hpp"
+    #include "PortablePixMap.hpp"
 
 namespace RayTracer {
 
     using BuilderMap =
         const std::unordered_map<std::string, Material::Builder>;
+    using TextureGenerationMap =
+        const std::unordered_map<std::string, PortablePixMap>;
 
     class IObjectPlugin {
     public:
@@ -30,7 +33,7 @@ namespace RayTracer {
 
         virtual std::unique_ptr<IObject> parseObject(
             libconfig::Setting const &element,
-            BuilderMap &) = 0;
+            BuilderMap &, TextureGenerationMap &) = 0;
     };
 }
 

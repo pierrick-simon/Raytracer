@@ -47,6 +47,13 @@ namespace RayTracer {
         void parseMaterials(
             libconfig::Setting const &element);
 
+        void parseTextures(
+            libconfig::Setting const &element);
+
+        void parseSimilarTexture(
+            libconfig::Setting const &texturesSetting,
+            std::unique_ptr<ITextureGenerationPlugin> const &plugin);
+
         [[nodiscard]] std::vector<std::unique_ptr<IObject>>
             parsePrimitives() const;
 
@@ -72,6 +79,7 @@ namespace RayTracer {
         std::vector<DLLoader<ITextureGenerationPlugin>> _texturesGenerationPluginsLoaders;
         std::vector<std::unique_ptr<ITextureGenerationPlugin>> _texturesGenerationPlugins;
         std::unordered_map<std::string, Material::Builder> _materialBuilders;
+        std::unordered_map<std::string, PortablePixMap> _textureGenerationMap;
         static BuilderMap _presetMaterialBuilders;
         static constexpr std::string_view PLUGINS_FOLDER = "plugins";
     };

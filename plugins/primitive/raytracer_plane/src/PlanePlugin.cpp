@@ -17,7 +17,8 @@ namespace RayTracer {
     }
 
      std::unique_ptr<IObject> PlanePlugin::parseObject(
-        libconfig::Setting const &element, BuilderMap &map)
+        libconfig::Setting const &element, BuilderMap &map,
+        TextureGenerationMap &texture)
     {
         std::cout << "Loading plane..." << std::endl;
         std::string axisName = element["axis"];
@@ -26,6 +27,6 @@ namespace RayTracer {
         double pos = ParserUtils::parseDouble(element, "position");
         return std::make_unique<PrimitivePlane>(PrimitivePlane::getAxisName()
             .at(axisName), pos, ParserUtils::getBuilder(element, map).build(),
-            ParserUtils::parseTexture(element));
+            ParserUtils::parseTexture(element, texture));
     }
 } // RayTracer

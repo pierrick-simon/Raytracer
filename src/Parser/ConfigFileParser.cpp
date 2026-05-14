@@ -40,6 +40,8 @@ namespace RayTracer {
         const libconfig::Setting &root = cfg.getRoot();
         if (root.exists("materials"))
             parseMaterials(root["materials"]);
+        if (root.exists("textures"))
+            parseMaterials(root["textures"]);
     }
 
     ConfigFileParser::ParserError::ParserError(std::string s) :
@@ -164,7 +166,7 @@ namespace RayTracer {
         for (int i = 0; i < count; ++i) {
             const libconfig::Setting &prim = element[i];
             object.push_back(
-                plugins->parseObject(prim, _materialBuilders));
+                plugins->parseObject(prim, _materialBuilders, _textureGenerationMap));
         }
         return std::move(object);
     }
@@ -214,6 +216,38 @@ namespace RayTracer {
                 this->_texturesGenerationPlugins.emplace_back(loader.getInstance());
                 this->_texturesGenerationPluginsLoaders.emplace_back(std::move(loader));
             }
+        }
+    }
+
+    void ConfigFileParser::parseTextures(libconfig::Setting const &element)
+    {
+        libconfig::Config cfg;
+
+        cfg.readFile(_filepath.c_str());
+
+        const libconfig::Setting &root = cfg.getRoot()["textures"];
+        for (const auto &primitive: root) {
+            auto it = std::ranges::find_if(this->_texturesGenerationPlugins,
+                [&](auto &plugin) {
+                    return plugin->getTexturesTypeName() == primitive.getName();
+                });
+
+            if (it != this->_texturesGenerationPlugins.end()) {
+                parseSimilarTexture(primitive, *it);
+            }
+        }
+    }
+
+    void ConfigFileParser::parseSimilarTexture(
+        libconfig::Setting const &element,
+        std::unique_ptr<ITextureGenerationPlugin> const &plugin)
+    {
+        int count = element.getLength();
+
+        for (int i = 0; i < count; ++i) {
+            const libconfig::Setting &text = element[i];
+            auto texture = plugin->parseTexture(text);
+            _textureGenerationMap.emplace(text["name"], texture->generate());
         }
     }
 }

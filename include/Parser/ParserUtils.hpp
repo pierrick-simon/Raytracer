@@ -44,7 +44,10 @@ namespace RayTracer {
             Material::Builder builder);
         
         static std::optional<Texture> parseTexture(
-            libconfig::Setting const &element);
+            libconfig::Setting const &element, TextureGenerationMap map);
+    private:
+        static std::optional<Texture> parseTextureName(
+            std::string name, TextureGenerationMap maps);
     };
 } // RayTracer
 

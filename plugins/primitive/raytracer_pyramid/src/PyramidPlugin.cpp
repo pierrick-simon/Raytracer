@@ -35,7 +35,8 @@ namespace RayTracer {
         return std::make_unique<Pyramid>(origin, h, w, l, mat);
     }
 
-    std::unique_ptr<IObject> PyramidPlugin::parseObject(libconfig::Setting const &element, BuilderMap &builders)
+    std::unique_ptr<IObject> PyramidPlugin::parseObject(libconfig::Setting const &element, BuilderMap &builders,
+        TextureGenerationMap &texture)
     {
         return parsePyramid(element, builders);
     }
