@@ -8,17 +8,40 @@
 #include "RayTracer.hpp"
 #include "PrimitiveCone.hpp"
 
+#include <utility>
+
 namespace RayTracer {
     PrimitiveCone::PrimitiveCone(const Maths::Point3D &origin,
         double const radius, std::optional<double> const height,
-        Material const &Material) : _origin(origin), _radius(radius),
-        _height(height), _material(Material)
+        Material Material) : _origin(origin), _radius(radius),
+        _height(height), _material(std::move(Material))
     {
     }
 
-    std::optional<HitInfo> PrimitiveCone::hitsInfinite(Ray const &ray)
+    std::optional<HitInfo> PrimitiveCone::hitsInfinite(Ray const &ray) const
     {
-        return std::nullopt;
+        Maths::Vector3D diff = ray.origin - _origin;
+        double k = _height.has_value() ? (_radius / _height.value()) *
+            (_radius / _height.value()) : 1.0;
+        double a = ray.direction.getX() * ray.direction.getX() + ray.direction.getY() *
+            ray.direction.getY() - k * ray.direction.getZ() * ray.direction.getZ();
+        double b = 2.0 * (diff.getX() * ray.direction.getX()+ diff.getY() *
+            ray.direction.getY() - k * diff.getZ() * ray.direction.getZ());
+        double c = diff.getX() * diff.getX() + diff.getY() * diff.getY()
+            - k * diff.getZ() * diff.getZ();
+        double delta = b * b - 4.0 * a * c;
+
+        if (delta < 0.0)
+            return std::nullopt;
+
+        double t1 = (-b - sqrt(delta)) / (2.0 * a);
+        double t2 = (-b + sqrt(delta)) / (2.0 * a);
+        double t = t1 > DOUBLE_OFFSET ? t1 : t2;
+
+        if (t < DOUBLE_OFFSET || diff.getZ() + ray.direction.getZ() * t > 0.0)
+            return std::nullopt;
+
+        return fillHitInfo(ray, t);
     }
 
     void PrimitiveCone::getBottomCapBestT(std::optional<double> &bestT,
@@ -30,7 +53,7 @@ namespace RayTracer {
     }
 
     bool PrimitiveCone::getSlideBestT(std::optional<double> &bestT, double t,
-        double hitZ)
+        double hitZ) const
     {
         if (hitZ >= 0.0 && hitZ <= _height.value()) {
             if (!bestT.has_value() || t < bestT.value())
@@ -40,13 +63,16 @@ namespace RayTracer {
         return false;
     }
 
-    std::optional<double> PrimitiveCone::hitSlide(Ray const &ray, Maths::Vector3D diff,
-        double a, double b, double delta)
+    std::optional<double> PrimitiveCone::hitSlide(Ray const &ray,
+        Maths::Vector3D diff,
+        double a, double b, double delta) const
     {
         std::optional<double> bestT = std::nullopt;
         double sqrtDelta = sqrt(delta);
-        for (double const t: {(-b - sqrtDelta) / (2.0 * a),
-            (-b + sqrtDelta) / (2.0 * a)}) {
+        for (double const t: {
+                 (-b - sqrtDelta) / (2.0 * a),
+                 (-b + sqrtDelta) / (2.0 * a)
+             }) {
             if (t < DOUBLE_OFFSET)
                 continue;
             double hitZ = diff.getZ() + ray.direction.getZ() * t;
@@ -57,7 +83,7 @@ namespace RayTracer {
     }
 
     void PrimitiveCone::hitCap(Ray const &ray, Maths::Vector3D diff,
-        std::optional<double> bestT) const
+        std::optional<double> &bestT) const
     {
         if (std::abs(ray.direction.getZ()) > DOUBLE_OFFSET) {
             double t = -diff.getZ() / ray.direction.getZ();
@@ -69,7 +95,7 @@ namespace RayTracer {
         }
     }
 
-    std::optional<HitInfo> PrimitiveCone::hitsCone(Ray const &ray)
+    std::optional<HitInfo> PrimitiveCone::hitsCone(Ray const &ray) const
     {
         Maths::Vector3D diff = ray.origin - _origin;
         std::optional<HitInfo> hitInfo = std::nullopt;
@@ -77,7 +103,8 @@ namespace RayTracer {
         double a = ray.direction.getX() * ray.direction.getX() + ray.direction.
             getY() * ray.direction.getY() - k * ray.direction.getZ() * ray.
             direction.getZ();
-        double b = 2.0 * (diff.getX() * ray.direction.getX() + diff.getY() * ray.direction.getY()
+        double b = 2.0 * (diff.getX() * ray.direction.getX() + diff.getY() * ray
+            .direction.getY()
             - k * (diff.getZ() - _height.value()) * ray.direction.getZ());
         double c = diff.getX() * diff.getX() + diff.getY() * diff.getY() - k * (
             diff.getZ() - _height.value()) * (diff.getZ() - _height.value());
@@ -106,7 +133,7 @@ namespace RayTracer {
         double nx = hitPos.getX() - _origin.getX();
         double ny = hitPos.getY() - _origin.getY();
         double len = sqrt(nx * nx + ny * ny);
-        double slide = _radius / _height.value();
+        double slide = _height.has_value() ? _radius / _height.value() : 1.0;
 
         Maths::Vector3D normal{nx / len * slide, ny / len * slide, slide};
         return normal.normalized();

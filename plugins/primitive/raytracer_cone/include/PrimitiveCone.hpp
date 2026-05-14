@@ -15,23 +15,23 @@ namespace RayTracer {
     class PrimitiveCone : public IObject {
     public:
         PrimitiveCone(const Maths::Point3D &origin, double radius,
-            std::optional<double> height, Material const &Material);
+            std::optional<double> height, Material Material);
 
-        std::optional<HitInfo> hitsInfinite(Ray const & ray);
+        std::optional<HitInfo> hitsInfinite(Ray const & ray) const;
 
         void getBottomCapBestT(std::optional<double> &bestT, double t,
             double hx,
             double hy) const;
 
-        bool getSlideBestT(std::optional<double> &bestT, double t, double hitZ);
+        bool getSlideBestT(std::optional<double> &bestT, double t, double hitZ) const;
 
-        std::optional<HitInfo> hitsCone(Ray const & ray);
+        std::optional<HitInfo> hitsCone(Ray const & ray) const;
 
         std::optional<HitInfo> hits(const Ray &ray) override;
 
         [[nodiscard]] Maths::Vector3D coneNormal(Maths::Point3D point3) const;
-        std::optional<double> hitSlide(Ray const &ray, Maths::Vector3D diff, double a, double b, double delta);
-        void hitCap(Ray const &ray, Maths::Vector3D diff, std::optional<double> bestT) const;
+        std::optional<double> hitSlide(Ray const &ray, Maths::Vector3D diff, double a, double b, double delta) const;
+        void hitCap(Ray const &ray, Maths::Vector3D diff, std::optional<double> &bestT) const;
         [[nodiscard]] HitInfo fillHitInfo(const Ray &ray, double t) const;
 
         [[nodiscard]] const Maths::Point3D &getOrigin() const;
