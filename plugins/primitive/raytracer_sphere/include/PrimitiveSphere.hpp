@@ -9,15 +9,18 @@
     #define PRIMITIVESPHERE_HPP
 
     #include <memory>
+    #include <optional>
     #include "IObject.hpp"
     #include "Material.hpp"
     #include "Vector.hpp"
+    #include "Texture.hpp"
 
 namespace RayTracer {
     class PrimitiveSphere : public IObject {
     public:
         PrimitiveSphere(const Maths::Point3D &origin,
-            double radius, Material Material);
+            double radius, Material Material,
+            std::optional<Texture> texture = std::nullopt);
 
         std::optional<HitInfo> hits(const Ray &ray) override;
 
@@ -35,6 +38,7 @@ namespace RayTracer {
         Maths::Point3D _origin;
         double _radius;
         Material _material;
+        std::optional<Texture> _texture;
     };
 };
 

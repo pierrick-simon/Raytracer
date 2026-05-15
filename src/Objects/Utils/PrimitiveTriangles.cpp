@@ -10,25 +10,34 @@
 namespace RayTracer {
     PrimitiveTriangle::PrimitiveTriangle(const Maths::Point3D &a,
         const Maths::Point3D &b, const Maths::Point3D &c,
-        const Material &mat) :
+        const Material &mat, std::optional<Texture> texture) :
         _a(a),
         _b(b),
         _c(c),
-        _material(mat)
+        _material(mat),
+        _texture(texture)
     {
     }
 
     std::optional<HitInfo> PrimitiveTriangle::fillHitInfo(Ray const &ray,
-        Maths::Vector3D const &AB, Maths::Vector3D const &AC, double t) const
+        Maths::Vector3D const &AB, Maths::Vector3D const &AC,
+        double t, Maths::Vector2D uv) const
     {
         HitInfo hit = HitInfo();
         hit.hitPos = Maths::Vector3D(ray.origin + ray.direction * t);
         hit.hitDist = hit.hitPos.distance(ray.origin);
         hit.impactNormal = AB.crossProduct(AC).normalized();
         hit.material = _material;
+        if (_texture) {
+            double w = 1.0 - uv.getX() - uv.getY();
+            auto tmp = Maths::Vector2D(
+                _uvA.getX() * w + _uvB.getX() * uv.getX() + _uvC.getX() * uv.getY(),
+                _uvA.getY() * w + _uvB.getY() * uv.getX() + _uvC.getY() * uv.getY()
+            );
+            hit.textureColor = _texture->getColor(tmp, false);
+        }
         return hit;
     }
-
     std::optional<HitInfo> PrimitiveTriangle::rayTriangleMollerTrumboreAlgo(
         Ray const &ray, Maths::Vector3D AB, Maths::Vector3D AC,
         Maths::Vector3D h) const
@@ -53,7 +62,7 @@ namespace RayTracer {
         double t = AC.dot(q) * invDet;
         if (t <= EPSILON)
             return std::nullopt;
-        return fillHitInfo(ray, AB, AC, t);
+        return fillHitInfo(ray, AB, AC, t, Maths::Vector2D{u, v});
     }
 
     std::optional<HitInfo> PrimitiveTriangle::hits(Ray const &ray) const
@@ -64,4 +73,8 @@ namespace RayTracer {
         
         return rayTriangleMollerTrumboreAlgo(ray, AB, AC, h);
     }
+
+    const Maths::Vector2D PrimitiveTriangle::_uvA = Maths::Vector2D(1.0, 1.0);
+    const Maths::Vector2D PrimitiveTriangle::_uvB = Maths::Vector2D(0.0, 1.0);
+    const Maths::Vector2D PrimitiveTriangle::_uvC = Maths::Vector2D(0.5, 0.0);
 }

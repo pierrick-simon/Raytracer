@@ -25,7 +25,10 @@ namespace RayTracer {
             DisplaySFML();
 
             Event getEvent();
-            void draw(PortablePixMap);
+            void draw();
+            void setSceneSize(std::size_t width, std::size_t height);
+            void setPix(std::size_t width,
+                std::size_t height, Maths::Color8bit color);
 
         private:
             Action keyPressed(sf::Event event);
@@ -39,6 +42,9 @@ namespace RayTracer {
             sf::RectangleShape _background;
             sf::RectangleShape _pix;
             sf::Vector2f _size = {WINDOW_SIZE_X, WINDOW_SIZE_Y};
+            sf::Image _image;
+            sf::Texture _texture;
+            sf::Sprite _sprite;
     };
 };
 

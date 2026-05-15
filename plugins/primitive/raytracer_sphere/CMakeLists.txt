@@ -11,7 +11,9 @@ set(SPHERE
 set(SHARED_SRCS
     Parser/ParserUtils.cpp
     Objects/materials/Material.cpp
-        maths/Color.cpp
+    maths/Color.cpp
+    Objects/texture/Texture.cpp
+    PortablePixMap.cpp
 )
 
 list(TRANSFORM SHARED_SRCS PREPEND ${CMAKE_SOURCE_DIR}/src/)

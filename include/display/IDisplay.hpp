@@ -10,6 +10,7 @@
 
     #include "Display.hpp"
     #include "PortablePixMap.hpp"
+    #include "Color.hpp"
 
 namespace RayTracer {
 
@@ -18,7 +19,10 @@ namespace RayTracer {
             virtual ~IDisplay() = default;
 
             virtual Event getEvent() = 0;
-            virtual void draw(PortablePixMap) = 0;
+            virtual void draw() = 0;
+            virtual void setSceneSize(std::size_t width, std::size_t height) = 0;
+            virtual void setPix(std::size_t width,
+                std::size_t height, Maths::Color8bit color) = 0;
     };
 };
 

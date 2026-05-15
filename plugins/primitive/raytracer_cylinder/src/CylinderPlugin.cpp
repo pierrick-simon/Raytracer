@@ -18,7 +18,8 @@ namespace RayTracer {
     }
 
     std::unique_ptr<IObject> CylinderPlugin::parseObject(
-        libconfig::Setting const &element, BuilderMap &builders)
+        libconfig::Setting const &element, BuilderMap &builders,
+        TextureGenerationMap &texture)
     {
         double r = 0;
         std::optional<double> h = std::nullopt;
@@ -32,6 +33,7 @@ namespace RayTracer {
             h = ParserUtils::parseDouble(element, "h");
         else
             h = std::nullopt;
-        return std::make_unique<PrimitiveCylinder>(origin, r, h, mat);
+        return std::make_unique<PrimitiveCylinder>(origin, r, h, mat, 
+            ParserUtils::parseTexture(element, texture));
     }
 }

@@ -11,8 +11,9 @@
 namespace RayTracer {
     PrimitiveCylinder::PrimitiveCylinder(const Maths::Point3D &origin,
         double const radius, std::optional<double> const height,
-        Material const &Material) : _origin(origin), _radius(radius),
-        _height(height), _material(Material)
+        Material const &material, std::optional<Texture> texture) :
+        _origin(origin), _radius(radius),
+        _height(height), _material(material), _texture(texture)
     {
     }
 
@@ -30,6 +31,20 @@ namespace RayTracer {
         hit.hitDist = hit.hitPos.distance(ray.origin);
         hit.impactNormal = cylNormal(hit.hitPos);
         hit.material = _material;
+
+        if (_texture) {
+            double nx = hit.hitPos.getX() - _origin.getX();
+            double ny = hit.hitPos.getY() - _origin.getY();
+            double u, v;
+            if (std::abs(hit.impactNormal.getZ()) > 0.5) {
+                u = nx / _radius * 0.5 + 0.5;
+                v = ny / _radius * 0.5 + 0.5;
+            } else {
+                u = std::atan2(-ny, -nx) / (2.0 * M_PI) + 0.5;
+                v = 1.0 - (hit.hitPos.getZ() - _origin.getZ()) / _height.value();
+            }
+            hit.textureColor = _texture->getColor(Maths::Vector2D(u, v), false);
+        }
         return hit;
     }
 
@@ -153,6 +168,14 @@ namespace RayTracer {
         hit.impactNormal = Maths::Vector3D{nx / len, ny / len, 0};
 
         hit.material = _material;
+
+        if (_texture) {
+            double phi = std::atan2(-ny, -nx) + M_PI;
+            double arcLength = phi * _radius;
+            double hz = hit.hitPos.getZ() - _origin.getZ();
+            hit.textureColor = _texture->getColor(
+                Maths::Vector2D(arcLength, hz), true);
+        }
         return hit;
     }
 

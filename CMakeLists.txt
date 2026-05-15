@@ -22,6 +22,7 @@ set(SRCS
     src/Objects/Lights/ALightSource.cpp
     src/Objects/materials/Material.cpp
     src/Objects/materials/PresetMaterialBuilders.cpp
+    src/Objects/texture/Texture.cpp
     src/Objects/Rectangle.cpp
     src/Objects/Utils/TriangleShape.cpp
     src/Objects/Utils/PrimitiveTriangles.cpp
@@ -38,6 +39,7 @@ set(HEADERS
     include/Objects/Lights
     include/Objects/materials
     include/Objects/Utils
+    include/Objects/texture
 )
 
 include_directories(${HEADERS})
@@ -89,6 +91,7 @@ add_subdirectory(plugins/primitive/raytracer_plane)
 add_subdirectory(plugins/primitive/raytracer_pyramid)
 add_subdirectory(plugins/primitive/raytracer_cylinder)
 add_subdirectory(plugins/primitive/raytracer_cone)
+add_subdirectory(plugins/primitive/raytracer_models)
 
 add_custom_target(display
     DEPENDS raytracer_sfml)
@@ -107,5 +110,11 @@ add_custom_target(lights
         DEPENDS raytracer_point_light
             raytracer_spot_light)
 
+add_subdirectory(plugins/textureGeneration/raytracer_chessboard)
+add_subdirectory(plugins/textureGeneration/raytracer_perlinnoise)
+
+add_custom_target(textureGenerations
+    DEPENDS raytracer_chessboard raytracer_perlinnoise)
+
 add_custom_target(plugins
-    DEPENDS primitives display lights)
+    DEPENDS primitives display lights textureGenerations)

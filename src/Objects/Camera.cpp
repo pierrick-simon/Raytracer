@@ -86,4 +86,19 @@ namespace RayTracer {
         return {_position, p - _position};
     }
 
+    Maths::Vector3D Camera::forward() const noexcept
+    {
+        return _rotation * Maths::Vector3D{1.0, 0.0, 0.0};
+    }
+
+    Maths::Vector3D Camera::right() const noexcept
+    {
+        return _rotation * Maths::Vector3D{0.0, 1.0, 0.0};
+    }
+
+    Maths::Vector3D Camera::up() const noexcept
+    {
+        return _rotation * Maths::Vector3D{0.0, 0.0, 1.0};
+    }
+
 }
