@@ -48,6 +48,8 @@ namespace RayTracer {
 
         void throwRays(std::size_t scale, std::size_t maxDepth) noexcept;
 
+        Maths::Color lunchRays(Maths::Vector2U idx, Maths::Vector2U res,
+            std::size_t scale, std::size_t maxDepth);
         void rayWorker(Maths::Vector2U start, Maths::Vector2U end,
             Maths::Vector2U res, std::size_t scale, std::size_t maxDepth);
 
@@ -114,6 +116,7 @@ namespace RayTracer {
         int _maxDepth = 10;
         int _nbScreenSplit = 4;
         std::mutex _mutex;
+        std::size_t _anti_aliasing = 0;
         std::vector<std::thread> _workers;
 
         std::atomic<bool> _renderDone  = false;

@@ -6,7 +6,8 @@ DESCRIPTION
         scene configuration
     
     OPTION (Optional arguments)
-        -h / --help
+        --help
         --display <PATH>
         --maxDepth <NUMBER>
         --screenDivision <NUMBER>
+        --antiAliasing <NUMBER>

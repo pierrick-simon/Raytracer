@@ -14,6 +14,7 @@ set(MAIN
 set(SRCS
     src/PortablePixMap.cpp
     src/RayTracer.cpp
+    src/ArgsParser.cpp
     src/PortablePixMap.cpp
     src/Parser/ConfigFileParser.cpp
     src/Parser/ParserUtils.cpp
@@ -55,7 +56,7 @@ endif()
 add_executable(raytracer ${MAIN} ${SRCS})
 target_link_libraries(raytracer sfml-graphics sfml-window sfml-system config++)
 
-target_compile_options(raytracer PRIVATE -g)
+target_compile_options(raytracer PRIVATE)
 
 add_custom_target(main
     DEPENDS raytracer

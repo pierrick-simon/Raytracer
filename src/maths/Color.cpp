@@ -196,4 +196,15 @@ namespace Maths {
             this->getA() / other
         );
     }
+
+    Color Color::mean(std::vector<Color> colors) {
+        Maths::Color finalColor = Maths::Color::BLACK;
+        for (auto color: colors) {
+            finalColor.getX() += color.getX();
+            finalColor.getY() += color.getY();
+            finalColor.getZ() += color.getZ();
+            finalColor.getW() += color.getW();
+        }
+        return finalColor / static_cast<double>(colors.size());
+    }
 } // Maths

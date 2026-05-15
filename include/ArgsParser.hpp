@@ -25,6 +25,19 @@ namespace RayTracer {
 
     class ArgsParser {
     public:
+        
+        static bool isArg(
+            std::reference_wrapper<std::vector<std::string>> args, std::string flag)
+        {
+            for (auto arg = args.get().begin(); arg != args.get().end(); ++arg) {
+                if (*arg == flag) {
+                    args.get().erase(arg);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         template<typename T>
         static std::optional<T> getArg(
             std::reference_wrapper<std::vector<std::string>> args, std::string flag)
