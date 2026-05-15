@@ -12,6 +12,7 @@
     #include <vector>
     #include <exception>
     #include <optional>
+    #include <iomanip>
 
 namespace RayTracer {
 

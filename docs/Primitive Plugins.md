@@ -31,12 +31,29 @@ For example, with this configuration file:
 primitives:
 {
     spheres = (
-        { x = 60; y = 5; z = 40; r = 25; color = { r = 255; g = 64; b = 64; }; },
-        { x = -40; y = 20; z = -10; r = 35; color = { r = 64; g = 255; b = 64; }; }
+        {
+            x = 5; y = 60; z = 40; r = 25;
+            material = {
+                name = "Flat color";
+            };
+        },
+        {
+            x = 20; y = -40; z = 0; r = 35;
+            material = {
+                name = "Flat color";
+                color = { r = 64; g = 255; b = 64; }
+            };
+        }
     );
 
     planes = (
-        { axis = "Z"; position = -20; color = { r = 64; g = 64; b = 255; }; }
+        {
+            axis = "Z"; position = -20;
+            material = {
+                name = "Flat color";
+                color = {  r = 64; g = 64; b = 255; }
+            };
+        }
     );
 };
 ```
@@ -52,11 +69,22 @@ each element of the configuration.
 Again, with the same configuration file, for the Sphere Plugin, it will return a
 list of two spheres created from:
 ```
-{ x = 60; y = 5; z = 40; r = 25; color = { r = 255; g = 64; b = 64; }; }
+{
+    x = 5; y = 60; z = 40; r = 25;
+    material = {
+        name = "Flat color";
+    };
+}
 ```
 and
 ```
-{ x = -40; y = 20; z = -10; r = 35; color = { r = 64; g = 255; b = 64; }; }
+{
+    x = 20; y = -40; z = 0; r = 35;
+    material = {
+        name = "Flat color";
+        color = { r = 64; g = 255; b = 64; }
+    };
+}
 ```
 
 ### Custom IObject
@@ -65,4 +93,4 @@ As stated previously, the `parseObjects` method returns a list of `IObject`s.
 However, if you want to create a custom IObject, you can do so by inheriting
 from `RayTracer::IObject`. The `IObject` class has a `hits` method that returns
 a non-empty optional with `HitInfo` if the ray intersects the object.
-The `HitInfo` holds the intersection point, and the normal vector of the surface.
+The `HitInfo` holds the intersection point, and the normal vector of the surface and other information on the hit object.
