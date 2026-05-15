@@ -11,6 +11,7 @@ set(MODEL
 set(SHARED_SRCS
     Parser/ParserUtils.cpp
     Objects/materials/Material.cpp
+    maths/Quaternion.cpp
     maths/Color.cpp
 )
 

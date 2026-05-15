@@ -25,9 +25,13 @@ namespace RayTracer {
         double scale = 1;
         if (element.exists("scale"))
             scale = ParserUtils::parseDouble(element, "scale");
+        Maths::Quaternion rot = Maths::Quaternion::identity();
+        if (element.exists("rotation"))
+            rot = ParserUtils::parseQuaternionFromEuler(element["rotation"]);
 
-        return std::make_unique<Model>(origin, path,
-            ParserUtils::getBuilder(element, map).build(), scale);
+        auto model = std::make_unique<Model>(origin, path,
+            ParserUtils::getBuilder(element, map).build(), scale, rot);
+        return model;
     }
 
 } // RayTracer

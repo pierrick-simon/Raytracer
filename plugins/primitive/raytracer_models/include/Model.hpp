@@ -19,6 +19,7 @@
     #include "IObject.hpp"
     #include "Material.hpp"
     #include "ObjMaterialLibrary.hpp"
+#include "Quaternion.hpp"
     #include "Vector.hpp"
     #include "Texture.hpp"
     #include "data/BoundingBox.hpp"
@@ -32,7 +33,7 @@ namespace RayTracer {
     class Model : public IObject {
     public:
         Model(const Maths::Point3D &position,
-            const std::string &path, Material material, double scale);
+            const std::string &path, Material material, double scale, Maths::Quaternion rotation);
 
         std::optional<HitInfo> hits(const Ray &ray) override;
 
@@ -84,6 +85,7 @@ namespace RayTracer {
         std::string _currentMaterialName;
         std::filesystem::path _sourcePath;
         double _scale;
+        Maths::Quaternion _rotation;
 
         static const std::unordered_map<std::string, void (Model::*)(
             std::istringstream &)> LINE_PARSE_FUNCTION;

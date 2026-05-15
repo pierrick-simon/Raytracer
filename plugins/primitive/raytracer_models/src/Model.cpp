@@ -57,10 +57,11 @@ namespace RayTracer {
     }
 
     Model::Model(const Maths::Point3D &position, const std::string &path,
-        Material material, double scale) :
+        Material material, double scale, Maths::Quaternion rotation) :
         _pos(position),
         _material(std::move(material)),
-        _scale(scale)
+        _scale(scale),
+        _rotation(rotation)
     {
         this->parseFile(path);
     }
@@ -92,6 +93,11 @@ namespace RayTracer {
         if (!line.eof())
             throw std::invalid_argument("Invalid vertex line");
         newVertex *= this->_scale;
+        const Maths::Vector3D rotated = this->_rotation
+            * Maths::Vector3D{newVertex.getX(), newVertex.getY(), newVertex.getZ()};
+        newVertex.getX() = rotated.getX();
+        newVertex.getY() = rotated.getY();
+        newVertex.getZ() = rotated.getZ();
         this->_vertices.push_back(newVertex);
     }
 
