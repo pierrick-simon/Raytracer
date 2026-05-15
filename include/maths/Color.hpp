@@ -54,6 +54,8 @@ namespace Maths {
 
         Color &operator*=(const Vector3D &other);
 
+        Color &operator*=(const Color &other);
+
         Color &operator*=(const double &other);
 
         Color &operator+=(const Vector3D &other);
@@ -61,6 +63,8 @@ namespace Maths {
         Color &operator+=(const double &other);
 
         Color &operator+=(const Vector &other);
+
+        Color operator/(const double &other) const;
 
         Color &clamp();
 

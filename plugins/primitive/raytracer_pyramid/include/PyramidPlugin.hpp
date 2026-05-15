@@ -15,11 +15,8 @@ namespace RayTracer {
     public:
         const std::string_view &getObjectsTypeName() override;
 
-        static std::unique_ptr<IObject> parsePyramid(
-            libconfig::Setting const &element, BuilderMap &builders);
-
         std::unique_ptr<IObject> parseObject(
-            libconfig::Setting const &, BuilderMap &) override;
+            libconfig::Setting const &, BuilderMap &, TextureGenerationMap &) override;
 
     private:
         static constexpr std::string_view TRIANGLE_TYPE_NAME = "pyramids";

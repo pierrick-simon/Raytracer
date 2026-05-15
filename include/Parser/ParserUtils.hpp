@@ -14,13 +14,22 @@
     #include "Point.hpp"
     #include "IObjectPlugin.hpp"
     #include "Material.hpp"
-#include "Quaternion.hpp"
+    #include "Quaternion.hpp"
+    #include "Texture.hpp"
 
 namespace RayTracer {
     class ParserUtils {
     public:
         static double parseDouble(
             libconfig::Setting const &element, std::string value);
+
+        static bool parseBool(
+            libconfig::Setting const &element, std::string value);
+
+        static std::size_t parseSizeT(
+            libconfig::Setting const &element, std::string key);
+
+        static Maths::Vector2U parseVector2U(libconfig::Setting const &element);
 
         static Maths::Vector3D parseVector3D(libconfig::Setting const &element);
 
@@ -38,6 +47,12 @@ namespace RayTracer {
         static Material::Builder parseMaterial(
             libconfig::Setting const &element,
             Material::Builder builder);
+        
+        static std::optional<Texture> parseTexture(
+            libconfig::Setting const &element, TextureGenerationMap map);
+    private:
+        static std::optional<Texture> parseTextureName(
+            std::string name, TextureGenerationMap maps);
     };
 } // RayTracer
 

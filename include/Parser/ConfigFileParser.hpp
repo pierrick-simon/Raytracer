@@ -15,21 +15,20 @@
     #include <vector>
     #include <unordered_map>
 
+    #include "DLLoader.hpp"
     #include "Camera.hpp"
     #include "ILightSourcePlugin.hpp"
     #include "IObjectPlugin.hpp"
     #include "LightConfig.hpp"
     #include "Material.hpp"
+    #include "ITextureGenerationPlugin.hpp"
 
 namespace RayTracer {
     constexpr std::string_view FILE_EXT = ".cfg";
 
     class ConfigFileParser {
     public:
-        ConfigFileParser(std::string filepath,
-        std::vector<std::unique_ptr<IObjectPlugin>> &primitivePlugins,
-        std::vector<std::unique_ptr<ILightSourcePlugin>> &lightPlugins,
-            BuilderMap &materials);
+        ConfigFileParser(std::vector<std::string> &args);
 
         class ParserError : public std::exception {
         public:
@@ -48,6 +47,13 @@ namespace RayTracer {
         void parseMaterials(
             libconfig::Setting const &element);
 
+        void parseTextures(
+            libconfig::Setting const &element);
+
+        void parseSimilarTexture(
+            libconfig::Setting const &texturesSetting,
+            std::unique_ptr<ITextureGenerationPlugin> const &plugin);
+
         [[nodiscard]] std::vector<std::unique_ptr<IObject>>
             parsePrimitives() const;
 
@@ -61,10 +67,21 @@ namespace RayTracer {
                 std::unique_ptr<IObjectPlugin> const &plugins) const;
 
     private:
+        void loadPrimitivePlugins();
+        void loadLightPlugins();
+        void loadTexturePlugins();
+
         std::string _filepath;
-        std::vector<std::unique_ptr<IObjectPlugin>> &_primitivePlugins;
-        std::vector<std::unique_ptr<ILightSourcePlugin>> &_lightPlugins;
-        std::unordered_map<std::string, Material::Builder> _presetMaterialBuilders;
+        std::vector<DLLoader<IObjectPlugin>> _primitivesPluginsLoaders;
+        std::vector<std::unique_ptr<IObjectPlugin>> _primitivesPlugins;
+        std::vector<DLLoader<ILightSourcePlugin>> _lightsPluginsLoaders;
+        std::vector<std::unique_ptr<ILightSourcePlugin>> _lightsPlugins;
+        std::vector<DLLoader<ITextureGenerationPlugin>> _texturesGenerationPluginsLoaders;
+        std::vector<std::unique_ptr<ITextureGenerationPlugin>> _texturesGenerationPlugins;
+        std::unordered_map<std::string, Material::Builder> _materialBuilders;
+        std::unordered_map<std::string, PortablePixMap> _textureGenerationMap;
+        static BuilderMap _presetMaterialBuilders;
+        static constexpr std::string_view PLUGINS_FOLDER = "plugins";
     };
 }
 

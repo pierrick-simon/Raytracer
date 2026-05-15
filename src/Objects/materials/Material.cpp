@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 #include "RayTracer.hpp"
 #include "Material.hpp"
 #include "Info.hpp"
@@ -123,5 +124,14 @@ namespace RayTracer {
         F0 = F0 * (1 - _metallic) + _metallic;
 
         return F0 + (1 - F0) * std::pow(1 - cosT, 5);
+    }
+
+    Maths::Color Material::getColor(const HitInfo &hit) const
+    {
+        Maths::Color color = _color;
+
+        if (hit.textureColor)
+            color *= hit.textureColor.value();
+        return color;
     }
 }

@@ -5,12 +5,12 @@
 ** PresetMaterials
 */
 
-#include "RayTracer.hpp"
+#include "ConfigFileParser.hpp"
 
 namespace RayTracer {
 
     BuilderMap
-        RayTracer::_presetMaterialBuilders = {
+        ConfigFileParser::_presetMaterialBuilders = {
         {
             "Flat color",
             Material::Builder()

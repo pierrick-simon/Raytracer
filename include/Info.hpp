@@ -17,6 +17,7 @@ namespace RayTracer {
         Maths::Vector3D impactNormal;
         double hitDist = 0;
         Material material = Material::Builder().build();
+        std::optional<Maths::Color> textureColor; 
     };
 }
 

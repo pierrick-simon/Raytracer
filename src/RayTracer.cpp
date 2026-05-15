@@ -16,19 +16,11 @@
 
 namespace RayTracer {
     RayTracer::RayTracer(std::vector<std::string> args)
+        : _configFileParser(args)
     {
-        if (args.empty() || args.front() == HELP_FLAG) {
-            showHelp();
-            throw HelpException();
-        }
-        this->loadPrimitivePlugins();
-        this->loadLightPlugins();
-        auto const parser = ConfigFileParser(args.front(),
-            this->_primitivesPlugins, this->_lightsPlugins,
-            _presetMaterialBuilders);
-        _camera = parser.parseCamera();
-        _lights = parser.parseLights();
-        _objects = parser.parsePrimitives();
+        _camera = _configFileParser.parseCamera();
+        _lights = _configFileParser.parseLights();
+        _objects = _configFileParser.parsePrimitives();
         initVars(args);
         parseOptionalArgs(args);
     }
@@ -206,7 +198,7 @@ namespace RayTracer {
 
     Maths::Color RayTracer::parseLight(const Ray &ray, HitInfo &info)
     {
-        Maths::Color color(info.material.getColor() * _lights.getAmbient());
+        Maths::Color color(info.material.getColor(info) * _lights.getAmbient());
 
         for (auto &light : _lights.getLights()) {
             Ray lightRay;
@@ -252,7 +244,7 @@ namespace RayTracer {
 
         color = Maths::Color(color * info.material.getOpacity()
             + refractColor * (1 - info.material.getOpacity()));
-        return Maths::Color(color * info.material.getColor());
+        return Maths::Color(color * info.material.getColor(info));
     }
 
     std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray)
@@ -430,37 +422,5 @@ namespace RayTracer {
         if (pos != std::string::npos)
             _name.replace(pos, _name.length() - pos, "\0");
         args.get().erase(args.get().begin());
-    }
-
-    void RayTracer::loadPrimitivePlugins()
-    {
-        std::filesystem::path path(PLUGINS_FOLDER);
-
-        for (auto const &plugin : std::filesystem::directory_iterator(path)) {
-            if (!std::filesystem::is_regular_file(plugin))
-                continue;
-            DLLoader<IObjectPlugin> loader(plugin.path().string());
-
-            if (loader.getType() == LibType::PRIMITIVE) {
-                this->_primitivesPlugins.emplace_back(loader.getInstance());
-                this->_primitivesPluginsLoaders.emplace_back(std::move(loader));
-            }
-        }
-    }
-
-    void RayTracer::loadLightPlugins()
-    {
-        std::filesystem::path path(PLUGINS_FOLDER);
-
-        for (auto const &plugin : std::filesystem::directory_iterator(path)) {
-            if (!std::filesystem::is_regular_file(plugin))
-                continue;
-            DLLoader<ILightSourcePlugin> loader(plugin.path().string());
-
-            if (loader.getType() == LibType::LIGHT_SOURCE) {
-                this->_lightsPlugins.emplace_back(loader.getInstance());
-                this->_lightsPluginsLoaders.emplace_back(std::move(loader));
-            }
-        }
     }
 } // namespace RayTracer

@@ -110,6 +110,15 @@ namespace Maths {
         return *this;
     }
 
+    Color & Color::operator*=(const Color &other)
+    {
+        this->getR() *= other.getR();
+        this->getG() *= other.getG();
+        this->getB() *= other.getB();
+        this->getA() *= other.getA();
+        return *this;
+    }
+
     Color & Color::operator*=(const double &other)
     {
         this->getR() *= other;
@@ -176,5 +185,15 @@ namespace Maths {
         this->getB() = std::clamp(this->getB(), 0.0, 1.0);
         this->getA() = std::clamp(this->getA(), 0.0, 1.0);
         return *this;
+    }
+
+    Color Color::operator/(const double &other) const
+    {
+        return Color(
+            this->getR() / other,
+            this->getG() / other,
+            this->getB() / other,
+            this->getA() / other
+        );
     }
 } // Maths
