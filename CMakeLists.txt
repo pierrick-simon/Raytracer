@@ -90,6 +90,7 @@ add_subdirectory(plugins/primitive/raytracer_sphere)
 add_subdirectory(plugins/primitive/raytracer_plane)
 add_subdirectory(plugins/primitive/raytracer_pyramid)
 add_subdirectory(plugins/primitive/raytracer_cylinder)
+add_subdirectory(plugins/primitive/raytracer_models)
 
 add_custom_target(display
     DEPENDS raytracer_sfml)
