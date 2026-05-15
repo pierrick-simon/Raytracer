@@ -74,14 +74,7 @@ namespace RayTracer {
                 closeColors.push_back(getNextPix(copy, width, height, i , j));
             }
         }
-        Maths::Color color = Maths::Color::BLACK;
-        for (auto closeColor: closeColors) {
-            color.getX() += closeColor.getX();
-            color.getY() += closeColor.getY();
-            color.getZ() += closeColor.getZ();
-            color.getW() += closeColor.getW();
-        }
-        return color / static_cast<double>(closeColors.size());
+        return Maths::Color::mean(closeColors);
     }
 
     void PerlinNoise::smooth(PortablePixMap &map)

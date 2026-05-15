@@ -166,6 +166,28 @@ namespace RayTracer {
         }
     }
 
+    Maths::Color RayTracer::lunchRays(Maths::Vector2U idx, Maths::Vector2U res,
+        std::size_t scale, std::size_t maxDepth)
+    {
+        Maths::Vector2D v((1.0 / res.getX()) * idx.getX(), (1.0 / res.getY()) * idx.getY());
+        if (_anti_aliasing == 0 || scale != 1) {
+            Ray ray = _camera.ray(v);
+            return parseObject(ray, 0, maxDepth);
+        }
+
+        std::vector<Maths::Color> colorList;
+        Ray ray;
+        for (std::size_t i = 0; i < _anti_aliasing; ++i) {
+            for (std::size_t j = 0; j < _anti_aliasing; ++j) {
+                ray = _camera.ray(v + Maths::Vector2D(
+                    (1.0 / res.getX()) * (double(i) / _anti_aliasing),
+                    (1.0 / res.getY()) * (double(j) / _anti_aliasing)));
+                colorList.emplace_back(parseObject(ray, 0, maxDepth));
+            }
+        }
+        return Maths::Color::mean(colorList);
+    }
+
     void RayTracer::rayWorker(Maths::Vector2U start, Maths::Vector2U end,
         Maths::Vector2U res, std::size_t scale, std::size_t maxDepth)
     {
@@ -175,10 +197,8 @@ namespace RayTracer {
             if (_cancelRender.load(std::memory_order_relaxed))
                 return;
             for (std::size_t j = start.getY(); j < end.getY(); ++j) {
-                Maths::Vector2D v((1.0 / res.getX()) * i, (1.0 / res.getY()) * j);
-                Ray ray = _camera.ray(v);
-                auto color = parseObject(ray, 0, maxDepth);
-                rayWorkerBatch(scale, i, j, update, color);
+                rayWorkerBatch(scale, i, j, update,
+                    lunchRays(Maths::Vector2U(i, j), res, scale, maxDepth));
             }
         }
         updateRays(start, end, update);
@@ -390,6 +410,9 @@ namespace RayTracer {
     void RayTracer::parseOptionalArgs(std::vector<std::string> args)
     {
         try {
+            auto aa = ArgsParser::getArg<int>(args, "--antiAliasing");
+            if (aa.has_value())
+                _anti_aliasing = aa.value();
             auto libName = ArgsParser::getArg<std::string>(args, "--display");
             if (libName.has_value())
                 _displayLoader.emplace(libName.value());
@@ -401,7 +424,8 @@ namespace RayTracer {
             auto md = ArgsParser::getArg<int>(args, "--maxDepth");
             if (md.has_value())
                 _maxDepth = md.value();
-            if (!args.empty() || _nbScreenSplit <= 0 || _maxDepth <= 0)
+            if (!args.empty() || _nbScreenSplit <= 0 ||
+                _maxDepth <= 0 || _anti_aliasing < 0)
                 throw ArgsParserError();
             if (_displayLoader) {
                 _display = _displayLoader->getInstance();
@@ -425,4 +449,4 @@ namespace RayTracer {
             _name.replace(pos, _name.length() - pos, "\0");
         args.get().erase(args.get().begin());
     }
-} // namespace RayTracer
+}

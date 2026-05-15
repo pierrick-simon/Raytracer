@@ -7,7 +7,9 @@
 
 #ifndef COLOR_HPP
     #define COLOR_HPP
+    
     #include <limits>
+    #include <vector>
 
     #include "Vector.hpp"
 
@@ -67,6 +69,8 @@ namespace Maths {
         Color operator/(const double &other) const;
 
         Color &clamp();
+
+        static Color mean(std::vector<Color> colors);
 
         static const Color WHITE;
 
