@@ -5,15 +5,17 @@
 ** ${descriptor}
 */
 
+#include <utility>
+
 #include "RayTracer.hpp"
 #include "PrimitiveCylinder.hpp"
 
 namespace RayTracer {
     PrimitiveCylinder::PrimitiveCylinder(const Maths::Point3D &origin,
         double const radius, std::optional<double> const height,
-        Material const &material, std::optional<Texture> texture) :
+        Material material, std::optional<Texture> texture) :
         _origin(origin), _radius(radius),
-        _height(height), _material(material), _texture(texture)
+        _height(height), _material(std::move(material)), _texture(std::move(texture))
     {
     }
 
@@ -108,12 +110,8 @@ namespace RayTracer {
     {
         double ox = ray.origin.getX() - _origin.getX();
         double oy = ray.origin.getY() - _origin.getY();
-
-        double dx = ray.direction.getX();
-        double dy = ray.direction.getY();
-
-        double a = dx * dx + dy * dy;
-        double b = 2.0 * (ox * dx + oy * dy);
+        double a = ray.direction.getX() * ray.direction.getX() + ray.direction.getY() * ray.direction.getY();
+        double b = 2.0 * (ox * ray.direction.getX() + oy * ray.direction.getY());
         double c = ox * ox + oy * oy - _radius * _radius;
 
         double delta = b * b - 4.0 * a * c;
@@ -183,11 +181,8 @@ namespace RayTracer {
     {
         double ox = ray.origin.getX() - _origin.getX();
         double oy = ray.origin.getY() - _origin.getY();
-        double dx = ray.direction.getX();
-        double dy = ray.direction.getY();
-
-        double a = dx * dx + dy * dy;
-        double b = 2.0 * (ox * dx + oy * dy);
+        double a = ray.direction.getX() * ray.direction.getX() + ray.direction.getY() * ray.direction.getY();
+        double b = 2.0 * (ox * ray.direction.getX() + oy * ray.direction.getY());
         double c = ox * ox + oy * oy - _radius * _radius;
         double delta = b * b - 4.0 * a * c;
         bool hit = true;

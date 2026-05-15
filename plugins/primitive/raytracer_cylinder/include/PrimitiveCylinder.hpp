@@ -16,7 +16,7 @@ namespace RayTracer {
     class PrimitiveCylinder : public IObject {
     public:
         PrimitiveCylinder(const Maths::Point3D &origin, double radius,
-            std::optional<double> height, Material const &Material,
+            std::optional<double> height, Material Material,
             std::optional<Texture> texture = std::nullopt);
 
         std::optional<HitInfo> hits(const Ray &ray) override;
