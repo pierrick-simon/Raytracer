@@ -170,7 +170,7 @@ namespace RayTracer {
         std::size_t scale, std::size_t maxDepth)
     {
         Maths::Vector2D v((1.0 / res.getX()) * idx.getX(), (1.0 / res.getY()) * idx.getY());
-        if (_anti_aliasing == 0 || scale == 0) {
+        if (_anti_aliasing == 0 || scale != 1) {
             Ray ray = _camera.ray(v);
             return parseObject(ray, 0, maxDepth);
         }
