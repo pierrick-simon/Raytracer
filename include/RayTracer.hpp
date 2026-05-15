@@ -88,7 +88,7 @@ namespace RayTracer {
 
         Maths::Color hitColor(const Ray &ray, HitInfo &info,
             std::size_t depth, int maxDepth);
-        std::optional<HitInfo> getHitObject(Ray const &ray);
+        std::optional<HitInfo> getHitObject(Ray const &ray, bool nearest);
         double getSpecular(const Ray &ray,
             const Ray &lightRay, HitInfo &info);
         Maths::Color parseObject(const Ray &ray,

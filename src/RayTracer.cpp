@@ -208,7 +208,7 @@ namespace RayTracer {
             auto diffuse = lightRay.direction.dot(info.impactNormal);
             if (diffuse <= DOUBLE_OFFSET)
                 continue;
-            if (!getHitObject(lightRay)) {
+            if (!getHitObject(lightRay, false)) {
                 Maths::Color lightColor = light->getLightAmount(lightRay);
                 color += lightColor * (info.material.getDiffuse() * diffuse
                     * _lights.getDiffuse()
@@ -247,7 +247,7 @@ namespace RayTracer {
         return Maths::Color(color * info.material.getColor(info));
     }
 
-    std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray)
+    std::optional<HitInfo> RayTracer::getHitObject(Ray const &ray, bool nearest)
     {
         std::optional<HitInfo> closerHit = std::nullopt;
 
@@ -257,6 +257,8 @@ namespace RayTracer {
                 || hit->hitDist < closerHit->hitDist)
                 && ray.origin != hit->hitPos && hit->hitDist > DOUBLE_OFFSET)
                 closerHit = hit.value();
+            if (closerHit && !nearest)
+                break;
         }
         return closerHit;
     }
@@ -266,7 +268,7 @@ namespace RayTracer {
     {
         if (depth >= static_cast<std::size_t>(maxDepth))
             return Maths::Color::BLACK;
-        auto closerHit = getHitObject(ray);
+        auto closerHit = getHitObject(ray, true);
         if (closerHit)
             return hitColor(ray, *closerHit, depth, maxDepth);
         return Maths::Color::BLACK;
