@@ -74,13 +74,13 @@ namespace RayTracer {
     bool BoundingBox::updateIntersectionInterval(const Ray &ray, size_t axis,
         double &tmin, double &tmax) const
     {
-        if (std::abs(this->_min[axis]) <=
+        if (std::abs(ray.direction[axis]) <=
             std::numeric_limits<double>::epsilon()) {
             return ray.origin[axis] >= this->_min[axis]
                    && ray.origin[axis] <= this->_max[axis];
         }
 
-        double invDir = 1.0 / this->_min[axis];
+        double invDir = 1.0 / ray.direction[axis];
         double t0 = (this->_min[axis] - ray.origin[axis]) * invDir;
         double t1 = (this->_max[axis] - ray.origin[axis]) * invDir;
 

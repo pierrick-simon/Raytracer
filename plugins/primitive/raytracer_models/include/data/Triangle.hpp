@@ -20,16 +20,17 @@
 namespace RayTracer {
     class Triangle {
     public:
-        Triangle() = default;
-        Triangle(const Maths::Point3D &a, const Maths::Point3D &b,
-            const Maths::Point3D &c,
+
+        Triangle(const std::array<const Maths::Point3D, 3> &points,
+            const Material &material,
             std::optional<std::reference_wrapper<const Texture>> texture,
             std::optional<std::array<Maths::Vector3D, 3>> texCoords);
 
-        const std::array<Maths::Point3D, 3> &getPoints() const noexcept;
+        std::optional<Maths::Color> getTextureColor(
+            const Maths::Vector2D &uvPos) const;
 
-        std::optional<HitInfo> createHitInfo(const Ray &ray, double u, double v,
-            double t) const;
+        std::optional<HitInfo> createHitInfo(const Ray &ray,
+            double t, const Maths::Vector2D &uvPos) const;
 
         const std::optional<std::array<Maths::Vector3D, 3>> &
         getTexCoords() const noexcept
@@ -40,9 +41,10 @@ namespace RayTracer {
         std::optional<HitInfo> hits(const Ray &ray) const;
 
     private:
-        std::array<Maths::Point3D, 3> _points;
+        std::array<const Maths::Point3D, 3> _points;
         std::optional<std::reference_wrapper<const Texture>> _texture;
         std::optional<std::array<Maths::Vector3D, 3>> _texCoords;
+        Material _material;
         const Maths::Vector3D _ab;
         const Maths::Vector3D _ac;
     };

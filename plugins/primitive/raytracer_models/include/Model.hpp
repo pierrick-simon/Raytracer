@@ -55,6 +55,10 @@ namespace RayTracer {
 
         void validateFace(FaceIndex &index) const;
 
+        std::array<const Maths::Point3D, 3> createTrianglePoints(
+            const std::vector<FaceIndex> &indices,
+            const std::array<unsigned long, 3> &tri) const;
+
         void triangulateFace(Face face);
 
         Material buildCurrentMaterial() const;

@@ -30,8 +30,9 @@ namespace RayTracer {
 
         std::string toLower(std::string value)
         {
-            for (char &ch : value)
-                ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+            for (char &ch: value)
+                ch = static_cast<char>(std::tolower(
+                    static_cast<unsigned char>(ch)));
             return value;
         }
 
@@ -75,7 +76,6 @@ namespace RayTracer {
             auto hit = triangle.hits(ray);
             if (!hit)
                 continue;
-            hit->material = this->_material;
             if (!bestHit || hit->hitDist < bestHit->hitDist)
                 bestHit = hit;
         }
@@ -119,48 +119,6 @@ namespace RayTracer {
         if (!line.eof())
             throw std::invalid_argument("Invalid vertex texture line");
         this->_texturesPos.push_back(newVertex);
-    }
-
-    void Model::addFace(std::istringstream &line)
-    {
-        Face face;
-
-        line >> face;
-        if (!line.eof() || line.bad() || face.getIndices().size() < 3)
-            throw std::invalid_argument("Invalid face line");
-
-        for (auto &index: face.getIndices())
-            this->validateFace(index);
-        triangulateFace(face);
-    }
-
-    void Model::addMaterialLibrary(std::istringstream &line)
-    {
-        std::string filename;
-        bool hasFilename = false;
-
-        while (line >> filename) {
-            hasFilename = true;
-            std::filesystem::path materialPath = filename;
-            if (!this->_sourcePath.empty())
-                materialPath = this->_sourcePath.parent_path() / materialPath;
-            this->_materialLibrary.parseFile(materialPath.string());
-        }
-        if (!hasFilename)
-            throw std::invalid_argument("Invalid mtllib line");
-    }
-
-    void Model::useMaterial(std::istringstream &line)
-    {
-        std::string name;
-
-        line >> name;
-        if (!line)
-            throw std::invalid_argument("Invalid usemtl line");
-        line >> std::ws;
-        if (!line.eof())
-            throw std::invalid_argument("Invalid usemtl line");
-        this->_currentMaterialName = name;
     }
 
     int Model::normalizeIndex(int index, int size) noexcept
@@ -216,6 +174,18 @@ namespace RayTracer {
             throw std::invalid_argument("Face normal index out of range");
     }
 
+    std::array<const Maths::Point3D, 3> Model::createTrianglePoints(
+        const std::vector<FaceIndex> &indices,
+        const std::array<unsigned long, 3> &tri) const
+    {
+        std::array<const Maths::Point3D, 3> points = {
+            toPoint(this->_vertices[indices[tri[0]].v], this->_pos),
+            toPoint(this->_vertices[indices[tri[1]].v], this->_pos),
+            toPoint(this->_vertices[indices[tri[2]].v], this->_pos),
+        };
+        return points;
+    }
+
     void Model::triangulateFace(Face face)
     {
         auto polygon = buildPolygonPoints(face.getIndices(), this->_vertices);
@@ -234,12 +204,9 @@ namespace RayTracer {
 
             if (texCoords)
                 texture = this->buildCurrentTexture();
-
-            const Maths::Point3D a = toPoint(this->_vertices[indices[tri[0]].v], this->_pos);
-            const Maths::Point3D b = toPoint(this->_vertices[indices[tri[1]].v], this->_pos);
-            const Maths::Point3D c = toPoint(this->_vertices[indices[tri[2]].v], this->_pos);
-
-            this->_triangles.emplace_back(a, b, c, texture, texCoords);
+            auto points = createTrianglePoints(indices, tri);
+            this->_triangles.emplace_back(points, this->buildCurrentMaterial(),
+                texture, texCoords);
         }
     }
 
@@ -315,8 +282,8 @@ namespace RayTracer {
         return this->getOrLoadTexture(*path);
     }
 
-    std::optional<std::array<Maths::Vector3D, 3>>
-    Model::buildTriangleTexCoords(const std::vector<FaceIndex> &indices,
+    std::optional<std::array<Maths::Vector3D, 3>> Model::buildTriangleTexCoords(
+        const std::vector<FaceIndex> &indices,
         const std::array<size_t, 3> &tri) const
     {
         if (indices[tri[0]].vt < 0 || indices[tri[1]].vt < 0
@@ -333,6 +300,48 @@ namespace RayTracer {
             Maths::Vector3D{vt2[0], vt2[1], vt2[2]}
         };
         return coords;
+    }
+
+    void Model::addFace(std::istringstream &line)
+    {
+        Face face;
+
+        line >> face;
+        if (!line.eof() || line.bad() || face.getIndices().size() < 3)
+            throw std::invalid_argument("Invalid face line");
+
+        for (auto &index: face.getIndices())
+            this->validateFace(index);
+        triangulateFace(face);
+    }
+
+    void Model::addMaterialLibrary(std::istringstream &line)
+    {
+        std::string filename;
+        bool hasFilename = false;
+
+        while (line >> filename) {
+            hasFilename = true;
+            std::filesystem::path materialPath = filename;
+            if (!this->_sourcePath.empty())
+                materialPath = this->_sourcePath.parent_path() / materialPath;
+            this->_materialLibrary.parseFile(materialPath.string());
+        }
+        if (!hasFilename)
+            throw std::invalid_argument("Invalid mtllib line");
+    }
+
+    void Model::useMaterial(std::istringstream &line)
+    {
+        std::string name;
+
+        line >> name;
+        if (!line)
+            throw std::invalid_argument("Invalid usemtl line");
+        line >> std::ws;
+        if (!line.eof())
+            throw std::invalid_argument("Invalid usemtl line");
+        this->_currentMaterialName = name;
     }
 
     const std::unordered_map<std::string, void (Model::*)(

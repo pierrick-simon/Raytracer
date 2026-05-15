@@ -6,7 +6,6 @@
 */
 
 #include <utility>
-#include <iostream>
 
 #include "data/Triangle.hpp"
 
@@ -15,42 +14,46 @@ namespace RayTracer {
         constexpr double EPSILON = 0.0000001;
     }
 
-    Triangle::Triangle(const Maths::Point3D &a, const Maths::Point3D &b,
-        const Maths::Point3D &c,
+    Triangle::Triangle(const std::array<const Maths::Point3D, 3> &points,
+        const Material &material,
         std::optional<std::reference_wrapper<const Texture>> texture,
         std::optional<std::array<Maths::Vector3D, 3>> texCoords) :
-        _points{a, b, c},
+        _points{points},
         _texture(texture),
         _texCoords(std::move(texCoords)),
-        _ab(b - a),
-        _ac(c - a)
+        _material(material),
+        _ab(points[1] - points[0]),
+        _ac(points[2] - points[0])
     {
     }
 
-    const std::array<Maths::Point3D, 3> &Triangle::getPoints() const noexcept
+    std::optional<Maths::Color> Triangle::getTextureColor(const Maths::Vector2D &uvPos) const
     {
-        return _points;
+        std::optional<Maths::Color> color;
+        if (_texture && _texCoords) {
+            double w = 1.0 - uvPos[0] - uvPos[1];
+            auto &coords = _texCoords.value();
+            Maths::Vector2D uv(
+                coords[0].getX() * w + coords[1].getX() * uvPos[0]
+                    + coords[2].getX() * uvPos[1],
+                coords[0].getY() * w + coords[1].getY() * uvPos[0]
+                    + coords[2].getY() * uvPos[1]
+            );
+            color = _texture->get().getColor(uv, false);
+        }
+        return color;
     }
 
-    std::optional<HitInfo> Triangle::createHitInfo(const Ray &ray, double u,
-        double v, double t) const
+    std::optional<HitInfo> Triangle::createHitInfo(const Ray &ray,
+        double t, const Maths::Vector2D &uvPos) const
     {
         HitInfo hit;
 
         hit.hitPos = ray.origin + ray.direction * t;
         hit.hitDist = t;
         hit.impactNormal = _ab.crossProduct(_ac).normalized();
-        if (_texture && _texCoords) {
-            double w = 1.0 - u - v;
-            auto &coords = _texCoords.value();
-            Maths::Vector2D uv(
-                coords[0].getX() * w + coords[1].getX() * u
-                    + coords[2].getX() * v,
-                coords[0].getY() * w + coords[1].getY() * u
-                    + coords[2].getY() * v
-            );
-            hit.textureColor = _texture->get().getColor(uv, false);
-        }
+        hit.textureColor = this->getTextureColor(uvPos);
+        hit.material = _material;
         return hit;
     }
 
@@ -75,6 +78,6 @@ namespace RayTracer {
         const double t = _ac.dot(qvec) * invDet;
         if (t <= EPSILON)
             return std::nullopt;
-        return createHitInfo(ray, u, v, t);
+        return createHitInfo(ray, t, Maths::Vector2D{u, v});
     }
 } // RayTracer
