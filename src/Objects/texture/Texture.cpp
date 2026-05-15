@@ -12,7 +12,7 @@ namespace RayTracer {
     {
     }
 
-    Texture::Texture(PortablePixMap ppm) : _ppm(ppm)
+    Texture::Texture(PortablePixMap ppm) : _ppm(std::move(ppm))
     {
     }
 

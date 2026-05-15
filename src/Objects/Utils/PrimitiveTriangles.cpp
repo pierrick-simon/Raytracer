@@ -30,12 +30,9 @@ namespace RayTracer {
         hit.material = _material;
         if (_texture) {
             double w = 1.0 - uv.getX() - uv.getY();
-            Maths::Vector2D uvA(1.0, 1.0);
-            Maths::Vector2D uvC(0.5, 0.0);
-            Maths::Vector2D uvB(0.0, 1.0);
             auto tmp = Maths::Vector2D(
-                uvA.getX() * w + uvB.getX() * uv.getX() + uvC.getX() * uv.getY(),
-                uvA.getY() * w + uvB.getY() * uv.getX() + uvC.getY() * uv.getY()
+                _uvA.getX() * w + _uvB.getX() * uv.getX() + _uvC.getX() * uv.getY(),
+                _uvA.getY() * w + _uvB.getY() * uv.getX() + _uvC.getY() * uv.getY()
             );
             hit.textureColor = _texture->getColor(tmp, false);
         }
@@ -76,4 +73,8 @@ namespace RayTracer {
         
         return rayTriangleMollerTrumboreAlgo(ray, AB, AC, h);
     }
+
+    const Maths::Vector2D PrimitiveTriangle::_uvA = Maths::Vector2D(1.0, 1.0);
+    const Maths::Vector2D PrimitiveTriangle::_uvB = Maths::Vector2D(0.0, 1.0);
+    const Maths::Vector2D PrimitiveTriangle::_uvC = Maths::Vector2D(0.5, 0.0);
 }

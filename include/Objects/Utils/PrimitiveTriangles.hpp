@@ -35,6 +35,10 @@ namespace RayTracer {
         Maths::Point3D _c;
         Material _material;
         std::optional<Texture> _texture;
+
+        static const Maths::Vector2D _uvA;
+        static const Maths::Vector2D _uvB;
+        static const Maths::Vector2D _uvC;
     };
 }
 
