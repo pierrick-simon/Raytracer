@@ -86,16 +86,17 @@ add_custom_target(tests_run
 
 list(TRANSFORM SRCS PREPEND ${CMAKE_SOURCE_DIR}/)
 
-add_subdirectory(plugins/display/raytracer_sfml)
-add_subdirectory(plugins/primitive/raytracer_sphere)
-add_subdirectory(plugins/primitive/raytracer_plane)
-add_subdirectory(plugins/primitive/raytracer_pyramid)
-add_subdirectory(plugins/primitive/raytracer_cylinder)
-add_subdirectory(plugins/primitive/raytracer_cone)
-add_subdirectory(plugins/primitive/raytracer_models)
+add_subdirectory(plugins/display/raytracer_sfml EXCLUDE_FROM_ALL)
 
 add_custom_target(display
     DEPENDS raytracer_sfml)
+
+add_subdirectory(plugins/primitive/raytracer_sphere EXCLUDE_FROM_ALL)
+add_subdirectory(plugins/primitive/raytracer_plane EXCLUDE_FROM_ALL)
+add_subdirectory(plugins/primitive/raytracer_pyramid EXCLUDE_FROM_ALL)
+add_subdirectory(plugins/primitive/raytracer_cylinder EXCLUDE_FROM_ALL)
+add_subdirectory(plugins/primitive/raytracer_cone EXCLUDE_FROM_ALL)
+add_subdirectory(plugins/primitive/raytracer_models EXCLUDE_FROM_ALL)
 
 add_custom_target(primitives
     DEPENDS raytracer_sphere
@@ -104,15 +105,15 @@ add_custom_target(primitives
         raytracer_cylinder
         raytracer_cone)
 
-add_subdirectory(plugins/light/raytracer_point_light)
-add_subdirectory(plugins/light/raytracer_spot_light)
+add_subdirectory(plugins/light/raytracer_point_light EXCLUDE_FROM_ALL)
+add_subdirectory(plugins/light/raytracer_spot_light EXCLUDE_FROM_ALL)
 
 add_custom_target(lights
         DEPENDS raytracer_point_light
             raytracer_spot_light)
 
-add_subdirectory(plugins/textureGeneration/raytracer_chessboard)
-add_subdirectory(plugins/textureGeneration/raytracer_perlinnoise)
+add_subdirectory(plugins/textureGeneration/raytracer_chessboard EXCLUDE_FROM_ALL)
+add_subdirectory(plugins/textureGeneration/raytracer_perlinnoise EXCLUDE_FROM_ALL)
 
 add_custom_target(textureGenerations
     DEPENDS raytracer_chessboard raytracer_perlinnoise)
