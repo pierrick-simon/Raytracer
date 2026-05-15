@@ -64,6 +64,8 @@ namespace Maths {
 
         Color &operator+=(const Vector &other);
 
+        Color operator/(const double &other) const;
+
         Color &clamp();
 
         static const Color WHITE;

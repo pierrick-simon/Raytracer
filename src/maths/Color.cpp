@@ -186,4 +186,14 @@ namespace Maths {
         this->getA() = std::clamp(this->getA(), 0.0, 1.0);
         return *this;
     }
+
+    Color Color::operator/(const double &other) const
+    {
+        return Color(
+            this->getR() / other,
+            this->getG() / other,
+            this->getB() / other,
+            this->getA() / other
+        );
+    }
 } // Maths
