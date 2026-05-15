@@ -90,6 +90,7 @@ add_subdirectory(plugins/primitive/raytracer_sphere)
 add_subdirectory(plugins/primitive/raytracer_plane)
 add_subdirectory(plugins/primitive/raytracer_pyramid)
 add_subdirectory(plugins/primitive/raytracer_cylinder)
+add_subdirectory(plugins/primitive/raytracer_cone)
 add_subdirectory(plugins/primitive/raytracer_models)
 
 add_custom_target(display
@@ -99,7 +100,8 @@ add_custom_target(primitives
     DEPENDS raytracer_sphere
         raytracer_plane
         raytracer_pyramid
-        raytracer_cylinder)
+        raytracer_cylinder
+        raytracer_cone)
 
 add_subdirectory(plugins/light/raytracer_point_light)
 add_subdirectory(plugins/light/raytracer_spot_light)

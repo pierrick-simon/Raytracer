@@ -5,21 +5,21 @@
 ** DESCRIPTION
 */
 
-#ifndef CYLINDERPLUGIN_HPP
-    #define CYLINDERPLUGIN_HPP
+#ifndef CONEPLUGIN_HPP
+    #define CONEPLUGIN_HPP
     #include "IObjectPlugin.hpp"
 
 namespace RayTracer {
-    class CylinderPlugin : public IObjectPlugin {
+    class ConePlugin : public IObjectPlugin {
     public:
         const std::string_view &getObjectsTypeName() override;
 
         std::unique_ptr<IObject> parseObject(
-            libconfig::Setting const &element, BuilderMap &,
-            TextureGenerationMap &) override;
+        libconfig::Setting const &, BuilderMap &,
+        TextureGenerationMap &) override;
 
     private:
-        static constexpr std::string_view CYLINDER_TYPE_NAME = "cylinders";
+        static constexpr std::string_view CONE_TYPE_NAME = "cones";
     };
 } // RayTracer
 
