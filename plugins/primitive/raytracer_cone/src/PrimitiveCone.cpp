@@ -127,15 +127,16 @@ namespace RayTracer {
     Maths::Vector3D PrimitiveCone::coneNormal(Maths::Point3D const &hitPos) const
     {
         Maths::Vector3D diff = hitPos - _origin;
-
+        Maths::Vector3D result;
         if (_height.has_value() && diff.getZ() <= DOUBLE_OFFSET)
-            return Maths::Vector3D{0, 0, -1};
-
-        double k = _height.has_value()
-            ? (_radius / _height.value()) * (_radius / _height.value()) : 1.0;
-
-        Maths::Vector3D normal{diff.getX(), diff.getY(), -k * diff.getZ()};
-        return normal.normalized();
+            result = Maths::Vector3D{0, 0, -1};
+        else {
+            double k = _height.has_value()
+                ? (_radius / _height.value()) * (_radius / _height.value()) : 1.0;
+            Maths::Vector3D normal{diff.getX(), diff.getY(), -k * diff.getZ()};
+            result = normal.normalized();
+        }
+        return result;;
     }
 
     HitInfo PrimitiveCone::fillHitInfo(const Ray &ray, double t) const
