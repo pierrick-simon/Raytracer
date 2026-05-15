@@ -10,12 +10,14 @@
     #include "IObject.hpp"
     #include "Material.hpp"
     #include "Vector.hpp"
+    #include "Texture.hpp"
 
 namespace RayTracer {
     class PrimitiveCylinder : public IObject {
     public:
         PrimitiveCylinder(const Maths::Point3D &origin, double radius,
-            std::optional<double> height, Material const &Material);
+            std::optional<double> height, Material const &Material,
+            std::optional<Texture> texture = std::nullopt);
 
         std::optional<HitInfo> hits(const Ray &ray) override;
         HitInfo fillHitInfo(const Ray &ray, double t) const;
@@ -46,6 +48,7 @@ namespace RayTracer {
         double _radius;
         std::optional<double> _height;
         Material _material;
+        std::optional<Texture> _texture;
     };
 };
 

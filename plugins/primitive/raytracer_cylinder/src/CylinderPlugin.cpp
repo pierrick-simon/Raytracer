@@ -33,6 +33,7 @@ namespace RayTracer {
             h = ParserUtils::parseDouble(element, "h");
         else
             h = std::nullopt;
-        return std::make_unique<PrimitiveCylinder>(origin, r, h, mat);
+        return std::make_unique<PrimitiveCylinder>(origin, r, h, mat, 
+            ParserUtils::parseTexture(element, texture));
     }
 }
