@@ -9,20 +9,20 @@
 
 namespace RayTracer {
     Pyramid::Pyramid(const Maths::Point3D &origin,
-        double height, double width, double length,
+        Maths::Vector2D size, double length,
         Material material, std::optional<Texture> texture) :
         _origin(origin),
-        _height(height),
-        _width(width),
+        _height(size.getX()),
+        _width(size.getY()),
         _length(length),
         _material(material),
         _texture(texture)
     {
-        Maths::Point3D apex(origin.getX(), origin.getY(), origin.getZ() + height);
-        Maths::Point3D A(origin.getX() - width / 2, origin.getY() - length / 2, origin.getZ());
-        Maths::Point3D B(origin.getX() + width / 2, origin.getY() - length / 2, origin.getZ());
-        Maths::Point3D C(origin.getX() + width / 2, origin.getY() + length / 2, origin.getZ());
-        Maths::Point3D D(origin.getX() - width / 2, origin.getY() + length / 2, origin.getZ());
+        Maths::Point3D apex(origin.getX(), origin.getY(), origin.getZ() + _height);
+        Maths::Point3D A(origin.getX() - _width / 2, origin.getY() - length / 2, origin.getZ());
+        Maths::Point3D B(origin.getX() + _width / 2, origin.getY() - length / 2, origin.getZ());
+        Maths::Point3D C(origin.getX() + _width / 2, origin.getY() + length / 2, origin.getZ());
+        Maths::Point3D D(origin.getX() - _width / 2, origin.getY() + length / 2, origin.getZ());
 
         _pyramid = TriangleShape({
             PrimitiveTriangle(A, B, apex, material, _texture),

@@ -15,8 +15,8 @@
 namespace RayTracer {
     class Pyramid : public IObject {
     public:
-        Pyramid(const Maths::Point3D &origin, double height,
-            double width, double length, Material material,
+        Pyramid(const Maths::Point3D &origin, Maths::Vector2D size,
+            double length, Material material,
             std::optional<Texture> texture = std::nullopt);
 
         std::optional<HitInfo> hits(Ray const &ray) override;
