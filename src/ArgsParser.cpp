@@ -8,15 +8,17 @@
 #include "ArgsParser.hpp"
 
 namespace RayTracer {
-    bool isArg(
+    bool ArgsParser::isArg(
         std::reference_wrapper<std::vector<std::string>> args, std::string flag)
     {
+        bool ret = false;
         for (auto arg = args.get().begin(); arg != args.get().end(); ++arg) {
             if (*arg == flag) {
                 args.get().erase(arg);
-                return true;
+                ret = true;
+                break;
             }
         }
-        return false;
+        return ret;
     }
 }

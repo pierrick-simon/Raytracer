@@ -27,16 +27,7 @@ namespace RayTracer {
     public:
         
         static bool isArg(
-            std::reference_wrapper<std::vector<std::string>> args, std::string flag)
-        {
-            for (auto arg = args.get().begin(); arg != args.get().end(); ++arg) {
-                if (*arg == flag) {
-                    args.get().erase(arg);
-                    return true;
-                }
-            }
-            return false;
-        }
+            std::reference_wrapper<std::vector<std::string>> args, std::string flag);
 
         template<typename T>
         static std::optional<T> getArg(
