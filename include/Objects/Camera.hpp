@@ -33,6 +33,9 @@ namespace RayTracer {
             [[nodiscard]] Maths::Vector2U getResolution() const noexcept;
             [[nodiscard]] Maths::Point3D getPosition() const noexcept;
             [[nodiscard]] Maths::Quaternion getRotation() const noexcept;
+            [[nodiscard]] Maths::Vector3D forward() const noexcept;
+            [[nodiscard]] Maths::Vector3D right() const noexcept;
+            [[nodiscard]] Maths::Vector3D up() const noexcept;
         private:
             Maths::Vector2U _resolution;
             std::size_t _nbPix;

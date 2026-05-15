@@ -308,17 +308,17 @@ namespace RayTracer {
         auto pos = _camera.getPosition();
 
         if (action == Action::Z)
-            pos.getX() += 1;
+            pos += _camera.forward();
         if (action == Action::S)
-            pos.getX() -= 1;
+            pos -= _camera.forward();
         if (action == Action::D)
-            pos.getY() += 1;
+            pos += _camera.right();
         if (action == Action::Q)
-            pos.getY() -= 1;
+            pos -= _camera.right();
         if (action == Action::X)
-            pos.getZ() += 1;
+            pos += _camera.up();
         if (action == Action::W)
-            pos.getZ() -= 1;
+            pos -= _camera.up();
         bool changed = (pos != _camera.getPosition());
         _camera.setPosition(pos);
         return changed;
@@ -341,7 +341,7 @@ namespace RayTracer {
         if (action == Action::Left)
             rotation *= Maths::Quaternion::fromEulerDegrees(0, 0, -1);
         bool changed = (rotation != _camera.getRotation());
-        _camera.setRotation(rotation);
+        _camera.setRotation(rotation.normalize());
         _camera.updateCamera();
         return changed;
     }
