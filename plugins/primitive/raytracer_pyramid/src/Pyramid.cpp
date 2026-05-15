@@ -10,11 +10,13 @@
 namespace RayTracer {
     Pyramid::Pyramid(const Maths::Point3D &origin,
         double height, double width, double length,
-        Material material) : _origin(origin),
+        Material material, std::optional<Texture> texture) :
+        _origin(origin),
         _height(height),
         _width(width),
         _length(length),
-        _material(material)
+        _material(material),
+        _texture(texture)
     {
         Maths::Point3D apex(origin.getX(), origin.getY(), origin.getZ() + height);
         Maths::Point3D A(origin.getX() - width / 2, origin.getY() - length / 2, origin.getZ());
@@ -23,12 +25,12 @@ namespace RayTracer {
         Maths::Point3D D(origin.getX() - width / 2, origin.getY() + length / 2, origin.getZ());
 
         _pyramid = TriangleShape({
-            PrimitiveTriangle(A, B, apex, material),
-            PrimitiveTriangle(B, C, apex, material),
-            PrimitiveTriangle(C, D, apex, material),
-            PrimitiveTriangle(D, A, apex, material),
-            PrimitiveTriangle(A, C, B, material),
-            PrimitiveTriangle(A, D, C, material),
+            PrimitiveTriangle(A, B, apex, material, _texture),
+            PrimitiveTriangle(B, C, apex, material, _texture),
+            PrimitiveTriangle(C, D, apex, material, _texture),
+            PrimitiveTriangle(D, A, apex, material, _texture),
+            PrimitiveTriangle(A, C, B, material, _texture),
+            PrimitiveTriangle(A, D, C, material, _texture),
         });
     }
 

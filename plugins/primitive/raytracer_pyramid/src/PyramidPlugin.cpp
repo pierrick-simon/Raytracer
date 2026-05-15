@@ -17,8 +17,9 @@ namespace RayTracer {
         return TRIANGLE_TYPE_NAME;
     }
 
-    std::unique_ptr<IObject> PyramidPlugin::parsePyramid(
-        libconfig::Setting const &element, BuilderMap &builders)
+    std::unique_ptr<IObject> PyramidPlugin::parseObject(
+        libconfig::Setting const &element, BuilderMap &builders,
+        TextureGenerationMap &texture)
     {
         double h = 0;
         double w = 0;
@@ -32,13 +33,8 @@ namespace RayTracer {
         element.lookupValue("w", w);
         element.lookupValue("l", l);
 
-        return std::make_unique<Pyramid>(origin, h, w, l, mat);
-    }
-
-    std::unique_ptr<IObject> PyramidPlugin::parseObject(libconfig::Setting const &element, BuilderMap &builders,
-        TextureGenerationMap &texture)
-    {
-        return parsePyramid(element, builders);
+        return std::make_unique<Pyramid>(origin, h, w, l, mat,
+            ParserUtils::parseTexture(element, texture));
     }
 
 } // RayTracer
