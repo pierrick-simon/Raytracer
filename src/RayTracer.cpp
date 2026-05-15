@@ -328,17 +328,17 @@ namespace RayTracer {
     {
         auto rotation = _camera.getRotation();
 
-        if (action == Action::Up)
-            rotation *= Maths::Quaternion::fromEulerDegrees(0,  1, 0);
         if (action == Action::Down)
+            rotation *= Maths::Quaternion::fromEulerDegrees(0,  1, 0);
+        if (action == Action::Up)
             rotation *= Maths::Quaternion::fromEulerDegrees(0, -1, 0);
-        if (action == Action::Right)
-            rotation *= Maths::Quaternion::fromEulerDegrees( 1, 0, 0);
-        if (action == Action::Left)
-            rotation *= Maths::Quaternion::fromEulerDegrees(-1, 0, 0);
-        if (action == Action::E)
-            rotation *= Maths::Quaternion::fromEulerDegrees(0, 0,  1);
         if (action == Action::A)
+            rotation *= Maths::Quaternion::fromEulerDegrees( 1, 0, 0);
+        if (action == Action::E)
+            rotation *= Maths::Quaternion::fromEulerDegrees(-1, 0, 0);
+        if (action == Action::Right)
+            rotation *= Maths::Quaternion::fromEulerDegrees(0, 0,  1);
+        if (action == Action::Left)
             rotation *= Maths::Quaternion::fromEulerDegrees(0, 0, -1);
         bool changed = (rotation != _camera.getRotation());
         _camera.setRotation(rotation);
