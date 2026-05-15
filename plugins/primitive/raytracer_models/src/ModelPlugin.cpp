@@ -17,7 +17,7 @@ namespace RayTracer {
     }
 
     std::unique_ptr<IObject> ModelPlugin::parseObject(
-        libconfig::Setting const &element, BuilderMap &map)
+        libconfig::Setting const &element, BuilderMap &map, TextureGenerationMap &)
     {
         std::cout << "Loading model..." << std::endl;
         Maths::Point3D origin = ParserUtils::parsePoint3D(element);
