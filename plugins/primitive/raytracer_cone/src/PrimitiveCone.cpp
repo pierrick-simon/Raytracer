@@ -13,8 +13,9 @@
 namespace RayTracer {
     PrimitiveCone::PrimitiveCone(const Maths::Point3D &origin,
         double const radius, std::optional<double> const height,
-        Material Material) : _origin(origin), _radius(radius),
-        _height(height), _material(std::move(Material))
+        Material material, std::optional<Texture> texture) : _origin(origin),
+          _radius(radius), _height(height), _material(std::move(material)),
+          _texture(std::move(texture))
     {
     }
     std::optional<HitInfo> PrimitiveCone::hitsInfinite(Ray const &ray) const
@@ -51,7 +52,7 @@ namespace RayTracer {
     }
 
     bool PrimitiveCone::getSlideBestT(std::optional<double> &bestT,
-    double t, double hitZ) const
+        double t, double hitZ) const
     {
         bool result = false;
 
@@ -61,38 +62,6 @@ namespace RayTracer {
             result = true;
         }
         return result;
-    }
-
-    std::optional<double> PrimitiveCone::hitSlide(Ray const &ray,
-        Maths::Vector3D diff,
-        double a, double b, double delta) const
-    {
-        std::optional<double> bestT = std::nullopt;
-        double sqrtDelta = sqrt(delta);
-        for (double const t: {
-                 (-b - sqrtDelta) / (2.0 * a),
-                 (-b + sqrtDelta) / (2.0 * a)
-             }) {
-            if (t < DOUBLE_OFFSET)
-                continue;
-            double hitZ = diff.getZ() + ray.direction.getZ() * t;
-            if (getSlideBestT(bestT, t, hitZ))
-                break;
-        }
-        return bestT;
-    }
-
-    void PrimitiveCone::hitCap(Ray const &ray, Maths::Vector3D diff,
-        std::optional<double> &bestT) const
-    {
-        if (std::abs(ray.direction.getZ()) > DOUBLE_OFFSET) {
-            double t = -diff.getZ() / ray.direction.getZ();
-            if (t > DOUBLE_OFFSET) {
-                double hx = diff.getX() + ray.direction.getX() * t;
-                double hy = diff.getY() + ray.direction.getY() * t;
-                getBottomCapBestT(bestT, t, hx, hy);
-            }
-        }
     }
 
     std::optional<HitInfo> PrimitiveCone::hitsCone(Ray const &ray) const
@@ -137,6 +106,38 @@ namespace RayTracer {
             result = normal.normalized();
         }
         return result;;
+    }
+
+    std::optional<double> PrimitiveCone::hitSlide(Ray const &ray,
+        Maths::Vector3D diff,
+        double a, double b, double delta) const
+    {
+        std::optional<double> bestT = std::nullopt;
+        double sqrtDelta = sqrt(delta);
+        for (double const t: {
+                 (-b - sqrtDelta) / (2.0 * a),
+                 (-b + sqrtDelta) / (2.0 * a)
+             }) {
+            if (t < DOUBLE_OFFSET)
+                continue;
+            double hitZ = diff.getZ() + ray.direction.getZ() * t;
+            if (getSlideBestT(bestT, t, hitZ))
+                break;
+        }
+        return bestT;
+    }
+
+    void PrimitiveCone::hitCap(Ray const &ray, Maths::Vector3D diff,
+        std::optional<double> &bestT) const
+    {
+        if (std::abs(ray.direction.getZ()) > DOUBLE_OFFSET) {
+            double t = -diff.getZ() / ray.direction.getZ();
+            if (t > DOUBLE_OFFSET) {
+                double hx = diff.getX() + ray.direction.getX() * t;
+                double hy = diff.getY() + ray.direction.getY() * t;
+                getBottomCapBestT(bestT, t, hx, hy);
+            }
+        }
     }
 
     HitInfo PrimitiveCone::fillHitInfo(const Ray &ray, double t) const

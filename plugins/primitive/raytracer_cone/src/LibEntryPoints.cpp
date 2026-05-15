@@ -5,7 +5,6 @@
 ** ${descriptor}
 */
 
-#include "IObjectPlugin.hpp"
 #include "RayTracer.hpp"
 #include "ConePlugin.hpp"
 

@@ -15,7 +15,8 @@ namespace RayTracer {
         const std::string_view &getObjectsTypeName() override;
 
         std::unique_ptr<IObject> parseObject(
-            libconfig::Setting const &, BuilderMap &, TextureGenerationMap &) override;
+            libconfig::Setting const &element, BuilderMap &,
+            TextureGenerationMap &) override;
 
     private:
         static constexpr std::string_view CYLINDER_TYPE_NAME = "cylinders";

@@ -15,7 +15,8 @@ namespace RayTracer {
         const std::string_view &getObjectsTypeName() override;
 
         std::unique_ptr<IObject> parseObject(
-            libconfig::Setting const &, BuilderMap &) override;
+        libconfig::Setting const &, BuilderMap &,
+        TextureGenerationMap &) override;
 
     private:
         static constexpr std::string_view CONE_TYPE_NAME = "cones";
