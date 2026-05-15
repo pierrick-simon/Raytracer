@@ -20,17 +20,13 @@ namespace RayTracer {
     std::unique_ptr<IObject> PyramidPlugin::parsePyramid(
         libconfig::Setting const &element, BuilderMap &builders)
     {
-        double h = 0;
-        double w = 0;
-        double l = 0;
-
         std::cout << "Loading pyramids..." << std::endl;
 
         Maths::Point3D origin = ParserUtils::parseVector3D(element["origin"]);
         Material mat = ParserUtils::getBuilder(element, builders).build();
-        element.lookupValue("h", h);
-        element.lookupValue("w", w);
-        element.lookupValue("l", l);
+        double h = ParserUtils::parseDouble(element, "h");
+        double w = ParserUtils::parseDouble(element, "w");
+        double l = ParserUtils::parseDouble(element, "l");
 
         return std::make_unique<Pyramid>(origin, h, w, l, mat);
     }
