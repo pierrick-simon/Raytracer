@@ -50,7 +50,7 @@ namespace RayTracer {
         HitInfo hit;
 
         hit.hitPos = ray.origin + ray.direction * t;
-        hit.hitDist = t;
+        hit.hitDist = hit.hitPos.distance(ray.origin);
         hit.impactNormal = _ab.crossProduct(_ac).normalized();
         hit.textureColor = this->getTextureColor(uvPos);
         hit.material = _material;
