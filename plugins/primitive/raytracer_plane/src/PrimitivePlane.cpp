@@ -35,7 +35,7 @@ namespace RayTracer {
             if (_axis == PrimitivePlane::Axis::X)
                 uv = Maths::Vector2D(hitPos.getY(), hitPos.getZ());
             if (_axis == PrimitivePlane::Axis::Y)
-                uv = Maths::Vector2D(hitPos.getZ(), hitPos.getX());
+                uv = Maths::Vector2D(hitPos.getX(), hitPos.getZ());
             color = _texture->getColor(uv, true);
         }
         return color;
