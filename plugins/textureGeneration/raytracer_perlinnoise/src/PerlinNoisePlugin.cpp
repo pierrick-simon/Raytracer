@@ -22,12 +22,20 @@ namespace RayTracer {
         std::cout << "Loading perlin noise..." << std::endl;
         auto size = ParserUtils::parseVector2U(element["size"]);
         auto seed = ParserUtils::parseSizeT(element, "seed");
+        std::size_t smooth = SMOOTH;
+        Maths::Vector2U spread(SPREAD, SPREAD);
 
         if (size.getX() == 0)
             size.getX()++;
         if (size.getY() == 0)
             size.getY()++;
-        
-        return std::make_unique<PerlinNoise>(size, seed);
+        if (element.exists("smooth"))
+            smooth = ParserUtils::parseSizeT(element, "smooth");
+        if (element.exists("spread")) {
+            spread = ParserUtils::parseVector2U(element["spread"]);
+            spread.getX() = std::min(spread.getX(), unsigned(size.getX() - 1));
+            spread.getY() = std::min(spread.getY(), unsigned(size.getY() - 1));
+        }
+        return std::make_unique<PerlinNoise>(size, seed, smooth, spread);
     }
 }
