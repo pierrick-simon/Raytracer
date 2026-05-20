@@ -32,7 +32,7 @@ namespace RayTracer {
             throw ParserError("Wrong Extenstion.");
         if (!file.is_open())
             throw ParserError("No Such File.");
-        _filepath = {std::move(args.front())};
+        _filepath = args.front();
         for (const auto &builder: _presetMaterialBuilders)
             _materialBuilders.insert(builder);
         libconfig::Config cfg;
